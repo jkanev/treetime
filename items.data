@@ -1,0 +1,41 @@
+
+          
+     x
+     {"amount": {"content": 23, "type": "integer"}, "description": {"content": "default node", "type": "string"}}
+     [[], [], []]
+          
+     a
+     {"description": {"content": "Item A", "type": "string"}}
+     [[0], [], [0]]
+          
+     b
+     {"description": {"content": "Item B", "type": "string"}}
+     [[0, 0], [], [1]]
+          
+     c
+     {"amount": {"content": 4, "type": "integer"}, "description": {"content": "Item C", "type": "string"}}
+     [[0, 1], [], []]
+          
+     d
+     {"amount": {"content": 1, "type": "integer"}, "description": {"content": "Item D", "type": "string"}}
+     [[0, 0, 0], [], []]
+          
+     e
+     {"amount": {"content": 2, "type": "integer"}, "description": {"content": "Item E", "type": "string"}}
+     [[0, 0, 1], [], []]
+          
+     x
+     {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+     [[], [], [2]]
+          
+     x
+     {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+     [[], [], [3]]
+          
+     x
+     {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+     [[], [], [4]]
+          
+     x
+     {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+     [[], [], [5]]
