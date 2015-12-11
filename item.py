@@ -4,8 +4,8 @@ import json
 
 
 
+"""The list/forest item containing the actual data"""
 class Item:
-	"""The list/tree item containing the actual data"""
 
 	def __init__(self, name, fieldstring='{}', treestring='[]'):
 		self.name = name
@@ -16,6 +16,7 @@ class Item:
 	
 	def addField(self, name, content):
 		self.fields[name] = content
+		self.fieldOrder += [name]
 	
 	
 	def removeField(self, name, content):
@@ -23,18 +24,18 @@ class Item:
 	
 	
 	def writeToString(self):
-		string = "\n     " + self.name
-		string += "\n     " + json.dumps(self.fields)
-		string += "\n     " + json.dumps(self.trees)
+		string = self.name + "\n"
+		string += "   fields " + json.dumps(self.fields) + "\n"
+		string += "   trees " + json.dumps(self.trees) + "\n"
 		return string
 	
 	
 	def readFromString(self, string):
-		s = string.split("\n     ")
-		self.name = s[1]
-		self.fields = json.loads(s[2])
-		self.trees = json.loads(s[3])
-		return self
+		s = string.split("\n   fields ")
+		self.name = s[0]
+		s = s[1].split("\n   trees ")
+		self.fields = json.loads(s[0])
+		self.trees = json.loads(s[1])
 	
 	
 	def printitem(self):
@@ -53,33 +54,24 @@ class ItemPool:
 	def writeToString(self):
 		string = ""
 		for it in self.items:
-			string += "\n          " + it.writeToString()
+			string += "item " + it.writeToString() + "\n"
 		return string
 		
 	def readFromString(self, string):
-		string = string.split("\n          ") # items are separated by ten spaces on single lines
+		string = string.split("\n\nitem ") # items are separated by empty lines and the keyword "item"
 		for s in string:
 			if s != "":
 				it = Item("")
-				self.items += [it.readFromString(s)]
+				it.readFromString(s)
+				self.items += [it]
 	
-	def writeToFile(self, filename):
-		string = self.writeToString()
-		with open(filename, "w") as f:
-			f.write(string)
-		
-	def readFromFile(self, filename):
-		with open(filename, "r") as f:
-			string = f.read()
-		self.readFromString(string)
-		
 	def printpool(self):
 		for it in self.items:
 			it.printitem()
 			
+
+	"""Adds a copy of the default item to the list and returns a reference to it"""
 	def addNewItem(self):
-		"""Adds a copy of the default item to the list and returns a reference to it"""
-		
 		item = copy.deepcopy(self.defaultItem)
 		self.items += [item]
 		return item
@@ -87,26 +79,26 @@ class ItemPool:
 
 
 class Node:
-	"""A tree structure consisting of nodes that are parents of nodes etc. A node is a view-object to display one item."""
-	def __init__(self, parent, branch, path):
+	
+	"""A forest structure consisting of nodes that are parents of nodes etc. A node is a view-object to display one item."""
+	def __init__(self, parent, tree, path):
 		self.parent = parent
 		self.children = []
 		self.item = None
 		self.name = ""
 		self.fields = {}
 		self.fieldOrder = []
-		self.fieldOrder = ["description", "single sums", "single percentage", "total percentage"]
-		self.branch = branch
+		self.tree = tree
 		self.path = path;
 		
 	
-	def printTree(self, indent=0):
+	def printForest(self, indent=0):
 		
 		# create leading white space
 		s = ""
 		for i in range(indent):
 			s += "    "
-		s += " → " + str(self.branch)
+		s += " → " + str(self.tree)
 		for p in self.path:
 			s += "[" + str(p) + "]"
 		s += " " + self.__class__.__name__ + " "
@@ -114,54 +106,55 @@ class Node:
 		# append item content and print
 		s += self.name
 		for name,field in self.fields.items():
-			s += " [" + name + "] " + field.getString()
+			s += " [" + name + "] " + str(field.getString())
 		print(s)
 		
 		# recurse
 		for i in range(len(self.children)):
-			self.children[i].printTree(indent + 1)
+			self.children[i].printForest(indent + 1)
 	
 	
-	def createPathTo(self, item, branchindex, nodeindex):
+	def createPathTo(self, item, treeindex, nodeindex, viewtemplate):
 		
 		# either recurse deeper
-		if nodeindex < len(item.trees[branchindex]):
-			n = item.trees[branchindex][nodeindex]
+		if nodeindex < len(item.trees[treeindex]):
+			n = item.trees[treeindex][nodeindex]
 			while n >= len(self.children):
 				self.addChild()
-			self.children[n].createPathTo(item,branchindex,nodeindex+1)
+			self.children[n].createPathTo(item,treeindex,nodeindex+1,viewtemplate)
 		
 		# or, if in final node, link item
 		else:
 			self.item = item
 			self.name = item.name
-			self.fields = {}
-			self.fields["description"] = Field(self, ["description"], [], "itemString")
-			self.fields["single sums"] = Field(self, ["amount"], ["single sums"], "itemSum")
-			self.fields["single percentage"] = Field(self, ["amount"], [], "itemPercentage")
-			self.fields["total percentage"] = Field(self, [], ["single sums"], "nodePercentage")
-			item.viewNode = self
+			self.initFields(viewtemplate)
 	
 	
 	def addChild(self):
-		node = Node(self, self.branch, self.path + [len(self.children)])
+		node = Node(self, self.tree, self.path + [len(self.children)])
 		self.children += [node]
 		return node
 	
 	
 	def addItemAsChild(self, item):
-		"""Creates a node and links it to the item. Updates the item's tree indexes."""
+		"""Creates a node and links it to the item. Updates the item's forest indexes."""
 		
 		node = self.addChild()
 		node.item = item
-		item.trees[node.branch] = node.path
+		item.trees[node.tree] = node.path
+	
+	
+	def initFields(self, viewTemplate):
+		self.fields = copy.deepcopy(viewTemplate)
+		for name,field in self.fields.items():
+			field.sourceNode = self
 
 
 
 class Field:
 	"""A set of instructions to view/display the content of data items. Fields are part of nodes, and are stored in templates."""
 
-	def __init__(self, node, sourceItemFields, sourceNodeFields, fieldType):
+	def __init__(self, node=None, sourceItemFields=[], sourceNodeFields=[], fieldType=None):
 		"""Initialises the class, links the source node, field type, and sets the evaluation method."""
 		
 		self.sourceItemFields = sourceItemFields
@@ -169,16 +162,23 @@ class Field:
 		self.sourceNode = node
 		self.getValue = None
 		self.getString = None
-		if fieldType is "itemString":
+		self.fieldType = fieldType
+		if (self.fieldType != ""):
+			self.initFieldType()
+		
+		
+	def initFieldType(self):
+		
+		if self.fieldType == "itemString":
 			self.getValue = self.getValueItemString
 			self.getString = self.getStringUnchanged
-		elif fieldType is "itemSum":
+		elif self.fieldType == "itemSum":
 			self.getValue = self.getValueItemSum
 			self.getString = self.getStringUnchanged
-		elif fieldType is "itemPercentage":
+		elif self.fieldType == "itemPercentage":
 			self.getValue = self.getValueItemPercentage
 			self.getString = self.getStringPercentage
-		elif fieldType is "nodePercentage":
+		elif self.fieldType == "nodePercentage":
 			self.getValue = self.getValueNodePercentage
 			self.getString = self.getStringPercentage
 			
@@ -199,7 +199,11 @@ class Field:
 			return "[undefined]"
 	
 	def getValueItemString(self):
-		return self.sourceNode.item.fields[self.sourceItemFields[0]]["content"]
+		key = self.sourceItemFields[0]
+		if key in self.sourceNode.item.fields:
+			return self.sourceNode.item.fields[key]["content"]
+		else:
+			return ""
 	
 	def getValueItemSum(self):
 		value = self.sourceNode.item.fields.get(self.sourceItemFields[0])
@@ -250,63 +254,147 @@ class Field:
 			return ownValue / sumSiblings * 100
 		else:
 			return None
-
-
-
-class Branch(Node):
-	"""A branch of a tree. Branches are just underneath the trunk. One item can appear several times in the tree,
-	but only once in each branch."""
 	
 	
-	def __init__(self, parent, index, viewTemplate):
-		"""Initialise"""
+	def writeToString(self):
+		string = "   field-type " + json.dumps(self.fieldType) + "\n"
+		string += "      item-fields " + json.dumps(self.sourceItemFields) + "\n"
+		string += "      tree-fields " + json.dumps(self.sourceNodeFields) + "\n"
+		return string
+	
+	
+	def readFromString(self, string):
 		
-		super().__init__(parent, index, [])
-		self.viewTemplate = viewTemplate
-	
-	
-	def createPathTo(self, item, branchindex):
-		"""Sort the item into the tree, creating existing nodes on the fly if missing."""
+		s = string.split("\n      field-type ")
+		name = json.loads(s[0])
+		s = s[1].split("\n      item-fields ")
+		self.fieldType = json.loads(s[0])
+		s = s[1].split("\n      tree-fields ")
+		self.sourceItemFields = json.loads(s[0])
+		self.sourceNodeFields = json.loads(s[1])
+		self.initFieldType()
 		
-		# per branch: loop over all nodes, creating if necessary
-		# per node: create final node and link it to item
-		if item.trees[branchindex]:
-			n = item.trees[branchindex][0]
-			while n >= len(self.children):
-				self.addChild()
-			self.children[n].createPathTo(item,branchindex,1)
+		return name
+	
+	
 
 
 
 class Tree(Node):
-	""" The trunk node containing branches, that contain the nodes. Also manages the node templates."""
+	"""A tree inside a forest. One item can appear several times in the forest,
+	but only once in each tree."""
 	
 	
-	def __init__(self):
+	def __init__(self, parent, index):
+		"""Initialise"""
+		
+		super().__init__(parent, index, [])
+		self.viewTemplate = {}
+		self.name = ""
+		self.viewTemplate["description"] = Field(None, ["description"], [], "itemString")
+		self.viewTemplate["single sums"] = Field(None, ["amount"], ["single sums"], "itemSum")
+		self.viewTemplate["single percentage"] = Field(None, ["amount"], [], "itemPercentage")
+		self.viewTemplate["total percentage"] = Field(None, [], ["single sums"], "nodePercentage")
+	
+
+	"""Sort the item into the forest, creating existing nodes on the fly if missing."""
+	def createPathTo(self, item, treeindex):
+		
+		# per tree: loop over all nodes, creating if necessary
+		# per node: create final node and link it to item
+		if item.trees[treeindex]:
+			n = item.trees[treeindex][0]
+			while n >= len(self.children):
+				self.addChild()
+			self.children[n].createPathTo(item, treeindex, 1, self.viewTemplate)
+	
+	def writeToString(self):
+		string = "tree " + json.dumps(self.name) + "\n"
+		for n,f in self.viewTemplate.items():
+			string += "   field " + json.dumps(n) + "\n"
+			string += "   " + f.writeToString()
+		return string
+	
+	
+	def readFromString(self, string):
+		fieldStrings = string.split("\n   field ")
+		for n,fs in enumerate(fieldStrings):
+			if n==0:
+				self.name = json.loads(fs)
+			else:
+				f = Field();
+				name = f.readFromString(fs)
+				self.viewTemplate[name] = f
+				self.fieldOrder += [name]
+
+
+class Forest(Node):
+	""" The trunk node containing trees, that contain the nodes. Also manages the node templates."""
+	
+	
+	def __init__(self, filename):
 		"""Initialise"""
 		
 		super().__init__(None, None, [])
+		self.itemPool = None
+		self.readFromFile(filename)
 	
 	
-	def createPaths(self, itempool):
-		"""Sort all items from the itempool into the tree, creating the tree structure as defined by the
-		items' node indexes"""
+	"""Sort all items from the itempool into the forest, creating the forest structure as defined by the
+	items' node indexes"""
+	def createPaths(self):
 		
-		for item in itempool.items:
+		for item in self.itemPool.items:
 			self.createPathTo(item)
 	
 	
 	def createPathTo(self, item):
 		
-		# start: loop over all branches, creating if necessary
+		# start: loop over all trees, creating if necessary
 		for b in range(len(item.trees)):
 			if b >= len(self.children):
-				self.addBranch("tisti-tasti-testi")
+				self.addTree()
 			if item.trees[b]:
 				self.children[b].createPathTo(item,b)
 	
 	
-	def addBranch(self, viewTemplate):
-		self.children += [Branch(self, len(self.children), viewTemplate)]
+	def addTree(self):
+		self.children += [Tree(self, len(self.children))]
+	
+	
+	def writeToString(self):
+		s = ""
+		for b in self.children:
+			s += b.writeToString() + "\n"
+		return s
+	
+	def readFromString(self, string):
+		string = string.split("\n\ntree ")
+		n = 0
+		for s in string:
+			if s != "":
+				self.children[n].readFromString(s)
+				n += 1
 
+	def writeToFile(self, filename):
+		treeString = self.writeToString()
+		itemString = self.itemPool.writeToString()
+		with open(filename, "w") as f:
+			f.write("--trees--\n\n")
+			f.write(treeString)
+			f.write("--item-pool--\n\n")
+			f.write(itemString)
+	
+	
+	def readFromFile(self, filename):
+		with open(filename, "r") as f:
+			s = f.read()
+			s = s.split("--trees--")[1]
+			s = s.split("--item-pool--")
+			self.itemPool = ItemPool()
+			self.itemPool.readFromString(s[1])
+			self.createPaths()
+			self.readFromString(s[0])
+		self.createPaths()
+		
 

@@ -1,41 +1,78 @@
+--trees--
 
-          
-     x
-     {"amount": {"content": 23, "type": "integer"}, "description": {"content": "default node", "type": "string"}}
-     [[], [], []]
-          
-     a
-     {"description": {"content": "Item A", "type": "string"}}
-     [[0], [], [0]]
-          
-     b
-     {"description": {"content": "Item B", "type": "string"}}
-     [[0, 0], [], [1]]
-          
-     c
-     {"amount": {"content": 4, "type": "integer"}, "description": {"content": "Item C", "type": "string"}}
-     [[0, 1], [], []]
-          
-     d
-     {"amount": {"content": 1, "type": "integer"}, "description": {"content": "Item D", "type": "string"}}
-     [[0, 0, 0], [], []]
-          
-     e
-     {"amount": {"content": 2, "type": "integer"}, "description": {"content": "Item E", "type": "string"}}
-     [[0, 0, 1], [], []]
-          
-     x
-     {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
-     [[], [], [2]]
-          
-     x
-     {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
-     [[], [], [3]]
-          
-     x
-     {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
-     [[], [], [4]]
-          
-     x
-     {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
-     [[], [], [5]]
+tree "Overwiew"
+   field "total percentage"
+      field-type "nodePercentage"
+      item-fields []
+      tree-fields ["single sums"]
+   field "description"
+      field-type "itemString"
+      item-fields ["description"]
+      tree-fields []
+   field "single percentage"
+      field-type "itemPercentage"
+      item-fields ["amount"]
+      tree-fields []
+   field "single sums"
+      field-type "itemSum"
+      item-fields ["amount"]
+      tree-fields ["single sums"]
+
+tree "Descriptions"
+   field "description"
+      field-type "itemString"
+      item-fields ["description"]
+      tree-fields []
+
+tree "Amounts"
+   field "single sums"
+      field-type "itemSum"
+      item-fields ["amount"]
+      tree-fields ["single sums"]
+   field "amount"
+      field-type "itemString"
+      item-fields ["amount"]
+      tree-fields []
+
+--item-pool--
+
+item item item x
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+   trees [[], [], []]
+
+item a
+   fields {"description": {"content": "Item A", "type": "string"}}
+   trees [[0], [], [0]]
+
+item b
+   fields {"description": {"content": "Item B", "type": "string"}}
+   trees [[0, 0], [], [1]]
+
+item c
+   fields {"description": {"content": "Item C", "type": "string"}, "amount": {"content": 4, "type": "integer"}}
+   trees [[0, 1], [], []]
+
+item d
+   fields {"description": {"content": "Item D", "type": "string"}, "amount": {"content": 1, "type": "integer"}}
+   trees [[0, 0, 0], [], []]
+
+item e
+   fields {"description": {"content": "Item E", "type": "string"}, "amount": {"content": 2, "type": "integer"}}
+   trees [[0, 0, 1], [], []]
+
+item x
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+   trees [[], [], [2]]
+
+item x
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+   trees [[], [], [3]]
+
+item x
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+   trees [[], [], [4]]
+
+item x
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+   trees [[], [], [5]]
+

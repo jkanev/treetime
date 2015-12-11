@@ -33,9 +33,8 @@ p.defaultItem = x
 
 # central tree object with no parent and no children
 print("creating tree:")
-tree_p = item.Tree()
-tree_p.createPaths(p)
-tree_p.printTree()
+tree_p = item.Forest("items.data")
+tree_p.printForest()
 
 # add new items as child of node e
 tree_p.children[2].addItemAsChild( p.addNewItem() )
@@ -44,13 +43,11 @@ tree_p.children[2].addItemAsChild( p.addNewItem() )
 tree_p.children[2].addItemAsChild( p.addNewItem() )
 
 print("writing pool to file and reading it back in")
-p.writeToFile("items.data")
-q = item.ItemPool()
-q.readFromFile("items.data")
+tree_p.writeToFile("items2.data")
+
+tree_q = item.Forest("items2.data")
 # central tree object with no parent and no children
 print("creating tree:")
-tree_q = item.Tree()
-tree_q.createPaths(q)
-tree_q.printTree()
+tree_q.printForest()
 
 

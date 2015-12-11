@@ -2,16 +2,17 @@ import sys
 import item
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
-with open("mainwindow.py", "w") as file:
-	uic.compileUi("mainwindow.ui", file)
+#with open("mainwindow.py", "w") as file:
+#	uic.compileUi("mainwindow.ui", file)
+#import mainwindow
 
 class QNode(QtWidgets.QTreeWidgetItem):
 	
-	def __init__(self, sourceNode):
+	def __init__(self, sourceNode, fieldOrder):
 		
 		self.sourceNode = sourceNode
 		displayStrings = [sourceNode.name]
-		for d in sourceNode.fieldOrder:
+		for d in fieldOrder:
 			if d in self.sourceNode.fields:
 				displayStrings += [self.sourceNode.fields[d].getString()]
 			else:
@@ -19,55 +20,45 @@ class QNode(QtWidgets.QTreeWidgetItem):
 				
 		super().__init__(displayStrings)
 		for c in sourceNode.children:
-			child = QNode(c)
+			child = QNode(c, fieldOrder)
 			super().addChild(child)
 
 
 class TreeTimeWindow(QtWidgets.QMainWindow):
 	
-	def __init__(self):
-		self.itemPool = None
-		self.itemTree = None
+	def __init__(self, filename):
+		self.forest = item.Forest(filename)
 		self.tabWidgets = []
 		self.treeWidgets = []
-		self.currentBranch = 0
+		self.currentTree = 0
 		super().__init__()
 		uic.loadUi('mainwindow.ui', self)
+		self.createBranchTabs()
+		self.fillTreeWidgets()
 	
-	
-	def loadItemPool(self, filename):
-		self.itemPool = item.ItemPool()
-		self.itemPool.readFromFile(filename)
-	
-	
-	def buildItemTree(self):
-		self.itemTree = item.Tree()
-		self.itemTree.createPaths(self.itemPool)
-	
-	
+		
 	def createBranchTabs(self):
-		for n,c in enumerate(self.itemTree.children):
+		for n,c in enumerate(self.forest.children):
 			newTab = QtWidgets.QWidget()
 			newTab.setObjectName("tab"+str(n))
 			self.tabWidget.addTab(newTab, "")
 			self.tabWidgets += [newTab]
-			self.tabWidget.setTabText(n, "Tree " + str(n))
+			self.tabWidget.setTabText(n, c.name)
 			newTree = QtWidgets.QTreeWidget(newTab)
 			newTree.setGeometry(QtCore.QRect(0, 0, 731, 751))
 			newTree.setAllColumnsShowFocus(True)
 			newTree.setWordWrap(True)
-			newTree.setObjectName("treeWidget1")
 			newTree.headerItem().setText(0, "1")
-			newTree.setColumnCount(4)
+			newTree.setColumnCount(len(c.fieldOrder))
 			self.treeWidgets += [newTree]
 
 	
 	
 	def fillTreeWidgets(self):
-		for n,c in enumerate(self.itemTree.children):
+		for n,c in enumerate(self.forest.children):
 			self.treeWidgets[n].itemSelectionChanged.connect(lambda x=n: self.treeSelectionChanged(x))
 			self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
-			parent = QNode(c)
+			parent = QNode(c, self.forest.children[n].fieldOrder)
 			self.treeWidgets[n].addTopLevelItem( parent )
 			self.treeWidgets[n].expandAll()
 	
@@ -105,11 +96,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 				
 
 app = QtWidgets.QApplication(sys.argv)
-mainWindow = TreeTimeWindow()
-mainWindow.loadItemPool("items.data")
-mainWindow.buildItemTree()
-mainWindow.createBranchTabs()
-mainWindow.fillTreeWidgets()
+mainWindow = TreeTimeWindow("items.data")
 
 mainWindow.show()
 sys.exit(app.exec_())
