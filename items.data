@@ -50,7 +50,7 @@ item b
 
 item c
    fields {"description": {"content": "Item C", "type": "string"}, "amount": {"content": 4, "type": "integer"}}
-   trees [[0, 1], [], []]
+   trees [[0, 1], [0], []]
 
 item d
    fields {"description": {"content": "Item D", "type": "string"}, "amount": {"content": 1, "type": "integer"}}
@@ -62,17 +62,17 @@ item e
 
 item x
    fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
-   trees [[], [], [2]]
+   trees [[], [1], [2]]
 
 item x
    fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
-   trees [[], [], [3]]
+   trees [[], [2], [3]]
 
 item x
    fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
-   trees [[], [], [4]]
+   trees [[], [3], [4]]
 
 item x
    fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
-   trees [[], [], [5]]
+   trees [[], [2,0], [5]]
 

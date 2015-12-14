@@ -282,6 +282,7 @@ class Node:
 				self.parent.notifyFieldChange(fieldName, True)
 			
 	
+	
 	'''Callback, called whenever the underlying item was deleted.'''
 	def notifyDeletion(self, fieldName, fieldContent):
 		if self.deletionCallback is not None:

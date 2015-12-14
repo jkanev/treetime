@@ -53,11 +53,11 @@ class Item:
 	
 	
 	def registerFieldChangeCallback(self, callback):
-		self.fieldChangeCallbacks = [callback]
+		self.fieldChangeCallbacks += [callback]
 	
 	
 	def registerDeletionCallback(self, callback):
-		self.deletionCallbacks = [callback]
+		self.deletionCallbacks += [callback]
 	
 	
 	def changeName(self, newName):

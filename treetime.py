@@ -51,7 +51,8 @@ class QNode(QtWidgets.QTreeWidgetItem):
 
 		
 	def notifyFieldChange(self, fieldName, fieldContent):
-		super().setText(self.fieldOrder[fieldName], fieldContent)
+		if fieldName in self.fieldOrder:
+			super().setText(self.fieldOrder[fieldName], fieldContent)
 	
 	def notifyDeletion(self):
 		pass
@@ -71,8 +72,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		uic.loadUi('mainwindow.ui', self)
 		self.createBranchTabs()
 		self.fillTreeWidgets()
-		self.pushButtonCreateNew.clicked.connect(self.pushButtonCreateNewClicked)
+		self.pushButtonNewChild.clicked.connect(self.pushButtonNewChildClicked)
+		self.pushButtonNewSibling.clicked.connect(self.pushButtonNewSiblingClicked)
 		self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
+		self.tableWidget.verticalHeader().setSectionResizeMode(3)
 		self.locked = True
 	
 		
@@ -185,7 +188,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 			self.locked = False
 				
 
-	def pushButtonCreateNewClicked(self):
+	def pushButtonNewChildClicked(self):
 		
 		# get current node in current tree
 		treeWidget = self.treeWidgets[self.currentTree]
@@ -193,6 +196,32 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 			sourceQNode = treeWidget.selectedItems()[0]
 			sourceNode = sourceQNode.sourceNode
 			sourceItem = sourceNode.item
+
+			# create default node and add item to it
+			item = self.forest.itemPool.addNewItem()
+			node = sourceNode.addItemAsChild(item)
+			qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+			sourceQNode.addChild(qnode)
+			
+			# expand parent and select new item
+			sourceQNode.setExpanded(True)
+			treeWidget.setCurrentItem(qnode)
+		else:
+			pass
+			
+	def pushButtonNewSiblingClicked(self):
+		
+		# get current node in current tree
+		treeWidget = self.treeWidgets[self.currentTree]
+		if len(treeWidget.selectedItems()):
+			sourceQNode = treeWidget.selectedItems()[0]
+			sourceNode = sourceQNode.sourceNode
+			if sourceNode.parent is None:
+				return
+			else:
+				sourceQNode = sourceQNode.parent()
+				sourceNode = sourceQNode.sourceNode
+				sourceItem = sourceNode.item
 
 			# create default node and add item to it
 			item = self.forest.itemPool.addNewItem()
