@@ -37,42 +37,42 @@ tree "Amounts"
 --item-pool--
 
 item Name
-   fields {"description": {"content": "description", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+   fields {"description": {"content": "description", "type": "string"}, "amount": {"content": 0, "type": "integer"}}
    trees [[], [], []]
 
 item a
-   fields {"description": {"content": "Item A", "type": "string"}}
+   fields {"description": {"content": "Item A", "type": "string"}, "amount": {"content": 1, "type": "integer"}}
    trees [[0], [], [0]]
 
 item b
-   fields {"description": {"content": "Item B", "type": "string"}}
+   fields {"description": {"content": "Item B", "type": "string"}, "amount": {"content": 2, "type": "integer"}}
    trees [[0, 0], [], [1]]
 
 item c
-   fields {"description": {"content": "Item C", "type": "string"}, "amount": {"content": 4, "type": "integer"}}
+   fields {"description": {"content": "Item C", "type": "string"}, "amount": {"content": 3, "type": "integer"}}
    trees [[0, 1], [0], []]
 
 item d
-   fields {"description": {"content": "Item D", "type": "string"}, "amount": {"content": 1, "type": "integer"}}
+   fields {"description": {"content": "Item D", "type": "string"}, "amount": {"content": 4, "type": "integer"}}
    trees [[0, 0, 0], [], []]
 
-item e
-   fields {"description": {"content": "Item E", "type": "string"}, "amount": {"content": 2, "type": "integer"}}
+item d
+   fields {"description": {"content": "Item E", "type": "string"}, "amount": {"content": 5, "type": "integer"}}
    trees [[0, 0, 1], [], []]
 
-item x
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+item e
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 6, "type": "integer"}}
    trees [[], [1], [2]]
 
-item x
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+item f
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 7, "type": "integer"}}
    trees [[], [2], [3]]
 
-item x
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+item g
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 8, "type": "integer"}}
    trees [[], [3], [4]]
 
-item x
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+item h
+   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 9, "type": "integer"}}
    trees [[], [2,0], [5]]
 

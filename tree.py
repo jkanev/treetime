@@ -65,6 +65,8 @@ class Field:
 			value = 0
 			
 		for child in self.sourceNode.children:
+			if self.sourceNodeFields[0] == "single sums" and "single sums" not in child.fields:
+				pass
 			field = child.fields[self.sourceNodeFields[0]]
 			value += field.getValue()
 					
@@ -228,8 +230,13 @@ class Node:
 	
 	def initFields(self, viewTemplate):
 		self.fields = copy.deepcopy(viewTemplate)
+		
+		# first set all fields to myself
 		for name,field in self.fields.items():
 			field.sourceNode = self
+		
+		# and only then send notification
+		for name,field in self.fields.items():
 			self.notifyFieldChange(name, True)
 	
 	

@@ -76,6 +76,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		self.pushButtonNewSibling.clicked.connect(self.pushButtonNewSiblingClicked)
 		self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
 		self.tableWidget.verticalHeader().setSectionResizeMode(3)
+		self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
 		self.locked = True
 	
 		
@@ -155,6 +156,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		
 		self.locked = False
 		
+	
+	'''Called when the user selects another tree in the tab widget.'''
+	def tabWidgetCurrentChanged(self, tree):
+		self.currentTree = tree
 	
 	''' Called when the user wants to change the item name, field content or parent via the grid'''
 	def tableWidgetCellChanged(self, row, column):
