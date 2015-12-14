@@ -153,14 +153,35 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		self.locked = False
 		
 	
+	''' Called when the user wants to change the item name, field content or parent via the grid'''
 	def tableWidgetCellChanged(self, row, column):
 		if not self.locked:
 			self.locked = True
 			if column == 1:
+
+				# the node name has been changed
 				if row == 0:
-					# the node name has been changed
 					newName = self.tableWidget.item(row,column).text()
 					self.currentItem.changeName(newName)
+
+				# one of the parents has been changed
+				elif row <= len(self.forest.children):
+					newParent = self.tableWidget.item(row,1).text()
+					tree = self.tableWidget.item(row,0).text()
+					message = "Cannot find a node with name '" + newParent + "' in tree '" + tree + "'.\nPlease check your spelling or create a node with the name '" + newParent + "' in the '" + tree + "' tab."
+					msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+					msgBox.exec_()
+					
+				# one of the fields has been changed
+				else:
+					fieldName = self.tableWidget.item(row,0).text()
+					newValue = self.tableWidget.item(row,1).text()
+					result = self.currentItem.changeFieldContent(fieldName, newValue)
+					if result is not True:
+						message = "Couldn't update field content.\n" + str(result)
+						msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+						msgBox.exec_()
+				
 			self.locked = False
 				
 

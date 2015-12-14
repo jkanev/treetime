@@ -36,8 +36,8 @@ tree "Amounts"
 
 --item-pool--
 
-item item item x
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
+item Name
+   fields {"description": {"content": "description", "type": "string"}, "amount": {"content": 23, "type": "integer"}}
    trees [[], [], []]
 
 item a

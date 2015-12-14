@@ -19,7 +19,6 @@ class Item:
 	
 	def addField(self, name, content):
 		self.fields[name] = content
-		self.fieldOrder += [name]
 	
 	
 	def removeField(self, name, content):
@@ -67,10 +66,27 @@ class Item:
 			c(newName)
 	
 	
-	def changeField(self, fieldName, fieldContent):
-		self.fields[fieldName] = fieldContent
-		for f in self.fieldChangeCallbacks:
-			f(fieldName)
+	''' Edit the content of a field. The content is expected to be a string and will be converted accourding to the field type. '''
+	def changeFieldContent(self, fieldName, fieldContent):
+		
+		if fieldName not in self.fields:
+			return "A field with name " + fieldName + " does not exist in node " + self.name + "."
+		else:
+			# update field content
+			field = self.fields[fieldName]
+			type = field["type"]
+			if type == "string":
+				field["content"] = fieldContent
+			elif type == "integer":
+				field["content"] = json.loads(fieldContent)
+			else:
+				return "A field of type " + type + " cannot be edited."
+			
+			# notify GUI of field change
+			for f in self.fieldChangeCallbacks:
+				f(fieldName)
+		
+		return True
 
 
 class ItemPool:

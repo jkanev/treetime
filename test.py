@@ -1,4 +1,5 @@
 # coding=utf-8
+import tree
 import item
 
 # create four single items and test read/write
@@ -33,7 +34,7 @@ p.defaultItem = x
 
 # central tree object with no parent and no children
 print("creating tree:")
-tree_p = item.Forest("items.data")
+tree_p = tree.Forest("items.data")
 tree_p.printForest()
 
 # add new items as child of node e
@@ -45,7 +46,7 @@ tree_p.children[2].addItemAsChild( p.addNewItem() )
 print("writing pool to file and reading it back in")
 tree_p.writeToFile("items2.data")
 
-tree_q = item.Forest("items2.data")
+tree_q = tree.Forest("items2.data")
 # central tree object with no parent and no children
 print("creating tree:")
 tree_q.printForest()

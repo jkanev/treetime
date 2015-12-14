@@ -233,6 +233,18 @@ class Node:
 			self.notifyFieldChange(name, True)
 	
 	
+	'''Finds the first node of a given name in the tree.'''
+	def findNodeByName(self, name):
+		if self.name == name:
+			return self
+		else:
+			for c in self.children:
+				found = c.findNodeByName(name)
+				if found is not None:
+					return found
+		return None
+	
+	
 	def registerNameChangeCallback(self, callback):
 		self.nameChangeCallback = callback
 	
@@ -250,9 +262,16 @@ class Node:
 			self.nameChangeCallback(newName)
 	
 	
+	'''Callback, called whenever a field in a related item has changed.'''
 	def notifyFieldChange(self, fieldName, recursion):
 		
+		if self.fieldChangeCallback is not None:
+			for f in self.fields:
+				self.fieldChangeCallback(f, self.fields[f].getString())
+		
+		# build list of children
 		if recursion:
+					
 			# notify all siblings, non-recursive
 			if self.parent is not None:
 				for c in self.parent.children:
@@ -261,18 +280,17 @@ class Node:
 					
 				# notify all parents, recursive
 				self.parent.notifyFieldChange(fieldName, True)
-		
-		if self.fieldChangeCallback is not None and fieldName in self.fields:
-			self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
+			
 	
+	'''Callback, called whenever the underlying item was deleted.'''
 	def notifyDeletion(self, fieldName, fieldContent):
 		if self.deletionCallback is not None:
 			self.deletionCallback()
 
 
+
+'''A tree inside a forest. One item can appear several times in the forest, but only once in each tree.'''
 class Tree(Node):
-	"""A tree inside a forest. One item can appear several times in the forest,
-	but only once in each tree."""
 	
 	
 	def __init__(self, parent, index):
