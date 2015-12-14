@@ -14,45 +14,194 @@
    <string>Tree Time</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout" columnstretch="2,5">
-      <item row="0" column="0">
-       <widget class="QTableWidget" name="tableWidget">
-        <property name="sortingEnabled">
-         <bool>false</bool>
-        </property>
-        <property name="rowCount">
-         <number>20</number>
-        </property>
-        <property name="columnCount">
-         <number>2</number>
-        </property>
-        <attribute name="horizontalHeaderVisible">
-         <bool>false</bool>
-        </attribute>
-        <attribute name="horizontalHeaderCascadingSectionResizes">
-         <bool>true</bool>
-        </attribute>
-        <attribute name="verticalHeaderVisible">
-         <bool>false</bool>
-        </attribute>
-        <attribute name="verticalHeaderCascadingSectionResizes">
-         <bool>true</bool>
-        </attribute>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QTabWidget" name="tabWidget">
-        <property name="currentIndex">
-         <number>-1</number>
-        </property>
-        <property name="documentMode">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,3">
+    <item>
+     <widget class="QToolBox" name="toolBox">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>200</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="pageTree">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>200</width>
+         <height>722</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string> Node Operations </string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButtonCreateNew">
+          <property name="text">
+           <string>Create New Item</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="pushButtonCopy">
+          <property name="text">
+           <string>Copy to Child</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButtonChangeParent">
+          <property name="text">
+           <string>Select New Parent</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QPushButton" name="pushButtonRemove">
+          <property name="text">
+           <string>Remove Node</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QPushButton" name="pushButtonDelete">
+          <property name="text">
+           <string>Delete Item</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="0">
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Copy to Sibling</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="pageItem">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>96</width>
+         <height>90</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string> Field Operations </string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButtonStartTimer">
+          <property name="text">
+           <string>Start Timer</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButtonStopTimer">
+          <property name="text">
+           <string>Stop Timer</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="sortingEnabled">
+       <bool>false</bool>
+      </property>
+      <property name="rowCount">
+       <number>20</number>
+      </property>
+      <property name="columnCount">
+       <number>2</number>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="horizontalHeaderCascadingSectionResizes">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderCascadingSectionResizes">
+       <bool>true</bool>
+      </attribute>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <column/>
+      <column/>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="documentMode">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
