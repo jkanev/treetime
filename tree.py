@@ -6,11 +6,13 @@ import item
 class Field:
 	"""A set of instructions to view/display the content of data items. Fields are part of nodes, and are stored in templates."""
 
-	def __init__(self, node=None, sourceItemFields=[], sourceNodeFields=[], fieldType=None):
+	def __init__(self, node=None, ownFields=[], childFields=[], siblingFields=[], parentFields=[], fieldType=None):
 		"""Initialises the class, links the source node, field type, and sets the evaluation method."""
 		
-		self.sourceItemFields = sourceItemFields
-		self.sourceNodeFields = sourceNodeFields
+		self.ownFields = ownFields
+		self.siblingFields = siblingFields
+		self.childFields = childFields
+		self.parentFields = parentFields
 		self.sourceNode = node
 		self.getValue = None
 		self.getString = None
@@ -18,22 +20,65 @@ class Field:
 		if (self.fieldType != ""):
 			self.initFieldType()
 		
+	
+	''' Gets all values of all related fields in a list. Order is: own fields first, then child fields, then sibling fields, then parent fields. Item fields of the same name have precence over tree fields.'''
+	def getFieldValues(self):
 		
+		values = []
+
+		# look in own fields
+		node = self.sourceNode
+		if node.item is not None: # don't try to get values from the root node
+			for f in self.ownFields:
+				if f in node.item.fields:
+					values += [node.item.fields[f]["content"]]
+				elif f in node.fields:
+					values += [node.fields[f].getValue()]
+		
+		# look in child fields
+		node = self.sourceNode
+		for f in self.childFields:
+			for c in node.children:
+				if f in c.item.fields:
+					values += [c.item.fields[f]["content"]]
+				elif f in c.fields:
+					values += [c.fields[f].getValue()]
+		
+		# look in sibling fields
+		node = self.sourceNode.parent
+		for f in self.siblingFields:
+			for c in node.children:
+				if c != self.sourceNode:
+					if f in c.item.fields:
+						values += [c.item.fields[f]["content"]]
+					elif f in c.fields:
+						values += [c.fields[f].getValue()]
+	
+		# look in parent fields
+		node = self.sourceNode.parent
+		for f in self.parentFields:
+			if f in node.fields:
+				values += [node.item.fields[f]["content"]]
+			elif f in node.item.fields:
+				values += [node.fields[f].getValue()]
+		
+		# return
+		return values
+	
+	
 	def initFieldType(self):
 		
-		if self.fieldType == "itemString":
-			self.getValue = self.getValueItemString
+		if self.fieldType == "string":
+			self.getValue = self.getValueString
 			self.getString = self.getStringUnchanged
-		elif self.fieldType == "itemSum":
-			self.getValue = self.getValueItemSum
+		elif self.fieldType == "sum":
+			self.getValue = self.getValueSum
 			self.getString = self.getStringUnchanged
-		elif self.fieldType == "itemPercentage":
-			self.getValue = self.getValueItemPercentage
+		elif self.fieldType == "percentage":
+			self.getValue = self.getValuePercentage
 			self.getString = self.getStringPercentage
-		elif self.fieldType == "nodePercentage":
-			self.getValue = self.getValueNodePercentage
-			self.getString = self.getStringPercentage
-			
+		
+		
 	def getStringPercentage(self):
 		if self.sourceNode and self.getValue:
 			v = self.getValue();
@@ -44,76 +89,46 @@ class Field:
 		else:
 			return ""
 	
+	
 	def getStringUnchanged(self):
 		if self.sourceNode and self.getValue:
 			return str(self.getValue())
 		else:
 			return "[undefined]"
 	
-	def getValueItemString(self):
-		key = self.sourceItemFields[0]
-		if key in self.sourceNode.item.fields:
-			return self.sourceNode.item.fields[key]["content"]
-		else:
-			return ""
 	
-	def getValueItemSum(self):
-		value = self.sourceNode.item.fields.get(self.sourceItemFields[0])
-		if value:
-			value = value["content"]
-		else:
-			value = 0
-			
-		for child in self.sourceNode.children:
-			if self.sourceNodeFields[0] == "single sums" and "single sums" not in child.fields:
-				pass
-			field = child.fields[self.sourceNodeFields[0]]
-			value += field.getValue()
-					
-		return value
+	def getValueString(self):
+		values = self.getFieldValues()
+		s = ""
+		for v in values:
+			s += str(v)
+		return s
+
 	
-	def getValueItemPercentage(self):
-		sumSiblings = 0;
-		for sibling in self.sourceNode.parent.children:
-			sourceField = sibling.item.fields.get(self.sourceItemFields[0])
-			if sourceField:
-				sumSiblings += sourceField["content"]
-			else:
-				break
-		ownValue = self.sourceNode.item.fields.get(self.sourceItemFields[0])
-		if ownValue:
-			ownValue = ownValue["content"]
+	def getValueSum(self):
+		values = self.getFieldValues()
+		sum = 0
+		for v in values:
+			sum += v
+		return sum
+	
+	def getValuePercentage(self):
+		values = self.getFieldValues()
+		sum = 0
+		for v in values:
+			sum += v
+		if sum != 0:
+			return values[0]*100.0/sum
 		else:
 			return None
-		if sumSiblings != 0:
-			return ownValue / sumSiblings * 100
-		else:
-			return None
-	
-	def getValueNodePercentage(self):
-		sumSiblings = 0;
-		for sibling in self.sourceNode.parent.children:
-			
-			sourceField = sibling.fields.get(self.sourceNodeFields[0])
-			if sourceField:
-				sumSiblings += sourceField.getValue()
-			else:
-				break
-		ownValue = self.sourceNode.fields.get(self.sourceNodeFields[0])
-		if ownValue:
-			ownValue = ownValue.getValue()
-		else:
-			return None
-		if sumSiblings != 0:
-			return ownValue / sumSiblings * 100
-		else:
-			return None
-	
-	
+		
+		
 	def writeToString(self):
 		string = "   field-type " + json.dumps(self.fieldType) + "\n"
-		string += "      item-fields " + json.dumps(self.sourceItemFields) + "\n"
-		string += "      tree-fields " + json.dumps(self.sourceNodeFields) + "\n"
+		string += "      own-fields " + json.dumps(self.ownFields) + "\n"
+		string += "      child-fields " + json.dumps(self.childFields) + "\n"
+		string += "      sibling-fields " + json.dumps(self.siblingFields) + "\n"
+		string += "      parent-fields " + json.dumps(self.parentFields) + "\n"
 		return string
 	
 	
@@ -121,11 +136,15 @@ class Field:
 		
 		s = string.split("\n      field-type ")
 		name = json.loads(s[0])
-		s = s[1].split("\n      item-fields ")
+		s = s[1].split("\n      own-fields ")
 		self.fieldType = json.loads(s[0])
-		s = s[1].split("\n      tree-fields ")
-		self.sourceItemFields = json.loads(s[0])
-		self.sourceNodeFields = json.loads(s[1])
+		s = s[1].split("\n      child-fields ")
+		self.ownFields = json.loads(s[0])
+		s = s[1].split("\n      sibling-fields ")
+		self.childFields = json.loads(s[0])
+		s = s[1].split("\n      parent-fields ")
+		self.siblingFields = json.loads(s[0])
+		self.parentFields = json.loads(s[1])
 		self.initFieldType()
 		
 		return name
@@ -329,10 +348,10 @@ class Tree(Node):
 		super().__init__(parent, index, [])
 		self.viewTemplate = {}
 		self.name = ""
-		self.viewTemplate["description"] = Field(None, ["description"], [], "itemString")
-		self.viewTemplate["single sums"] = Field(None, ["amount"], ["single sums"], "itemSum")
-		self.viewTemplate["single percentage"] = Field(None, ["amount"], [], "itemPercentage")
-		self.viewTemplate["total percentage"] = Field(None, [], ["single sums"], "nodePercentage")
+		#self.viewTemplate["description"] = Field(None, ["description"], [], "itemString")
+		#self.viewTemplate["single sums"] = Field(None, ["amount"], ["single sums"], "itemSum")
+		#self.viewTemplate["single percentage"] = Field(None, ["amount"], [], "itemPercentage")
+		#self.viewTemplate["total percentage"] = Field(None, [], ["single sums"], "nodePercentage")
 	
 
 	"""Sort the item into the forest, creating existing nodes on the fly if missing."""

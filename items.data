@@ -1,38 +1,59 @@
 --trees--
 
-tree "Overwiew"
+tree "Overview"
+   field "description"
+      field-type "string"
+      own-fields ["description"]
+      child-fields []
+      sibling-fields []
+      parent-fields []
    field "total percentage"
-      field-type "nodePercentage"
-      item-fields []
-      tree-fields ["single sums"]
-   field "description"
-      field-type "itemString"
-      item-fields ["description"]
-      tree-fields []
-   field "single percentage"
-      field-type "itemPercentage"
-      item-fields ["amount"]
-      tree-fields []
-   field "single sums"
-      field-type "itemSum"
-      item-fields ["amount"]
-      tree-fields ["single sums"]
-
-tree "Descriptions"
-   field "description"
-      field-type "itemString"
-      item-fields ["description"]
-      tree-fields []
-
-tree "Amounts"
-   field "single sums"
-      field-type "itemSum"
-      item-fields ["amount"]
-      tree-fields ["single sums"]
+      field-type "percentage"
+      own-fields ["total"]
+      child-fields []
+      sibling-fields ["total"]
+      parent-fields []
+   field "total"
+      field-type "sum"
+      own-fields ["amount"]
+      child-fields ["total"]
+      sibling-fields []
+      parent-fields []
    field "amount"
-      field-type "itemString"
-      item-fields ["amount"]
-      tree-fields []
+      field-type "sum"
+      own-fields ["amount"]
+      child-fields []
+      sibling-fields []
+      parent-fields []
+
+tree "Amount"
+   field "total"
+      field-type "sum"
+      own-fields ["amount"]
+      child-fields ["total"]
+      sibling-fields []
+      parent-fields []
+   field "amount"
+      field-type "sum"
+      own-fields ["amount"]
+      child-fields []
+      sibling-fields []
+      parent-fields []
+
+tree "Percentage"
+   field "ratio"
+      field-type "percentage"
+      own-fields ["amount"]
+      child-fields []
+      sibling-fields ["amount"]
+      parent-fields []
+   field "amount"
+      field-type "sum"
+      own-fields ["amount"]
+      child-fields []
+      sibling-fields []
+      parent-fields []
+
 
 --item-pool--
 
