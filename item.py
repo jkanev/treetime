@@ -117,7 +117,11 @@ class ItemPool:
 
 	"""Adds a copy of the default item to the list and returns a reference to it"""
 	def addNewItem(self):
-		item = copy.deepcopy(self.defaultItem)
-		self.items += [item]
-		return item
-
+		return self.copyItem(self.defaultItem)
+	
+	
+	"""Adds a copy of the default item to the list and returns a reference to it"""
+	def copyItem(self, item):
+		newitem = copy.deepcopy(item)
+		self.items += [newitem]
+		return newitem

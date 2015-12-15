@@ -72,9 +72,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		uic.loadUi('mainwindow.ui', self)
 		self.createBranchTabs()
 		self.fillTreeWidgets()
-		self.pushButtonNewChild.clicked.connect(self.pushButtonNewChildClicked)
-		self.pushButtonNewSibling.clicked.connect(self.pushButtonNewSiblingClicked)
-		self.pushButtonNewParent.clicked.connect(self.pushButtonNewParentClicked)
+		self.pushButtonNewChild.clicked.connect(lambda: self.createNode("child", False))
+		self.pushButtonNewSibling.clicked.connect(lambda: self.createNode("sibling", False))
+		self.pushButtonNewParent.clicked.connect(lambda: self.createNode("parent", False))
+		self.pushButtonCopyNodeChild.clicked.connect(lambda: self.createNode("child", True))
+		self.pushButtonCopyNodeSibling.clicked.connect(lambda: self.createNode("sibling", True))
+		self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
 		self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
 		self.tableWidget.verticalHeader().setSectionResizeMode(3)
 		self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
@@ -194,78 +197,64 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 			self.locked = False
 				
 	
-	'''Called, when the user wants to create a new node as child to the currently selected one.'''
-	def pushButtonNewChildClicked(self):
+
+	def createNode(self, insertas, copy):
 		
-		# get current node in current tree
 		treeWidget = self.treeWidgets[self.currentTree]
 		if len(treeWidget.selectedItems()):
+
 			sourceQNode = treeWidget.selectedItems()[0]
 			sourceNode = sourceQNode.sourceNode
 			sourceItem = sourceNode.item
-
-			# create default node and add item to it
-			item = self.forest.itemPool.addNewItem()
-			node = sourceNode.addItemAsChild(item)
-			qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-			sourceQNode.addChild(qnode)
-			
-			# expand parent and select new item
-			sourceQNode.setExpanded(True)
-			treeWidget.setCurrentItem(qnode)
-
-			
-	def pushButtonNewSiblingClicked(self):
-		
-		# get current node in current tree
-		treeWidget = self.treeWidgets[self.currentTree]
-		if len(treeWidget.selectedItems()):
-			sourceQNode = treeWidget.selectedItems()[0]
-			sourceNode = sourceQNode.sourceNode
-			sourceItem = sourceNode.item
-			if sourceNode.parent is None or sourceQNode.parent() is None:
-				return
-
-			# create default node and add item to it
-			item = self.forest.itemPool.addNewItem()
-			node = sourceNode.parent.addItemAsChild(item)
-			qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-			sourceQNode.parent().addChild(qnode)
-			
-			# expand parent and select new item
-			sourceQNode.parent().setExpanded(True)
-			treeWidget.setCurrentItem(qnode)
-			
-			
-	def pushButtonNewParentClicked(self):
-		
-		# get current node in current tree
-		treeWidget = self.treeWidgets[self.currentTree]
-		if len(treeWidget.selectedItems()):
-			sourceQNode = treeWidget.selectedItems()[0]
-			sourceNode = sourceQNode.sourceNode
-			sourceItem = sourceNode.item
-			if sourceNode.parent is None or sourceQNode.parent() is None:
-				return
 			parentNode = sourceNode.parent
 			parentQNode = sourceQNode.parent()
+			item = None
+			if copy:
+				item = self.forest.itemPool.copyItem(sourceItem)
+			else:
+				item = self.forest.itemPool.addNewItem()
 
-			# create default node and add item to it
-			item = self.forest.itemPool.addNewItem()
-			node = parentNode.addItemAsChild(item)
+			if insertas == "child":
+				# create default node and add item to it
+				node = sourceNode.addItemAsChild(item)
+				qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+				sourceQNode.addChild(qnode)
+				
+				# expand parent and select new item
+				sourceQNode.setExpanded(True)
+
+			elif insertas == "sibling":
+
+				if parentNode is None or parentQNode is None:
+					return
+
+				# create default node and add item to it
+				node = parentNode.addItemAsChild(item)
+				qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+				parentQNode.addChild(qnode)
+				
+				# expand parent and select new item
+				parentQNode.setExpanded(True)
+
+			elif insertas == "parent":
 			
-			# move original node to be child of new parent
-			parentNode.removeChild(sourceNode)
-			node.addNodeAsChild(sourceNode)
-			parentQNode.removeChild(sourceQNode)
-			qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-			parentQNode.addChild(qnode)
-			
-			# expand parent and select new item
-			qnode.setExpanded(True)
+				if parentNode is None or parentQNode is None:
+					return
+
+				node = parentNode.addItemAsChild(item)
+				
+				# move original node to be child of new parent
+				parentNode.removeChild(sourceNode)
+				node.addNodeAsChild(sourceNode)
+				parentQNode.removeChild(sourceQNode)
+				qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+				parentQNode.addChild(qnode)
+				
+				# expand parent and select new item
+				qnode.setExpanded(True)
+
 			treeWidget.setCurrentItem(qnode)
-			
-
+		
 
 app = QtWidgets.QApplication(sys.argv)
 mainWindow = TreeTimeWindow("items.data")
