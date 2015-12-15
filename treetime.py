@@ -74,6 +74,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		self.fillTreeWidgets()
 		self.pushButtonNewChild.clicked.connect(self.pushButtonNewChildClicked)
 		self.pushButtonNewSibling.clicked.connect(self.pushButtonNewSiblingClicked)
+		self.pushButtonNewParent.clicked.connect(self.pushButtonNewParentClicked)
 		self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
 		self.tableWidget.verticalHeader().setSectionResizeMode(3)
 		self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
@@ -192,7 +193,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 				
 			self.locked = False
 				
-
+	
+	'''Called, when the user wants to create a new node as child to the currently selected one.'''
 	def pushButtonNewChildClicked(self):
 		
 		# get current node in current tree
@@ -211,8 +213,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 			# expand parent and select new item
 			sourceQNode.setExpanded(True)
 			treeWidget.setCurrentItem(qnode)
-		else:
-			pass
+
 			
 	def pushButtonNewSiblingClicked(self):
 		
@@ -221,25 +222,51 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		if len(treeWidget.selectedItems()):
 			sourceQNode = treeWidget.selectedItems()[0]
 			sourceNode = sourceQNode.sourceNode
-			if sourceNode.parent is None:
+			sourceItem = sourceNode.item
+			if sourceNode.parent is None or sourceQNode.parent() is None:
 				return
-			else:
-				sourceQNode = sourceQNode.parent()
-				sourceNode = sourceQNode.sourceNode
-				sourceItem = sourceNode.item
 
 			# create default node and add item to it
 			item = self.forest.itemPool.addNewItem()
-			node = sourceNode.addItemAsChild(item)
+			node = sourceNode.parent.addItemAsChild(item)
 			qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-			sourceQNode.addChild(qnode)
+			sourceQNode.parent().addChild(qnode)
 			
 			# expand parent and select new item
-			sourceQNode.setExpanded(True)
+			sourceQNode.parent().setExpanded(True)
 			treeWidget.setCurrentItem(qnode)
-		else:
-			pass
 			
+			
+	def pushButtonNewParentClicked(self):
+		
+		# get current node in current tree
+		treeWidget = self.treeWidgets[self.currentTree]
+		if len(treeWidget.selectedItems()):
+			sourceQNode = treeWidget.selectedItems()[0]
+			sourceNode = sourceQNode.sourceNode
+			sourceItem = sourceNode.item
+			if sourceNode.parent is None or sourceQNode.parent() is None:
+				return
+			parentNode = sourceNode.parent
+			parentQNode = sourceQNode.parent()
+
+			# create default node and add item to it
+			item = self.forest.itemPool.addNewItem()
+			node = parentNode.addItemAsChild(item)
+			
+			# move original node to be child of new parent
+			parentNode.removeChild(sourceNode)
+			node.addNodeAsChild(sourceNode)
+			parentQNode.removeChild(sourceQNode)
+			qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+			parentQNode.addChild(qnode)
+			
+			# expand parent and select new item
+			qnode.setExpanded(True)
+			treeWidget.setCurrentItem(qnode)
+			
+
+
 app = QtWidgets.QApplication(sys.argv)
 mainWindow = TreeTimeWindow("items.data")
 

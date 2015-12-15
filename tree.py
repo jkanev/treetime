@@ -203,6 +203,8 @@ class Node:
 		# either recurse deeper
 		if currentIndex < len(path):
 			childNumber = path[currentIndex]
+			if childNumber >= len(self.children):
+				return None
 			return self.children[childNumber].findNode(path, currentIndex+1)
 		
 		# or, return myself
@@ -215,6 +217,26 @@ class Node:
 		self.children += [node]
 		return node
 	
+	
+	def addNodeAsChild(self, node):
+		self.children += [node]
+		self.renumberChildren()
+		for f in self.fields:
+			self.notifyFieldChange(f, True)
+		
+	def removeChild(self, child):
+		if child in self.children:
+			self.children.remove(child)
+			self.renumberChildren()
+			for f in self.fields:
+				self.notifyFieldChange(f, True)
+	
+	def renumberChildren(self):
+		for i,c in enumerate(self.children):
+			c.path = self.path + [i]
+			c.item.trees[self.tree] = self.path + [i]
+			c.renumberChildren()
+
 	
 	def addItemAsChild(self, item):
 		"""Creates a node and links it to the item. Updates the item's forest indexes."""

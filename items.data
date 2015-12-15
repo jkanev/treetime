@@ -56,23 +56,23 @@ item d
    fields {"description": {"content": "Item D", "type": "string"}, "amount": {"content": 4, "type": "integer"}}
    trees [[0, 0, 0], [], []]
 
-item d
+item e
    fields {"description": {"content": "Item E", "type": "string"}, "amount": {"content": 5, "type": "integer"}}
    trees [[0, 0, 1], [], []]
 
-item e
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 6, "type": "integer"}}
+item f
+   fields {"description": {"content": "Item F", "type": "string"}, "amount": {"content": 6, "type": "integer"}}
    trees [[], [1], [2]]
 
-item f
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 7, "type": "integer"}}
+item g
+   fields {"description": {"content": "Item G", "type": "string"}, "amount": {"content": 7, "type": "integer"}}
    trees [[], [2], [3]]
 
-item g
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 8, "type": "integer"}}
+item h
+   fields {"description": {"content": "Item H", "type": "string"}, "amount": {"content": 8, "type": "integer"}}
    trees [[], [3], [4]]
 
-item h
-   fields {"description": {"content": "default node", "type": "string"}, "amount": {"content": 9, "type": "integer"}}
+item i
+   fields {"description": {"content": "Item I", "type": "string"}, "amount": {"content": 9, "type": "integer"}}
    trees [[], [2,0], [5]]
 
