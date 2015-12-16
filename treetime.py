@@ -109,8 +109,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		for n,c in enumerate(self.forest.children):
 			self.treeWidgets[n].itemSelectionChanged.connect(lambda x=n: self.treeSelectionChanged(x))
 			self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
-			parent = QNode(c, self.forest.children[n].fieldOrder)
-			self.treeWidgets[n].addTopLevelItem( parent )
+			root = self.treeWidgets[n].invisibleRootItem()
+			for b in c.children:
+				parent = QNode(b, c.fieldOrder)
+				#self.treeWidgets[n].addTopLevelItem( parent )
+				root.addChild(parent)
 			self.treeWidgets[n].expandAll()
 	
 	
@@ -208,6 +211,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 			sourceItem = sourceNode.item
 			parentNode = sourceNode.parent
 			parentQNode = sourceQNode.parent()
+			if parentQNode is None:
+				parentQNode = treeWidget.invisibleRootItem()
 			item = None
 			if copy:
 				item = self.forest.itemPool.copyItem(sourceItem)

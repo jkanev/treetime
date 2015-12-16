@@ -25,6 +25,18 @@ tree "Overview"
       child-fields []
       sibling-fields []
       parent-fields []
+   field "parent"
+      field-type "node-name"
+      own-fields []
+      child-fields []
+      sibling-fields []
+      parent-fields [0]
+   field "parent 2"
+      field-type "node-name"
+      own-fields []
+      child-fields []
+      sibling-fields []
+      parent-fields [1]
 
 tree "Amount"
    field "total"

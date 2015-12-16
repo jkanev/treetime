@@ -2,6 +2,7 @@
 import copy
 import json
 import item
+import datetime
 
 class Field:
 	"""A set of instructions to view/display the content of data items. Fields are part of nodes, and are stored in templates."""
@@ -9,6 +10,7 @@ class Field:
 	def __init__(self, node=None, ownFields=[], childFields=[], siblingFields=[], parentFields=[], fieldType=None):
 		"""Initialises the class, links the source node, field type, and sets the evaluation method."""
 		
+		self.cache = None
 		self.ownFields = ownFields
 		self.siblingFields = siblingFields
 		self.childFields = childFields
@@ -77,6 +79,9 @@ class Field:
 		elif self.fieldType == "percentage":
 			self.getValue = self.getValuePercentage
 			self.getString = self.getStringPercentage
+		elif self.fieldType == "node-name":
+			self.getValue = self.getValueNodeName
+			self.getString = self.getStringUnchanged
 		
 		
 	def getStringPercentage(self):
@@ -96,6 +101,28 @@ class Field:
 		else:
 			return "[undefined]"
 	
+	
+	def getValueNodeName(self):
+		if self.cache is not None:
+			return self.cache
+		else:
+			s = ""
+			item = self.sourceNode.item
+			for t in self.parentFields:
+				# find tree
+				tree = self.sourceNode
+				while tree.parent is not None:
+					tree = tree.parent
+				tree = tree.children[t]
+				# find node in tree
+				path = item.trees[t]
+				node = tree.findNode(path)
+				if node is not None:
+					parent = node.parent
+					if parent is not None:
+						s += parent.name
+			return s
+
 	
 	def getValueString(self):
 		values = self.getFieldValues()
@@ -179,6 +206,10 @@ class Node:
 		s += " → " + str(self.tree)
 		for p in self.path:
 			s += "[" + str(p) + "]"
+		s += "    "
+		if self.item is not None:
+			for p in self.item.trees[self.tree]:
+				s += "[" + str(p) + "]"
 		s += " " + self.__class__.__name__ + " "
 		
 		# append item content and print
@@ -209,14 +240,14 @@ class Node:
 			self.registerCallbacks()
 	
 
-	def registerCallbacks(self):
+	def registerCallbacks(self, register=True):
 		# register callbacks with source node
 		if self.item is not None:
-			self.item.registerNameChangeCallback(self.notifyNameChange)
-			self.item.registerFieldChangeCallback(lambda x: self.notifyFieldChange(x, True))
-			self.item.registerDeletionCallback(self.notifyDeletion)
+			self.item.registerNameChangeCallback(self.notifyNameChange, register)
+			self.item.registerFieldChangeCallback(lambda x: self.notifyFieldChange(x, True), register)
+			self.item.registerDeletionCallback(self.notifyDeletion, register)
+			self.item.registerViewNode(self.tree, self)
 	
-
 	def findNode(self, path, currentIndex):
 		
 		# either recurse deeper
@@ -239,12 +270,14 @@ class Node:
 	
 	def addNodeAsChild(self, node):
 		self.children += [node]
+		node.parent = self
 		self.renumberChildren()
 		for f in self.fields:
 			self.notifyFieldChange(f, True)
 		
 	def removeChild(self, child):
 		if child in self.children:
+			self.registerCallbacks(False)
 			self.children.remove(child)
 			self.renumberChildren()
 			for f in self.fields:
@@ -269,8 +302,8 @@ class Node:
 		return node
 	
 	
-	def initFields(self, viewTemplate):
-		self.fields = copy.deepcopy(viewTemplate)
+	def initFields(self, fields):
+		self.fields = copy.deepcopy(fields)
 		
 		# first set all fields to myself
 		for name,field in self.fields.items():
@@ -306,8 +339,21 @@ class Node:
 	
 	
 	def notifyNameChange(self, newName):
+		self.name = newName
 		if self.nameChangeCallback is not None:
 			self.nameChangeCallback(newName)
+		for c in self.children:
+			for n in c.item.viewNodes:
+				if n is not None:
+					n.notifyParentNameChange(self.tree, newName)
+			
+			
+	def notifyParentNameChange(self, tree, newName):
+		for f in self.fields:
+			if self.fields[f].fieldType == "node-name":
+				if tree in self.fields[f].parentFields:
+					self.fields[f].cache = newName
+					self.notifyFieldChange(f,False)
 	
 	
 	'''Callback, called whenever a field in a related item has changed.'''
@@ -346,12 +392,12 @@ class Tree(Node):
 		"""Initialise"""
 		
 		super().__init__(parent, index, [])
-		self.viewTemplate = {}
+		self.fields = {}
 		self.name = ""
-		#self.viewTemplate["description"] = Field(None, ["description"], [], "itemString")
-		#self.viewTemplate["single sums"] = Field(None, ["amount"], ["single sums"], "itemSum")
-		#self.viewTemplate["single percentage"] = Field(None, ["amount"], [], "itemPercentage")
-		#self.viewTemplate["total percentage"] = Field(None, [], ["single sums"], "nodePercentage")
+		#self.fields["description"] = Field(None, ["description"], [], "itemString")
+		#self.fields["single sums"] = Field(None, ["amount"], ["single sums"], "itemSum")
+		#self.fields["single percentage"] = Field(None, ["amount"], [], "itemPercentage")
+		#self.fields["total percentage"] = Field(None, [], ["single sums"], "nodePercentage")
 	
 
 	"""Sort the item into the forest, creating existing nodes on the fly if missing."""
@@ -363,7 +409,7 @@ class Tree(Node):
 			n = item.trees[treeindex][0]
 			while n >= len(self.children):
 				self.addChild()
-			self.children[n].createPathTo(item, treeindex, 1, self.viewTemplate)
+			self.children[n].createPathTo(item, treeindex, 1, self.fields)
 	
 	"""Sort the item into the forest, creating existing nodes on the fly if missing."""
 	def findNode(self, path):
@@ -373,7 +419,7 @@ class Tree(Node):
 	
 	def writeToString(self):
 		string = "tree " + json.dumps(self.name) + "\n"
-		for n,f in self.viewTemplate.items():
+		for n,f in self.fields.items():
 			string += "   field " + json.dumps(n) + "\n"
 			string += "   " + f.writeToString()
 		return string
@@ -387,7 +433,7 @@ class Tree(Node):
 			else:
 				f = Field();
 				name = f.readFromString(fs)
-				self.viewTemplate[name] = f
+				self.fields[name] = f
 				self.fieldOrder += [name]
 
 

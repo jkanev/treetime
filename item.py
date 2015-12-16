@@ -9,9 +9,12 @@ class Item:
 
 	def __init__(self, name, fieldstring='{}', treestring='[]'):
 		self.name = name
+		self.parentNames = []
 		self.fields = json.loads(fieldstring)
 		self.trees = json.loads(treestring)
 		self.viewNodes = []
+		for t in self.trees:
+			self.viewNodes += [None]
 		self.nameChangeCallbacks = []
 		self.fieldChangeCallbacks = []
 		self.deletionCallbacks = []
@@ -38,6 +41,8 @@ class Item:
 		s = s[1].split("\n   trees ")
 		self.fields = json.loads(s[0])
 		self.trees = json.loads(s[1])
+		for t in self.trees:
+			self.viewNodes += [None]
 	
 	
 	def printitem(self):
@@ -47,17 +52,33 @@ class Item:
 			for subkey in self.fields[key]:
 				print("        ", subkey, ":", self.fields[key][subkey])
 	
+
+	def registerViewNode(self, tree, node):
+		self.viewNodes[tree] = node
+		
 	
-	def registerNameChangeCallback(self, callback):
-		self.nameChangeCallbacks += [callback]
+	def registerNameChangeCallback(self, callback, register):
+		if register:
+			self.nameChangeCallbacks += [callback]
+		else:
+			if callback in self.nameChangeCallbacks:
+				self.nameChangeCallbacks.remove(callback)
+			
+
+	def registerFieldChangeCallback(self, callback, register):
+		if register:
+			self.fieldChangeCallbacks += [callback]
+		else:
+			if callback in self.fieldChangeCallbacks:
+				self.fieldChangeCallbacks.remove(callback)
 	
 	
-	def registerFieldChangeCallback(self, callback):
-		self.fieldChangeCallbacks += [callback]
-	
-	
-	def registerDeletionCallback(self, callback):
-		self.deletionCallbacks += [callback]
+	def registerDeletionCallback(self, callback, register):
+		if register:
+			self.deletionCallbacks += [callback]
+		else:
+			if callback in self.deletionCallbacks:
+				self.deletionCallbacks.remove(callback)
 	
 	
 	def changeName(self, newName):
@@ -65,7 +86,7 @@ class Item:
 		for c in self.nameChangeCallbacks:
 			c(newName)
 	
-	
+
 	''' Edit the content of a field. The content is expected to be a string and will be converted accourding to the field type. '''
 	def changeFieldContent(self, fieldName, fieldContent):
 		
