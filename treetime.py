@@ -1,6 +1,7 @@
 import sys
 import item
 import tree
+import datetime
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
@@ -43,6 +44,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
 		self.sourceNode.registerNameChangeCallback(self.notifyNameChange)
 		self.sourceNode.registerFieldChangeCallback(self.notifyFieldChange)
 		self.sourceNode.registerDeletionCallback(self.notifyDeletion)
+		self.sourceNode.registerViewNode(self)
 		
 
 	
@@ -216,10 +218,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 			item = None
 			if copy:
 				item = self.forest.itemPool.copyItem(sourceItem)
+				for n,t in enumerate(self.forest.children):
+					if n != self.currentTree:
+						oldNode = t.findNode(item.trees[n])
+						newNode = oldNode.parent.addItemAsChild(item)
+						newQNode = QNode(newNode, self.forest.children[n].fieldOrder)
+						parent = oldNode.viewNode.parent()
+						if parent is None:
+							parent = self.treeWidgets[n].invisibleRootItem()
+						parent.addChild(newQNode)
 			else:
 				item = self.forest.itemPool.addNewItem()
+				for t in item.trees:
+					t = []
 
 			if insertas == "child":
+				
 				# create default node and add item to it
 				node = sourceNode.addItemAsChild(item)
 				qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)

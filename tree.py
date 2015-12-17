@@ -32,37 +32,37 @@ class Field:
 		node = self.sourceNode
 		if node.item is not None: # don't try to get values from the root node
 			for f in self.ownFields:
-				if f in node.item.fields:
-					values += [node.item.fields[f]["content"]]
-				elif f in node.fields:
+				if f in node.fields:
 					values += [node.fields[f].getValue()]
+				elif f in node.item.fields:
+					values += [node.item.fields[f]["content"]]
 		
 		# look in child fields
 		node = self.sourceNode
 		for f in self.childFields:
 			for c in node.children:
-				if f in c.item.fields:
-					values += [c.item.fields[f]["content"]]
-				elif f in c.fields:
+				if f in c.fields:
 					values += [c.fields[f].getValue()]
+				elif f in c.item.fields:
+					values += [c.item.fields[f]["content"]]
 		
 		# look in sibling fields
 		node = self.sourceNode.parent
 		for f in self.siblingFields:
 			for c in node.children:
 				if c != self.sourceNode:
-					if f in c.item.fields:
-						values += [c.item.fields[f]["content"]]
-					elif f in c.fields:
+					if f in c.fields:
 						values += [c.fields[f].getValue()]
+					elif f in c.item.fields:
+						values += [c.item.fields[f]["content"]]
 	
 		# look in parent fields
 		node = self.sourceNode.parent
 		for f in self.parentFields:
-			if f in node.fields:
-				values += [node.item.fields[f]["content"]]
-			elif f in node.item.fields:
+			if f in node.item.fields:
 				values += [node.fields[f].getValue()]
+			elif f in node.fields:
+				values += [node.item.fields[f]["content"]]
 		
 		# return
 		return values
@@ -192,6 +192,7 @@ class Node:
 		self.fieldOrder = []
 		self.tree = tree
 		self.path = path
+		self.viewNode = None
 		self.nameChangeCallback = None
 		self.fieldChangeCallback = None
 		self.deletionCallback = None
@@ -248,6 +249,9 @@ class Node:
 			self.item.registerDeletionCallback(self.notifyDeletion, register)
 			self.item.registerViewNode(self.tree, self)
 	
+	def registerViewNode(self, viewNode):
+		self.viewNode = viewNode
+		
 	def findNode(self, path, currentIndex):
 		
 		# either recurse deeper
@@ -290,8 +294,8 @@ class Node:
 			c.renumberChildren()
 
 	
+	"""Creates a node and links it to the item. Updates the item's forest indexes."""
 	def addItemAsChild(self, item):
-		"""Creates a node and links it to the item. Updates the item's forest indexes."""
 		
 		node = self.addChild()
 		node.item = item

@@ -144,5 +144,11 @@ class ItemPool:
 	"""Adds a copy of the default item to the list and returns a reference to it"""
 	def copyItem(self, item):
 		newitem = copy.deepcopy(item)
+		newitem.viewNodes = []
+		for t in newitem.trees:
+			newitem.viewNodes += [None]
+		newitem.nameChangeCallbacks = []
+		newitem.fieldChangeCallbacks = []
+		newitem.deletionCallbacks = []
 		self.items += [newitem]
 		return newitem
