@@ -198,7 +198,25 @@ class Node:
 		self.nameChangeCallback = None
 		self.fieldChangeCallback = None
 		self.deletionCallback = None
+	
+	
+	
+	'''Applies the function to each node in the tree. The function must receive one parameter and return one parameter. The return value is used as parameter for the next function call. The value Parameter is used in the first call.'''
+	def map(self, function, parameter, depthFirst):
 		
+		# if depthFirst then recurse first and apply later
+		if depthFirst:
+			for c in self.children:
+				parameter = c.map(function, parameter, depthFirst)
+				
+			return function(self, parameter)
+		else:
+			parameter = function(self, parameter)
+			for c in self.children:
+				parameter = c.map(function, parameter, depthFirst)
+				
+			return parameter
+	
 	
 	def printForest(self, indent=0):
 		
@@ -242,7 +260,7 @@ class Node:
 			self.initFields(viewtemplate)
 			self.registerCallbacks()
 	
-
+		
 	def registerCallbacks(self, register=True):
 		# register callbacks with source node
 		if self.item is not None:

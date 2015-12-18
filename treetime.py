@@ -285,11 +285,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 		treeWidget = self.treeWidgets[self.currentTree]
 		if len(treeWidget.selectedItems()):
 
-			# find old parent
-			oldParent = treeWidget.selectedItems()[0].sourceNode
+			# find item
+			item = treeWidget.selectedItems()[0].sourceNode.item
 			
-			# find trees
-			item = oldParent.item
+			# find tree and node
 			tree = None
 			treeIndex = None
 			for n,t in enumerate(self.forest.children):
@@ -297,6 +296,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 					tree = t
 					treeIndex = n
 					break
+			node = item.viewNodes[treeIndex]
+			oldParent = node.parent
 
 			# find new parent
 			newParent = tree.findNodeByName(newParentName)
@@ -311,8 +312,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 				item.removeFromTree(treeIndex)
 				
 				# assign node to new parent
-				newNode = newParent.addItemAsChild(item)
-				newQNode = QNode(newNode, tree.fieldOrder)
+				node.item = item
+				newParent.addNodeAsChild(node)
+				newQNode = QNode(node, tree.fieldOrder)
 				newParent.viewNode.addChild(newQNode)
 
 app = QtWidgets.QApplication(sys.argv)
