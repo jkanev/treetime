@@ -13,11 +13,22 @@ class Item:
 		self.fields = json.loads(fieldstring)
 		self.trees = json.loads(treestring)
 		self.viewNodes = []
-		for t in self.trees:
-			self.viewNodes += [None]
 		self.nameChangeCallbacks = []
 		self.fieldChangeCallbacks = []
 		self.deletionCallbacks = []
+		self.clearCallbacks()
+		
+		
+	def clearCallbacks(self):
+		self.viewNodes = []
+		self.nameChangeCallbacks = []
+		self.fieldChangeCallbacks = []
+		self.deletionCallbacks = []
+		for t in self.trees:
+			self.viewNodes += [None]
+			self.nameChangeCallbacks += [None]
+			self.fieldChangeCallbacks += [None]
+			self.deletionCallbacks += [None]
 		
 	
 	def addField(self, name, content):
@@ -41,9 +52,7 @@ class Item:
 		s = s[1].split("\n   trees ")
 		self.fields = json.loads(s[0])
 		self.trees = json.loads(s[1])
-		for t in self.trees:
-			self.viewNodes += [None]
-	
+		self.clearCallbacks()
 	
 	def printitem(self):
 		print(self.name)
@@ -57,34 +66,23 @@ class Item:
 		self.viewNodes[tree] = node
 		
 	
-	def registerNameChangeCallback(self, callback, register):
-		if register:
-			self.nameChangeCallbacks += [callback]
-		else:
-			if callback in self.nameChangeCallbacks:
-				self.nameChangeCallbacks.remove(callback)
+	def registerNameChangeCallback(self, tree, callback):
+		self.nameChangeCallbacks[tree] = callback
 			
 
-	def registerFieldChangeCallback(self, callback, register):
-		if register:
-			self.fieldChangeCallbacks += [callback]
-		else:
-			if callback in self.fieldChangeCallbacks:
-				self.fieldChangeCallbacks.remove(callback)
+	def registerFieldChangeCallback(self, tree, callback):
+		self.fieldChangeCallbacks[tree] = callback
 	
 	
-	def registerDeletionCallback(self, callback, register):
-		if register:
-			self.deletionCallbacks += [callback]
-		else:
-			if callback in self.deletionCallbacks:
-				self.deletionCallbacks.remove(callback)
+	def registerDeletionCallback(self, tree, callback):
+		self.deletionCallbacks[tree] = callback
 	
 	
 	def changeName(self, newName):
 		self.name = newName
 		for c in self.nameChangeCallbacks:
-			c(newName)
+			if c is not None:
+				c(newName)
 	
 
 	''' Edit the content of a field. The content is expected to be a string and will be converted accourding to the field type. '''
@@ -108,7 +106,14 @@ class Item:
 				f(fieldName)
 		
 		return True
-
+	
+	
+	''' Remove this item from the tree, and have it call all removal callbacks. '''
+	def removeFromTree(self, treeIndex):
+		
+		self.trees[treeIndex] = [];
+		self.deletionCallbacks[treeIndex]();
+		
 
 class ItemPool:
 	def __init__(self):
@@ -145,10 +150,6 @@ class ItemPool:
 	def copyItem(self, item):
 		newitem = copy.deepcopy(item)
 		newitem.viewNodes = []
-		for t in newitem.trees:
-			newitem.viewNodes += [None]
-		newitem.nameChangeCallbacks = []
-		newitem.fieldChangeCallbacks = []
-		newitem.deletionCallbacks = []
+		newitem.clearCallbacks()
 		self.items += [newitem]
 		return newitem

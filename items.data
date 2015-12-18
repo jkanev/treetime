@@ -58,12 +58,6 @@ tree "Reporting"
       own-fields []
       child-fields []
       sibling-fields []
-      parent-fields [0]
-   field "Project"
-      field-type "node-name"
-      own-fields []
-      child-fields []
-      sibling-fields []
       parent-fields [1]
    field "Development hours"
       field-type "sum"

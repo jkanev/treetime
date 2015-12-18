@@ -54,10 +54,17 @@ class QNode(QtWidgets.QTreeWidgetItem):
 		
 	def notifyFieldChange(self, fieldName, fieldContent):
 		if fieldName in self.fieldOrder:
+			if self.sourceNode is not None and self.sourceNode.name == "Task 2":
+				print("")
 			super().setText(self.fieldOrder[fieldName], fieldContent)
 	
 	def notifyDeletion(self):
-		pass
+		# unlink node
+		self.sourceNode = None
+		
+		# unlink from parent
+		if self.parent() is not None:
+			self.parent().removeChild(self)
 		
 
 
@@ -185,9 +192,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 				elif row <= len(self.forest.children):
 					newParent = self.tableWidget.item(row,1).text()
 					tree = self.tableWidget.item(row,0).text()
-					message = "Cannot find a node with name '" + newParent + "' in tree '" + tree + "'.\nPlease check your spelling or create a node with the name '" + newParent + "' in the '" + tree + "' tab."
-					msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-					msgBox.exec_()
+					self.moveToNewParent(tree, newParent)
 					
 				# one of the fields has been changed
 				else:
@@ -274,6 +279,41 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
 
 			treeWidget.setCurrentItem(qnode)
 		
+		
+	def moveToNewParent(self, treeName, newParentName):
+		
+		treeWidget = self.treeWidgets[self.currentTree]
+		if len(treeWidget.selectedItems()):
+
+			# find old parent
+			oldParent = treeWidget.selectedItems()[0].sourceNode
+			
+			# find trees
+			item = oldParent.item
+			tree = None
+			treeIndex = None
+			for n,t in enumerate(self.forest.children):
+				if t.name == treeName:
+					tree = t
+					treeIndex = n
+					break
+
+			# find new parent
+			newParent = tree.findNodeByName(newParentName)
+			
+			# change
+			if newParent is None:
+				message = "Cannot find a node with name '" + newParentName + "' in tree '" + treeName + "'.\nPlease check your spelling or create a node with the name '" + newParentName + "' in the '" + treeName + "' tab."
+				msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+				msgBox.exec_()
+			else:
+				# remove node from old parent
+				item.removeFromTree(treeIndex)
+				
+				# assign node to new parent
+				newNode = newParent.addItemAsChild(item)
+				newQNode = QNode(newNode, tree.fieldOrder)
+				newParent.viewNode.addChild(newQNode)
 
 app = QtWidgets.QApplication(sys.argv)
 mainWindow = TreeTimeWindow("items.data")

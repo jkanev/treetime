@@ -108,6 +108,8 @@ class Field:
 		else:
 			s = ""
 			item = self.sourceNode.item
+			if item is None:
+				return s
 			for t in self.parentFields:
 				# find tree
 				tree = self.sourceNode
@@ -244,9 +246,9 @@ class Node:
 	def registerCallbacks(self, register=True):
 		# register callbacks with source node
 		if self.item is not None:
-			self.item.registerNameChangeCallback(self.notifyNameChange, register)
-			self.item.registerFieldChangeCallback(lambda x: self.notifyFieldChange(x, True), register)
-			self.item.registerDeletionCallback(self.notifyDeletion, register)
+			self.item.registerNameChangeCallback(self.tree, self.notifyNameChange)
+			self.item.registerFieldChangeCallback(self.tree, lambda x: self.notifyFieldChange(x, True))
+			self.item.registerDeletionCallback(self.tree, self.notifyDeletion)
 			self.item.registerViewNode(self.tree, self)
 	
 	def registerViewNode(self, viewNode):
@@ -382,7 +384,12 @@ class Node:
 	
 	
 	'''Callback, called whenever the underlying item was deleted.'''
-	def notifyDeletion(self, fieldName, fieldContent):
+	def notifyDeletion(self):
+		
+		# unlink item
+		self.item = None
+		
+		# remove myself from my parent
 		if self.deletionCallback is not None:
 			self.deletionCallback()
 
