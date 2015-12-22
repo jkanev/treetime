@@ -2,11 +2,16 @@ import sys
 import item
 import tree
 import datetime
-
+import os.path
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
-with open("mainwindow.py", "w") as file:
-    uic.compileUi("mainwindow.ui", file)
+# compile ui file if necessary
+if os.path.getmtime("mainwindow.py") < os.path.getmtime("mainwindow.ui"):
+    with open("mainwindow.py", "w") as file:
+        print("compiling ui")
+        uic.compileUi("mainwindow.ui", file)
+        
+import mainwindow
 
 
 class QNode(QtWidgets.QTreeWidgetItem):
@@ -69,7 +74,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
 
 
 
-class TreeTimeWindow(QtWidgets.QMainWindow):
+class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def __init__(self, filename):
         self.forest = tree.Forest(filename)
@@ -78,7 +83,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow):
         self.currentTree = 0
         self.currentItem = None
         super().__init__()
-        uic.loadUi('mainwindow.ui', self)
+        self.setupUi(self)
         self.createBranchTabs()
         self.fillTreeWidgets()
         self.pushButtonNewChild.clicked.connect(lambda: self.createNode("child", False))
