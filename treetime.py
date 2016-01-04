@@ -96,27 +96,41 @@ class QNode(QtWidgets.QTreeWidgetItem):
 class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def __init__(self, filename):
-        self.forest = tree.Forest(filename)
-        self.tabWidgets = []
-        self.treeWidgets = []
-        self.currentTree = 0
-        self.currentItem = None
         super().__init__()
         self.setupUi(self)
-        self.createBranchTabs()
-        self.fillTreeWidgets()
         self.pushButtonNewChild.clicked.connect(lambda: self.createNode("child", False))
         self.pushButtonNewSibling.clicked.connect(lambda: self.createNode("sibling", False))
         self.pushButtonNewParent.clicked.connect(lambda: self.createNode("parent", False))
         self.pushButtonCopyNodeChild.clicked.connect(lambda: self.createNode("child", True))
         self.pushButtonCopyNodeSibling.clicked.connect(lambda: self.createNode("sibling", True))
         self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
+        self.pushButtonLoadFile.clicked.connect(lambda: self.loadFile())
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
         self.locked = True
+        self.lineEditNewFileName.setText(filename)
+        self.loadFile()
 
+
+    def loadFile(self):
+        self.removeBranchTabs()
+        filename = self.lineEditNewFileName.text()
+        self.forest = tree.Forest(filename)
+        self.tabWidgets = []
+        self.treeWidgets = []
+        self.currentTree = 0
+        self.currentItem = None
+        self.createBranchTabs()
+        self.fillTreeWidgets()
+        self.labelCurrentFile.setText(filename)
     
+    
+    def removeBranchTabs(self):
+            self.tabWidget.clear()
+            self.tabWidgets = []
+
+
     def createBranchTabs(self):
         
         # create tabs and tree widgets
@@ -305,7 +319,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 qnode.setExpanded(True)
                 
             treeWidget.setCurrentItem(qnode)
-            self.forest.writeToFile("items.data")
+            self.forest.writeToFile( self.labelCurrentFile.text() )
     
     
     def moveToNewParent(self, treeName, newParentName):
@@ -347,7 +361,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.forest.writeToFile("items.data")
 
 app = QtWidgets.QApplication(sys.argv)
-mainWindow = TreeTimeWindow("items.data")
+mainWindow = TreeTimeWindow("//home/jacob/software/tree-time/treetime/items.data")
 
 mainWindow.show()
 sys.exit(app.exec_())
