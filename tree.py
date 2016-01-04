@@ -314,9 +314,9 @@ class Node:
         self.children += [node]
         node.parent = self
         self.renumberChildren()
-        for f in self.fields:
-            self.notifyFieldChange(f, True)
-        
+        node.item.notifyFieldChange("")
+
+    
     def removeChild(self, child):
         if child in self.children:
             self.registerCallbacks(False)
@@ -324,6 +324,7 @@ class Node:
             self.renumberChildren()
             for f in self.fields:
                 self.notifyFieldChange(f, True)
+
 
     def renumberChildren(self):
         for i,c in enumerate(self.children):

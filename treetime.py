@@ -105,6 +105,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.pushButtonCopyNodeSibling.clicked.connect(lambda: self.createNode("sibling", True))
         self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
         self.pushButtonLoadFile.clicked.connect(lambda: self.loadFile())
+        self.pushButtonSaveToFile.clicked.connect(lambda: self.writeToFile())
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
@@ -124,6 +125,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.createBranchTabs()
         self.fillTreeWidgets()
         self.labelCurrentFile.setText(filename)
+    
+    
+    def writeToFile(self):
+        self.forest.writeToFile( self.labelCurrentFile.text() )
     
     
     def removeBranchTabs(self):
@@ -157,6 +162,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.treeWidgets[n].itemSelectionChanged.connect(lambda x=n: self.treeSelectionChanged(x))
             self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
             root = self.treeWidgets[n].invisibleRootItem()
+            c.viewNode = root
             for b in c.children:
                 parent = QNode(b, c.fieldOrder)
                 #self.treeWidgets[n].addTopLevelItem( parent )
@@ -319,7 +325,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 qnode.setExpanded(True)
                 
             treeWidget.setCurrentItem(qnode)
-            self.forest.writeToFile( self.labelCurrentFile.text() )
+            self.writeToFile()
     
     
     def moveToNewParent(self, treeName, newParentName):
@@ -358,7 +364,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 newParent.addNodeAsChild(node)
                 newQNode = QNode(node, tree.fieldOrder)
                 newParent.viewNode.addChild(newQNode)
-                self.forest.writeToFile("items.data")
+                self.writeToFile()
 
 app = QtWidgets.QApplication(sys.argv)
 mainWindow = TreeTimeWindow("//home/jacob/software/tree-time/treetime/items.data")
