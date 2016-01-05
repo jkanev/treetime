@@ -30,7 +30,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="fileIo">
        <property name="geometry">
@@ -106,52 +106,16 @@
          </widget>
         </item>
         <item>
-         <spacer name="verticalSpacer_13">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_6">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>New Data File</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEditNewFileName">
-          <property name="text">
-           <string>[type other file name]</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="pushButtonLoadFile">
           <property name="text">
-           <string>Load new File</string>
+           <string>Load other File</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonSaveToFile">
           <property name="text">
-           <string>Save to new File</string>
+           <string>Save to other File</string>
           </property>
          </widget>
         </item>
@@ -441,8 +405,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>100</width>
-         <height>30</height>
+         <width>96</width>
+         <height>26</height>
         </rect>
        </property>
        <attribute name="label">

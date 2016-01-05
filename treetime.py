@@ -104,19 +104,27 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.pushButtonCopyNodeChild.clicked.connect(lambda: self.createNode("child", True))
         self.pushButtonCopyNodeSibling.clicked.connect(lambda: self.createNode("sibling", True))
         self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
-        self.pushButtonLoadFile.clicked.connect(lambda: self.loadFile())
-        self.pushButtonSaveToFile.clicked.connect(lambda: self.writeToFile())
+        self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
+        self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
         self.locked = True
-        self.lineEditNewFileName.setText(filename)
-        self.loadFile()
+        self.loadFile(filename)
 
+    def pushButtonSaveToFileClicked(self):
+        result = QtWidgets.QFileDialog.getSaveFileName(self, "Save data file", "", ".trt")[0]
+        if result != '':
+            self.labelCurrentFile.setText(result)
+            self.writeToFile()
 
-    def loadFile(self):
+    def pushButtonLoadFileClicked(self):
+        result = QtWidgets.QFileDialog.getOpenFileName(self, "Load data file", "", ".trt")[0]
+        if result != '':
+            self.loadFile( result )
+
+    def loadFile(self, filename):
         self.removeBranchTabs()
-        filename = self.lineEditNewFileName.text()
         self.forest = tree.Forest(filename)
         self.tabWidgets = []
         self.treeWidgets = []
@@ -252,7 +260,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                         msgBox.exec_()
                 
             self.locked = False
-                
+            self.writeToFile()
 
 
     def createNode(self, insertas, copy):
@@ -345,23 +353,31 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     treeIndex = n
                     break
             node = item.viewNodes[treeIndex]
-            oldParent = node.parent
             
             # find new parent
             newParent = tree.findNodeByName(newParentName)
             
             # change
-            if newParent is None:
+            if newParentName != "" and newParent is None:
                 message = "Cannot find a node with name '" + newParentName + "' in tree '" + treeName + "'.\nPlease check your spelling or create a node with the name '" + newParentName + "' in the '" + treeName + "' tab."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
                 msgBox.exec_()
+            elif newParentName == "" and newParent is None:
+                message = "Removing node from the tree '" + treeName + "'. Please make sure you don't orphan nodes."
+                msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+                msgBox.exec_()
+                # remove node from old parent
+                item.removeFromTree(treeIndex)
             else:
                 # remove node from old parent
                 item.removeFromTree(treeIndex)
                 
                 # assign node to new parent
-                node.item = item
-                newParent.addNodeAsChild(node)
+                if node is None:
+                    node = newParent.addItemAsChild(item)
+                else:
+                    node.item = item
+                    newParent.addNodeAsChild(node)
                 newQNode = QNode(node, tree.fieldOrder)
                 newParent.viewNode.addChild(newQNode)
                 self.writeToFile()

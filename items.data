@@ -7,12 +7,6 @@ tree "Projects"
       child-fields []
       sibling-fields []
       parent-fields []
-   field "Planning"
-      field-type "node-name"
-      own-fields []
-      child-fields []
-      sibling-fields []
-      parent-fields [1]
    field "Planned hours"
       field-type "sum"
       own-fields ["planned hours"]
@@ -25,12 +19,30 @@ tree "Projects"
       child-fields ["Actual hours"]
       sibling-fields []
       parent-fields []
+   field "Planning"
+      field-type "node-name"
+      own-fields []
+      child-fields []
+      sibling-fields []
+      parent-fields [1]
 
 tree "Planning"
+   field "Ratio actual"
+      field-type "percentage"
+      own-fields ["Actual hours"]
+      child-fields []
+      sibling-fields ["Actual hours"]
+      parent-fields []
    field "Planned hours"
       field-type "sum"
       own-fields ["planned hours"]
       child-fields ["Planned hours"]
+      sibling-fields []
+      parent-fields []
+   field "Actual hours"
+      field-type "sum"
+      own-fields ["devel. hours", "plann. hours", "testn. hours"]
+      child-fields ["Actual hours"]
       sibling-fields []
       parent-fields []
    field "Ratio planned"
@@ -39,26 +51,8 @@ tree "Planning"
       child-fields []
       sibling-fields ["Planned hours"]
       parent-fields []
-   field "Actual hours"
-      field-type "sum"
-      own-fields ["devel. hours", "plann. hours", "testn. hours"]
-      child-fields ["Actual hours"]
-      sibling-fields []
-      parent-fields []
-   field "Ratio actual"
-      field-type "percentage"
-      own-fields ["Actual hours"]
-      child-fields []
-      sibling-fields ["Actual hours"]
-      parent-fields []
 
 tree "Reporting"
-   field "Status"
-      field-type "node-name"
-      own-fields []
-      child-fields []
-      sibling-fields []
-      parent-fields [1]
    field "Development hours"
       field-type "sum"
       own-fields ["devel. hours"]
@@ -71,16 +65,16 @@ tree "Reporting"
       child-fields []
       sibling-fields []
       parent-fields []
+   field "Testing ratio"
+      field-type "percentage"
+      own-fields ["Testing hours", "Development hours", "Planning hours"]
+      child-fields []
+      sibling-fields []
+      parent-fields []
    field "Planning hours"
       field-type "sum"
       own-fields ["plann. hours"]
       child-fields ["plann. hours"]
-      sibling-fields []
-      parent-fields []
-   field "Planning ratio"
-      field-type "percentage"
-      own-fields ["Planning hours", "Testing hours", "Development hours"]
-      child-fields []
       sibling-fields []
       parent-fields []
    field "testing hours"
@@ -89,36 +83,42 @@ tree "Reporting"
       child-fields ["testn. hours"]
       sibling-fields []
       parent-fields []
-   field "Testing ratio"
+   field "Status"
+      field-type "node-name"
+      own-fields []
+      child-fields []
+      sibling-fields []
+      parent-fields [1]
+   field "Planning ratio"
       field-type "percentage"
-      own-fields ["Testing hours", "Development hours", "Planning hours"]
+      own-fields ["Planning hours", "Testing hours", "Development hours"]
       child-fields []
       sibling-fields []
       parent-fields []
 
-
 --item-pool--
 
 item New Task
-   fields {"details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}, "devel. hours": {"content": 0, "type": "integer"}, "plann. hours": {"content": 0, "type": "integer"}, "testn. hours": {"content": 0, "type": "integer"}}
+   fields {"planned hours": {"type": "integer", "content": 4}, "plann. hours": {"type": "integer", "content": 0}, "devel. hours": {"type": "integer", "content": 0}, "details": {"type": "string", "content": "task details"}, "testn. hours": {"type": "integer", "content": 0}}
    trees [[], [], []]
 
 item Project 1
-   fields {"details": {"content": "task details", "type": "string"}, "planned hours": {"content": 0, "type": "integer"}, "devel. hours": {"content": 0, "type": "integer"}, "plann. hours": {"content": 0, "type": "integer"}, "testn. hours": {"content": 0, "type": "integer"}}
-   trees [[0], [0], [0,0]]
+   fields {"planned hours": {"type": "integer", "content": 0}, "plann. hours": {"type": "integer", "content": 0}, "devel. hours": {"type": "integer", "content": 0}, "details": {"type": "string", "content": "task details"}, "testn. hours": {"type": "integer", "content": 0}}
+   trees [[0], [0], [0, 0]]
 
 item This week
-   fields {"details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}, "devel. hours": {"content": 0, "type": "integer"}, "plann. hours": {"content": 0, "type": "integer"}, "testn. hours": {"content": 0, "type": "integer"}}
-   trees [[], [0,0], [0]]
+   fields {"planned hours": {"type": "integer", "content": 4}, "plann. hours": {"type": "integer", "content": 0}, "devel. hours": {"type": "integer", "content": 0}, "details": {"type": "string", "content": "task details"}, "testn. hours": {"type": "integer", "content": 0}}
+   trees [[], [0, 0], [0]]
 
 item Task 1
-   fields {"details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}, "devel. hours": {"content": 0, "type": "integer"}, "plann. hours": {"content": 0, "type": "integer"}, "testn. hours": {"content": 0, "type": "integer"}}
-   trees [[0,0], [0,0,0], [0,0,0]]
+   fields {"planned hours": {"type": "integer", "content": 4}, "plann. hours": {"type": "integer", "content": 0}, "devel. hours": {"type": "integer", "content": 0}, "details": {"type": "string", "content": "task details"}, "testn. hours": {"type": "integer", "content": 0}}
+   trees [[0, 0], [0, 0, 0], [0, 0, 0]]
 
 item Task 2
-   fields {"details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}, "devel. hours": {"content": 0, "type": "integer"}, "plann. hours": {"content": 0, "type": "integer"}, "testn. hours": {"content": 0, "type": "integer"}}
-   trees [[0,1], [0,0,1], [0,0,1]]
+   fields {"planned hours": {"type": "integer", "content": 4}, "plann. hours": {"type": "integer", "content": 0}, "devel. hours": {"type": "integer", "content": 0}, "details": {"type": "string", "content": "task details"}, "testn. hours": {"type": "integer", "content": 0}}
+   trees [[0, 1], [0, 0, 1], [0, 0, 1]]
 
 item Task 3
-   fields {"details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}, "devel. hours": {"content": 0, "type": "integer"}, "plann. hours": {"content": 0, "type": "integer"}, "testn. hours": {"content": 0, "type": "integer"}}
-   trees [[0,2], [0,0,2], [0,0,2]]
+   fields {"planned hours": {"type": "integer", "content": 4}, "plann. hours": {"type": "integer", "content": 0}, "devel. hours": {"type": "integer", "content": 0}, "details": {"type": "string", "content": "task details"}, "testn. hours": {"type": "integer", "content": 0}}
+   trees [[0, 2], [0, 0, 2], [0, 0, 2]]
+

@@ -135,8 +135,9 @@ class Item:
     def removeFromTree(self, treeIndex):
         
         self.trees[treeIndex] = [];
-        self.deletionCallbacks[treeIndex]();
-        
+        if self.deletionCallbacks[treeIndex] is not None:
+            self.deletionCallbacks[treeIndex]();
+    
 
 class ItemPool:
     def __init__(self):
