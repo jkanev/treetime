@@ -28,7 +28,7 @@ tree "Projects"
 
 tree "Planning"
    field "Ratio actual"
-      field-type "percentage"
+      field-type "ratio-percent"
       own-fields ["Actual hours"]
       child-fields []
       sibling-fields ["Actual hours"]
@@ -46,7 +46,7 @@ tree "Planning"
       sibling-fields []
       parent-fields []
    field "Ratio planned"
-      field-type "percentage"
+      field-type "ratio-percent"
       own-fields ["Planned hours"]
       child-fields []
       sibling-fields ["Planned hours"]
@@ -60,13 +60,13 @@ tree "Reporting"
       sibling-fields []
       parent-fields []
    field "Development ratio"
-      field-type "percentage"
+      field-type "ratio-percent"
       own-fields ["Development hours", "Testing hours", "Planning hours"]
       child-fields []
       sibling-fields []
       parent-fields []
    field "Testing ratio"
-      field-type "percentage"
+      field-type "ratio-percent"
       own-fields ["Testing hours", "Development hours", "Planning hours"]
       child-fields []
       sibling-fields []
@@ -90,7 +90,7 @@ tree "Reporting"
       sibling-fields []
       parent-fields [1]
    field "Planning ratio"
-      field-type "percentage"
+      field-type "ratio-percent"
       own-fields ["Planning hours", "Testing hours", "Development hours"]
       child-fields []
       sibling-fields []

@@ -17,6 +17,8 @@
 
 # -*- coding:utf-8 -*-
 
+#!/usr/bin/python3
+
 import sys
 import item
 import tree
@@ -24,12 +26,6 @@ import datetime
 import os.path
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
-# compile ui file if necessary
-if os.path.getmtime("mainwindow.py") < os.path.getmtime("mainwindow.ui"):
-    with open("mainwindow.py", "w") as file:
-        print("compiling ui")
-        uic.compileUi("mainwindow.ui", file)
-        
 import mainwindow
 
 
@@ -175,7 +171,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 parent = QNode(b, c.fieldOrder)
                 #self.treeWidgets[n].addTopLevelItem( parent )
                 root.addChild(parent)
-            self.treeWidgets[n].expandAll()
+            # self.treeWidgets[n].expandAll()
 
 
     def treeSelectionChanged(self, treeIndex):

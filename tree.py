@@ -94,19 +94,33 @@ class Field:
         elif self.fieldType == "sum":
             self.getValue = self.getValueSum
             self.getString = self.getStringUnchanged
-        elif self.fieldType == "percentage":
-            self.getValue = self.getValuePercentage
-            self.getString = self.getStringPercentage
+        elif self.fieldType == "mean":
+            self.getValue = self.getValueMean
+            self.getString = self.getStringUnchanged
+        elif self.fieldType == "mean-percent":
+            self.getValue = self.getValueMean
+            self.getString = self.getStringPercent
+        elif self.fieldType == "ratio":
+            self.getValue = self.getValueRatio
+            self.getString = self.getStringUnchanged
+        elif self.fieldType == "ratio-percent":
+            self.getValue = self.getValueRatio
+            self.getString = self.getStringPercent
         elif self.fieldType == "node-name":
             self.getValue = self.getValueNodeName
             self.getString = self.getStringUnchanged
         
         
-    def getStringPercentage(self):
+    def getStringPercent(self):
         if self.sourceNode and self.getValue:
             v = self.getValue();
             if v:
-                return str(round(self.getValue())) + " %"
+                whitespace = ""
+                if v<0.1:
+                    whitespace = "  "
+                elif v<1.0:
+                    whitespace = " "
+                return whitespace + str(round(100*v)) + " %"
             else:
                 return ""
         else:
@@ -159,13 +173,24 @@ class Field:
             sum += v
         return sum
 
-    def getValuePercentage(self):
+
+    def getValueMean(self):
+        values = self.getFieldValues()
+        sum = 0.0
+        n = 0.0
+        for v in values:
+            n += 1.0
+            sum += v
+        return sum/n
+
+
+    def getValueRatio(self):
         values = self.getFieldValues()
         sum = 0
         for v in values:
             sum += v
         if sum != 0:
-            return values[0]*100.0/sum
+            return values[0]/sum
         else:
             return None
         
@@ -447,8 +472,8 @@ class Tree(Node):
         self.name = ""
         #self.fields["description"] = Field(None, ["description"], [], "itemString")
         #self.fields["single sums"] = Field(None, ["amount"], ["single sums"], "itemSum")
-        #self.fields["single percentage"] = Field(None, ["amount"], [], "itemPercentage")
-        #self.fields["total percentage"] = Field(None, [], ["single sums"], "nodePercentage")
+        #self.fields["single percentage"] = Field(None, ["amount"], [], "itemPercent")
+        #self.fields["total percentage"] = Field(None, [], ["single sums"], "nodePercent")
 
 
     """Sort the item into the forest, creating existing nodes on the fly if missing."""
