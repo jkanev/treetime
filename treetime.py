@@ -91,7 +91,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
 
 class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
-    def __init__(self, filename):
+    def __init__(self, filename=None):
         super().__init__()
         self.setupUi(self)
         self.pushButtonNewChild.clicked.connect(lambda: self.createNode("child", False))
@@ -106,7 +106,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
         self.locked = True
-        self.loadFile(filename)
+        self.settings = QtCore.QSettings('', 'TreeTime')
+        self.loadFile(filename or self.settings.value('lastFile'))
 
     def pushButtonSaveToFileClicked(self):
         result = QtWidgets.QFileDialog.getSaveFileName(self, "Save data file", "", ".trt")[0]
@@ -121,14 +122,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def loadFile(self, filename):
         self.removeBranchTabs()
-        self.forest = tree.Forest(filename)
         self.tabWidgets = []
         self.treeWidgets = []
         self.currentTree = 0
         self.currentItem = None
-        self.createBranchTabs()
-        self.fillTreeWidgets()
-        self.labelCurrentFile.setText(filename)
+        if filename is not None and filename != '':
+            self.forest = tree.Forest(filename)
+            self.createBranchTabs()
+            self.fillTreeWidgets()
+            self.labelCurrentFile.setText(filename)
+            self.settings.setValue('lastFile', filename)
     
     
     def writeToFile(self):
@@ -379,7 +382,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 self.writeToFile()
 
 app = QtWidgets.QApplication(sys.argv)
-mainWindow = TreeTimeWindow("//home/jacob/software/tree-time/treetime/items.data")
+mainWindow = TreeTimeWindow()
 
 mainWindow.show()
 sys.exit(app.exec_())
