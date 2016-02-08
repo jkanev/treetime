@@ -206,10 +206,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             tree = self.forest.children[treeNumber]
             name = QtWidgets.QTableWidgetItem(tree.name)
             name.setFlags(nonEditFlags)
-            parent = tree.findNode(path).parent.name
-            parent = QtWidgets.QTableWidgetItem(parent)
             self.tableWidget.setItem(n,0,name)
-            self.tableWidget.setItem(n,1,parent)
+            parent = tree.findNode(path).parent
+            menu = QtWidgets.QMenu()
+            menu.addAction(parent.name, lambda x=self.currentItem, y=treeNumber, z=tree: self.showChildMenu(x,y,z))
+            self.tableWidget.setCellWidget(n, 1, menu)
+            # parent = QtWidgets.QTableWidgetItem(parent)
+            # self.tableWidget.setItem(n,1,parent)
             n += 1
             
         # add item fields
@@ -224,7 +227,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.locked = False
         
     
-    
+    def showChildMenu(self, item, treeIndex, parent):
+        menu = QtWidgets.QMenu()
+        menu.addAction(parent.name, lambda x=item, y=treeIndex, z=parent: self.moveToNewParent(x,y,z))
+        menu.addSeparator()
+        for c in parent.children:
+            menu.addAction(c.name, lambda x=item, y=treeIndex, z=c: self.showChildMenu(x,y,z))
+        menu.exec(QtGui.QCursor.pos())
+
     '''Called when the user selects another tree in the tab widget.'''
     def tabWidgetCurrentChanged(self, tree):
         self.currentTree = tree
@@ -335,33 +345,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.writeToFile()
     
     
-    def moveToNewParent(self, treeName, newParentName):
+    def moveToNewParent(self, item, treeIndex, newParent):
         
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
         
-            # find item
-            item = treeWidget.selectedItems()[0].sourceNode.item
-            
             # find tree and node
-            tree = None
-            treeIndex = None
-            for n,t in enumerate(self.forest.children):
-                if t.name == treeName:
-                    tree = t
-                    treeIndex = n
-                    break
+            tree = self.forest.children[treeIndex]
             node = item.viewNodes[treeIndex]
             
-            # find new parent
-            newParent = tree.findNodeByName(newParentName)
-            
             # change
-            if newParentName != "" and newParent is None:
-                message = "Cannot find a node with name '" + newParentName + "' in tree '" + treeName + "'.\nPlease check your spelling or create a node with the name '" + newParentName + "' in the '" + treeName + "' tab."
-                msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-                msgBox.exec_()
-            elif newParentName == "" and newParent is None:
+            if newParent is None:
                 message = "Removing node from the tree '" + treeName + "'. Please make sure you don't orphan nodes."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
                 msgBox.exec_()
