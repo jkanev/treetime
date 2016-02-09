@@ -137,6 +137,9 @@ class Item:
         self.trees[treeIndex] = [];
         if self.deletionCallbacks[treeIndex] is not None:
             self.deletionCallbacks[treeIndex]();
+            self.registerDeletionCallback(treeIndex, None);
+            self.registerFieldChangeCallback(treeIndex, None);
+            self.registerNameChangeCallback(treeIndex, None);
     
 
 class ItemPool:

@@ -58,7 +58,9 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.registerCallbacks()
         
 
-
+    def parent(self):
+        return super().parent() or self.treeWidget().invisibleRootItem() or None
+    
     def registerCallbacks(self):
         # register callbacks with source node
         self.sourceNode.registerNameChangeCallback(self.notifyNameChange)
@@ -71,7 +73,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
     def notifyNameChange(self, newName):
         super().setText(0, newName)
 
-        
+    
     def notifyFieldChange(self, fieldName, fieldContent):
         if fieldName in self.fieldOrder:
             super().setText(self.fieldOrder[fieldName], fieldContent)
@@ -83,7 +85,8 @@ class QNode(QtWidgets.QTreeWidgetItem):
         # unlink from parent
         if self.parent() is not None:
             self.parent().removeChild(self)
-        
+        else:
+            print("I have no parent, so I'll stay.")
 
 
 
@@ -381,6 +384,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     node = newParent.addItemAsChild(item)
                 else:
                     node.item = item
+                    node.registerCallbacks()
                     newParent.addNodeAsChild(node)
                 newQNode = QNode(node, tree.fieldOrder)
                 newParent.viewNode.addChild(newQNode)
