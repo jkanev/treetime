@@ -74,8 +74,6 @@ class QNode(QtWidgets.QTreeWidgetItem):
         
     def notifyFieldChange(self, fieldName, fieldContent):
         if fieldName in self.fieldOrder:
-            if self.sourceNode is not None and self.sourceNode.name == "Task 2":
-                print("")
             super().setText(self.fieldOrder[fieldName], fieldContent)
 
     def notifyDeletion(self):
@@ -208,8 +206,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             name.setFlags(nonEditFlags)
             self.tableWidget.setItem(n,0,name)
             parent = tree.findNode(path).parent
+            parentName = parent.name
+            if parentName == "":
+                parentName == "          "
             menu = QtWidgets.QMenu(parent.name)
-            menu.addAction(parent.name, lambda a=self.currentItem, b=treeNumber, c=tree: self.showChildMenu(a,b,c))
+            menu.addAction(parentName, lambda a=self.currentItem, b=treeNumber, c=tree: self.showChildMenu(a,b,c))
             self.tableWidget.setCellWidget(n, 1, menu)
             # parent = QtWidgets.QTableWidgetItem(parent)
             # self.tableWidget.setItem(n,1,parent)
@@ -235,6 +236,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             parentMenu = QtWidgets.QMenu()
         if parentMenu.isEmpty():
             parentMenu.addAction(parent.name, lambda x=item, y=treeIndex, z=parent: self.moveToNewParent(x,y,z))
+            if isRoot:
+                parentMenu.addAction("(None)", lambda x=item, y=treeIndex: self.moveToNewParent(x,y,None))
             parentMenu.addSeparator()
             for c in parent.children:
                 submenu = QtWidgets.QMenu(c.name, parentMenu)
@@ -254,7 +257,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if not self.locked:
             self.locked = True
             if column == 1:
-        
+                
                 # the node name has been changed
                 if row == 0:
                     newName = self.tableWidget.item(row,column).text()
@@ -265,7 +268,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     newParent = self.tableWidget.item(row,1).text()
                     tree = self.tableWidget.item(row,0).text()
                     self.moveToNewParent(tree, newParent)
-                    
+                
                 # one of the fields has been changed
                 else:
                     fieldName = self.tableWidget.item(row,0).text()
@@ -284,7 +287,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
-        
+            
             sourceQNode = treeWidget.selectedItems()[0]
             sourceNode = sourceQNode.sourceNode
             sourceItem = sourceNode.item
@@ -348,7 +351,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 
                 # expand parent and select new item
                 qnode.setExpanded(True)
-                
+            
             treeWidget.setCurrentItem(qnode)
             self.writeToFile()
     
@@ -364,7 +367,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             
             # change
             if newParent is None:
-                message = "Removing node from the tree '" + treeName + "'. Please make sure you don't orphan nodes."
+                message = "Removing node from the tree. Please make sure you don't orphan nodes."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
                 msgBox.exec_()
                 # remove node from old parent
@@ -383,6 +386,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                 newParent.viewNode.addChild(newQNode)
             
             # save change
+            item.notifyFieldChange('')
+            self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
 
 app = QtWidgets.QApplication(sys.argv)

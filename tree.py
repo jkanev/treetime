@@ -181,8 +181,10 @@ class Field:
         for v in values:
             n += 1.0
             sum += v
-        return sum/n
-
+        if n > 0.0:
+            return sum/n
+        else:
+            return 0.0
 
     def getValueRatio(self):
         values = self.getFieldValues()
