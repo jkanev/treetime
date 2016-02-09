@@ -208,8 +208,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             name.setFlags(nonEditFlags)
             self.tableWidget.setItem(n,0,name)
             parent = tree.findNode(path).parent
-            menu = QtWidgets.QMenu()
-            menu.addAction(parent.name, lambda x=self.currentItem, y=treeNumber, z=tree: self.showChildMenu(x,y,z))
+            menu = QtWidgets.QMenu(parent.name)
+            menu.addAction(parent.name, lambda a=self.currentItem, b=treeNumber, c=tree: self.showChildMenu(a,b,c))
             self.tableWidget.setCellWidget(n, 1, menu)
             # parent = QtWidgets.QTableWidgetItem(parent)
             # self.tableWidget.setItem(n,1,parent)
@@ -227,13 +227,21 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.locked = False
         
     
-    def showChildMenu(self, item, treeIndex, parent):
-        menu = QtWidgets.QMenu()
-        menu.addAction(parent.name, lambda x=item, y=treeIndex, z=parent: self.moveToNewParent(x,y,z))
-        menu.addSeparator()
-        for c in parent.children:
-            menu.addAction(c.name, lambda x=item, y=treeIndex, z=c: self.showChildMenu(x,y,z))
-        menu.exec(QtGui.QCursor.pos())
+    '''Displays a menu with possible children to select, at the current mouse cursor position. '''
+    def showChildMenu(self, item, treeIndex, parent, parentMenu=None):
+        isRoot = False
+        if parentMenu is None:
+            isRoot = True
+            parentMenu = QtWidgets.QMenu()
+        if parentMenu.isEmpty():
+            parentMenu.addAction(parent.name, lambda x=item, y=treeIndex, z=parent: self.moveToNewParent(x,y,z))
+            parentMenu.addSeparator()
+            for c in parent.children:
+                submenu = QtWidgets.QMenu(c.name, parentMenu)
+                submenu.aboutToShow.connect(lambda a=item, b=treeIndex, c=c, d=submenu: self.showChildMenu(a,b,c,d))
+                parentMenu.addMenu(submenu)
+        if isRoot:
+            parentMenu.exec(QtGui.QCursor.pos())
 
     '''Called when the user selects another tree in the tab widget.'''
     def tabWidgetCurrentChanged(self, tree):
@@ -373,7 +381,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
                     newParent.addNodeAsChild(node)
                 newQNode = QNode(node, tree.fieldOrder)
                 newParent.viewNode.addChild(newQNode)
-                self.writeToFile()
+            
+            # save change
+            self.writeToFile()
 
 app = QtWidgets.QApplication(sys.argv)
 mainWindow = TreeTimeWindow()
