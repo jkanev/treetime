@@ -302,7 +302,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             if copy:
                 item = self.forest.itemPool.copyItem(sourceItem)
                 for n,t in enumerate(self.forest.children):
-                    if n != self.currentTree:
+                    if n != self.currentTree and item.trees[n] != []:
                         oldNode = t.findNode(item.trees[n])
                         newNode = oldNode.parent.addItemAsChild(item)
                         newQNode = QNode(newNode, self.forest.children[n].fieldOrder)
