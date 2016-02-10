@@ -1,0 +1,122 @@
+--trees--
+
+tree "Projects"
+   field "Details"
+      field-type "string"
+      own-fields ["details"]
+      child-fields []
+      sibling-fields []
+      parent-fields []
+   field "Planning"
+      field-type "node-name"
+      own-fields []
+      child-fields []
+      sibling-fields []
+      parent-fields [1]
+   field "Actual hours"
+      field-type "sum"
+      own-fields ["actual hours"]
+      child-fields ["Actual hours"]
+      sibling-fields []
+      parent-fields []
+   field "Planned hours"
+      field-type "sum"
+      own-fields ["planned hours"]
+      child-fields ["Planned hours"]
+      sibling-fields []
+      parent-fields []
+
+tree "Planning"
+   field "Actual hours"
+      field-type "sum"
+      own-fields ["actual hours"]
+      child-fields ["Actual hours"]
+      sibling-fields []
+      parent-fields []
+   field "Progress"
+      field-type "ratio-percent"
+      own-fields ["Actual hours", "Planned hours"]
+      child-fields []
+      sibling-fields ["Actual hours"]
+      parent-fields []
+   field "Planned hours"
+      field-type "sum"
+      own-fields ["planned hours"]
+      child-fields ["Planned hours"]
+      sibling-fields []
+      parent-fields []
+
+tree "Reporting"
+   field "Planning/Actual ratio"
+      field-type "ratio-percent"
+      own-fields ["Actual hours", "Planned hours"]
+      child-fields []
+      sibling-fields []
+      parent-fields []
+   field "Actual hours"
+      field-type "sum"
+      own-fields ["actual hours"]
+      child-fields ["Actual hours"]
+      sibling-fields []
+      parent-fields []
+   field "Planned hours"
+      field-type "sum"
+      own-fields ["planned hours"]
+      child-fields ["planned hours"]
+      sibling-fields []
+      parent-fields []
+
+--item-pool--
+
+item New Task
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[], [], []]
+
+item Project 2
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "A project with tasks", "type": "string"}, "planned hours": {"content": 0, "type": "integer"}}
+   trees [[0], [], []]
+
+item 2016-W02
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[], [0, 0], [0]]
+
+item Task 1
+   fields {"actual hours": {"content": 1, "type": "integer"}, "details": {"content": "Do something", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[0, 0], [1, 1, 2], [0, 4]]
+
+item Task 2
+   fields {"actual hours": {"content": 2, "type": "integer"}, "details": {"content": "Do something else", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[0, 1], [1, 1, 1], [0, 3]]
+
+item Task 3
+   fields {"actual hours": {"content": 3, "type": "integer"}, "details": {"content": "Do something else", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[0, 2], [0, 0], [0, 2]]
+
+item Project 1
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "A project with tasks", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[1], [], []]
+
+item Task 1
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "Do something", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[1, 0], [1, 1, 0], [0, 0]]
+
+item Task 2
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "Do something else", "type": "string"}, "planned hours": {"content": 5, "type": "integer"}}
+   trees [[1, 1], [1, 0, 0], [0, 1]]
+
+item This week
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[], [1, 1], []]
+
+item Next week
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[], [1, 0], []]
+
+item Later
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[], [0], []]
+
+item This month
+   fields {"actual hours": {"content": 0, "type": "integer"}, "details": {"content": "task details", "type": "string"}, "planned hours": {"content": 4, "type": "integer"}}
+   trees [[], [1], []]
+
