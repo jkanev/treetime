@@ -28,9 +28,10 @@ Start the python script "treetime". Go to "File Storage", click "Load other File
 - A tab view with tress spanning the center-right. View and analyse your data here.
 
 ![Screenshot 1](doc/screenshot01.png)
-![Screenshot 2](doc/screenshot02.png)
 
 Access each single tree by clicking a tab on the main tree-view widget. Branches and children can be sorted, branches can be folded and unfolded. Data content is shown via analytic fields that are defined per tree. In the example project you will see a sum, a percentage, and text display. 
+
+![Screenshot 2](doc/screenshot02.png)
 
 Add and move single nodes and branches by using the buttons on the left (New Child, New Sibling, New Parent, Copy Node as Child, Copy Node as Sibling, Copy Node as Prent, Copy Branch as Sibling (not implemented yet), copy Children to Siblings (not implemented yet), Remove from this Tree (not implemented yet), Delete Item (not implemented yet).
 
