@@ -4,16 +4,16 @@ Tired of trying to organise your data in spread sheets? Use trees instead.
 
 TreeTime is a to-do list manager, test report tool, project manager, family ancestry editor, mind-mapping tool, etc. Using TreeTime you can categorise and organise your data items in tree structures, calculate sums, ratios and means from single nodes up to branches up the tree. 
 
-# Table of Contents
 <div id='id-contents'/>
+# Table of Contents
 - [Concept](#id-concept)
 - [Usage](#id-usage)
 - [Road-Map](#id-roadmap)
 - [Dependencies](#id-dependencies)
 
 
-## Concept
 <div id='id-concept'/>
+## Concept
 [Table of Contents](#id-contents)
 
 Think about your data and what you want to organise. Think of the smallest data structure. If you want to organise work in a company that could be a Task. In TreeTime a Task would be a data item. It could have several fields like planned completion date, planned effort, actual completion date, current progress, a name and a short description. You can think of several ways to organise your data items:
@@ -30,8 +30,8 @@ The concept of hierarchical categorisation can be applied to all sorts of data a
 
 In TreeTime, the data item fields, the trees, and the fields that are displayed in a tree are completely user defined. At the moment TreeTime can display texts as well as numbers and their sums, means and ratios, and names of the parent node in all different trees.
 
-## Usage
 <div id='id-usage'/>
+## Usage
 [Table of Contents](#id-contents)
 
 Start the python script "treetime". Go to "File Storage", click "Load other File" and select "items.trt". The GUI will come up with an example project. Several data items will have loaded (a project with three tasks and two week-planning entries) and are organised in three trees. The GUI is organised in three parts:
@@ -50,8 +50,8 @@ Add and move single nodes and branches by using the buttons on the left (New Chi
 Change the name of a node by selecting the node and editing the name in the top of the edit grid in the middle.
 Change the parent of any node by typing a name of an existing node into the parent fields in the edit grid. The parent fields are the three lines underneath the item's name.
 
-## Road-Map
 <div id='id-roadmap'/>
+## Road-Map
 [Table of Contents](#id-contents)
 
 - Implement selection (the same item gets selected in all trees, changing a tab shows the same item)
@@ -70,8 +70,8 @@ Change the parent of any node by typing a name of an existing node into the pare
 - Release Version 1.0
 - Implement tree export to PDF, txt, and/or CSV
 
-## Dependencies
 <div id='id-dependencies'/>
-[Table of Contents](#id-content)
+## Dependencies
+[Table of Contents](#id-contents)
 
 TreeTime depends on [`Python 3`](https://www.python.org/downloads/), [`Qt5`](http://www.qt.io/download/), and [`PyQt5`](https://pypi.python.org/pypi/PyQt5).
