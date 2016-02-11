@@ -66,8 +66,8 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.sourceNode.registerNameChangeCallback(self.notifyNameChange)
         self.sourceNode.registerFieldChangeCallback(self.notifyFieldChange)
         self.sourceNode.registerDeletionCallback(self.notifyDeletion)
+        self.sourceNode.registerSelectionCallback(lambda x: self.notifySelection(x))
         self.sourceNode.registerViewNode(self)
-        
 
 
     def notifyNameChange(self, newName):
@@ -87,6 +87,9 @@ class QNode(QtWidgets.QTreeWidgetItem):
             self.parent().removeChild(self)
         else:
             print("I have no parent, so I'll stay.")
+    
+    def notifySelection(self, select):
+        self.setSelected(select)
 
 
 
@@ -146,6 +149,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def createBranchTabs(self):
         
+        self.locked = True
+        
         # create tabs and tree widgets
         for n,c in enumerate(self.forest.children):
             newTab = QtWidgets.QWidget()
@@ -163,7 +168,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             newTree.setSortingEnabled(True)
             newGridLayout.addWidget(newTree, 0, 0, 1, 1)
             self.treeWidgets += [newTree]
-
+        
+        self.locked = False
 
     def fillTreeWidgets(self):
         for n,c in enumerate(self.forest.children):
@@ -180,56 +186,77 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def treeSelectionChanged(self, treeIndex):
         
-        # init
-        qnode = self.treeWidgets[treeIndex].selectedItems()[0]
-        self.currentItem = qnode.sourceNode.item
-        if self.currentItem is None:
-            return
-        
-        self.tableWidget.clear()
-        n = 0
-        self.locked = True
-        
-        # create non-edit flags
-        nonEditFlags = QtCore.Qt.ItemFlags()
-        nonEditFlags != QtCore.Qt.ItemIsEnabled
-        
-        # add name
-        name = QtWidgets.QTableWidgetItem("")
-        name.setFlags(nonEditFlags)
-        value = QtWidgets.QTableWidgetItem(self.currentItem.name)
-        self.tableWidget.setItem(n,0,name)
-        self.tableWidget.setItem(n,1,value)
-        n += 1
-        
-        # add tree parents
-        for treeNumber,path in enumerate(self.currentItem.trees):
-            tree = self.forest.children[treeNumber]
-            name = QtWidgets.QTableWidgetItem(tree.name)
-            name.setFlags(nonEditFlags)
-            self.tableWidget.setItem(n,0,name)
-            parent = tree.findNode(path).parent
-            parentName = parent.name
-            if parentName == "":
-                parentName == "          "
-            menu = QtWidgets.QMenu(parent.name)
-            menu.addAction(parentName, lambda a=self.currentItem, b=treeNumber, c=tree: self.showChildMenu(a,b,c))
-            self.tableWidget.setCellWidget(n, 1, menu)
-            # parent = QtWidgets.QTableWidgetItem(parent)
-            # self.tableWidget.setItem(n,1,parent)
-            n += 1
+        if not self.locked:
             
-        # add item fields
-        for key in self.currentItem.fields:
-            name = QtWidgets.QTableWidgetItem(key)
-            name.setFlags(nonEditFlags)
-            value = QtWidgets.QTableWidgetItem(str(self.currentItem.fields[key]["content"]))
-            self.tableWidget.setItem(n,0,name)
-            self.tableWidget.setItem(n,1,value)
-            n += 1
-        
-        self.locked = False
-        
+            self.locked = True
+
+            # init
+            self.tableWidget.clear()
+            selectedItems = self.treeWidgets[treeIndex].selectedItems()
+            
+            if selectedItems != []:
+                
+                qnode = selectedItems[0]
+                
+                # unselect previous item in all trees
+                if self.currentItem is not None:
+                    self.currentItem.select(False)
+                
+                # select current item in all trees
+                self.currentItem = qnode.sourceNode.item
+                if self.currentItem is None:
+                    return
+                self.currentItem.select(True)
+                
+                # expand current item in current tree
+                parent = qnode.parent()
+                while parent is not None:
+                    parent.setExpanded(True)
+                    parent = parent.parent()
+                
+                # create non-edit flags
+                nonEditFlags = QtCore.Qt.ItemFlags()
+                nonEditFlags != QtCore.Qt.ItemIsEnabled
+                
+                # go through all lines of the table
+                n = 0
+                
+                # add name
+                name = QtWidgets.QTableWidgetItem("")
+                name.setFlags(nonEditFlags)
+                value = QtWidgets.QTableWidgetItem(self.currentItem.name)
+                self.tableWidget.setItem(n,0,name)
+                self.tableWidget.setItem(n,1,value)
+                n += 1
+                
+                # add tree parents
+                for treeNumber,path in enumerate(self.currentItem.trees):
+                    tree = self.forest.children[treeNumber]
+                    name = QtWidgets.QTableWidgetItem(tree.name)
+                    name.setFlags(nonEditFlags)
+                    self.tableWidget.setItem(n,0,name)
+                    parent = tree.findNode(path).parent
+                    parentName = parent.name
+                    if parentName == "":
+                        parentName == "          "
+                    menu = QtWidgets.QMenu(parent.name)
+                    menu.addAction(parentName, lambda a=self.currentItem, b=treeNumber, c=tree: self.showChildMenu(a,b,c))
+                    self.tableWidget.setCellWidget(n, 1, menu)
+                    # parent = QtWidgets.QTableWidgetItem(parent)
+                    # self.tableWidget.setItem(n,1,parent)
+                    n += 1
+                    
+                # add item fields
+                for key in self.currentItem.fields:
+                    name = QtWidgets.QTableWidgetItem(key)
+                    name.setFlags(nonEditFlags)
+                    value = QtWidgets.QTableWidgetItem(str(self.currentItem.fields[key]["content"]))
+                    self.tableWidget.setItem(n,0,name)
+                    self.tableWidget.setItem(n,1,value)
+                    n += 1
+            
+            self.locked = False
+    
     
     '''Displays a menu with possible children to select, at the current mouse cursor position. '''
     def showChildMenu(self, item, treeIndex, parent, parentMenu=None):
@@ -249,9 +276,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if isRoot:
             parentMenu.exec(QtGui.QCursor.pos())
 
+
     '''Called when the user selects another tree in the tab widget.'''
     def tabWidgetCurrentChanged(self, tree):
         self.currentTree = tree
+        self.treeSelectionChanged(tree)
 
     
     

@@ -312,6 +312,7 @@ class Node:
             self.item.registerNameChangeCallback(self.tree, self.notifyNameChange)
             self.item.registerFieldChangeCallback(self.tree, lambda x: self.notifyFieldChange(x, True))
             self.item.registerDeletionCallback(self.tree, self.notifyDeletion)
+            self.item.registerSelectionCallback(self.tree, lambda x: self.notifySelection(x))
             self.item.registerViewNode(self.tree, self)
 
     def registerViewNode(self, viewNode):
@@ -407,6 +408,9 @@ class Node:
     def registerDeletionCallback(self, callback):
         self.deletionCallback = callback
 
+    def registerSelectionCallback(self, callback):
+        self.selectionCallback = callback
+
 
     def notifyNameChange(self, newName):
         self.name = newName
@@ -460,6 +464,13 @@ class Node:
         # make parent renumber children
         self.parent.removeChild(self)
 
+
+    '''Callback, called whenever the underlying item was selected.'''
+    def notifySelection(self, select):
+        
+        # remove myself from my parent
+        if self.selectionCallback is not None:
+            self.selectionCallback(select)
 
 
 '''A tree inside a forest. One item can appear several times in the forest, but only once in each tree.'''

@@ -34,6 +34,7 @@ class Item:
         self.nameChangeCallbacks = []
         self.fieldChangeCallbacks = []
         self.deletionCallbacks = []
+        self.selectionCallbacks = []
         self.clearCallbacks()
         
         
@@ -42,11 +43,13 @@ class Item:
         self.nameChangeCallbacks = []
         self.fieldChangeCallbacks = []
         self.deletionCallbacks = []
+        self.selectionCallbacks = []
         for t in self.trees:
             self.viewNodes += [None]
             self.nameChangeCallbacks += [None]
             self.fieldChangeCallbacks += [None]
             self.deletionCallbacks += [None]
+            self.selectionCallbacks += [None]
         
 
     def addField(self, name, content):
@@ -86,7 +89,11 @@ class Item:
 
     def registerNameChangeCallback(self, tree, callback):
         self.nameChangeCallbacks[tree] = callback
-            
+
+
+    def registerSelectionCallback(self, tree, callback):
+        self.selectionCallbacks[tree] = callback
+
 
     def registerFieldChangeCallback(self, tree, callback):
         self.fieldChangeCallbacks[tree] = callback
@@ -101,6 +108,11 @@ class Item:
         for c in self.nameChangeCallbacks:
             if c is not None:
                 c(newName)
+    
+    def select(self, select):
+        for c in self.selectionCallbacks:
+            if c is not None:
+                c(select)
 
 
     ''' Edit the content of a field. The content is expected to be a string and will be converted accourding to the field type. '''
