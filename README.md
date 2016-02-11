@@ -5,7 +5,7 @@ Tired of trying to organise your data in spread sheets? Use trees instead.
 TreeTime is a to-do list manager, test report tool, project manager, family ancestry editor, mind-mapping tool, etc. Using TreeTime you can categorise and organise your data items in tree structures, calculate sums, ratios and means from single nodes up to branches up the tree. 
 
 <div id='id-contents'/>
-# Table of Contents
+### Table of Contents
 - [Concept](#id-concept)
 - [Usage](#id-usage)
 - [Road-Map](#id-roadmap)
@@ -54,6 +54,7 @@ Change the parent of any node by typing a name of an existing node into the pare
 ## Road-Map
 [Table of Contents](#id-contents)
 
+I deliberately didn't give any time estimates for this. I'm using the software myself to organise my own data, so I'm interested in keeping this going. Nevertheless I cannot promise any specific release dates. If you have any suggestions or would like me to implement some feature sooner than I suggested here, please just drop me an email.
 - Implement selection (the same item gets selected in all trees, changing a tab shows the same item)
 - Create installer for Linux, Windows, possibly Android
 - Bugfixing
@@ -64,11 +65,20 @@ Change the parent of any node by typing a name of an existing node into the pare
 - Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Bugfixing
 - Release Version 0.2
+- Implement search functionality
+- Implement more data item field types (URLs, timers, date/time/time-span)
+- Implement more tree field types (standard deviation, min, max, string concatenation, 
+- Bugfixing
+- Release Version 0.3
 - Implement tree field editing with graphical dialog (add, remove, change tree fields)
 - Implement data item field editing with graphical dialog (add, remove, change data item fields)
 - Bugfixing
 - Release Version 1.0
 - Implement tree export to PDF, txt, and/or CSV
+- Implement safe usage by multiple simultaneous users
+- Implement a database backend instead of text file storage
+- Implement a web server
+- A whole lot of other fancy things that will probably never get done
 
 <div id='id-dependencies'/>
 ## Dependencies
