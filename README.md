@@ -56,10 +56,8 @@ Change the parent of any node by typing a name of an existing node into the pare
 
 I deliberately didn't give any time estimates for this. I'm using the software myself to organise my own data, so I'm interested in keeping this going. Nevertheless I cannot promise any specific release dates. If you have any suggestions or would like me to implement some feature sooner than I suggested here, please just drop me an email.
 - Implement selection (the same item gets selected in all trees, changing a tab shows the same item)
-- Create installer for Linux, Windows, possibly Android
-- Bugfixing
-- Release Version 0.0
 - Implement remaining local functionality (Copy Branch as Sibling, Copy Children to Siblings, Remove from this Tree, Delete Item)
+- Create installer for Linux, Windows, possibly Android
 - Bugfixing
 - Release Version 0.1
 - Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)

@@ -106,6 +106,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
+        self.pushButtonRemove.clicked.connect(lambda: self.moveToNewParent(self.currentItem, self.currentTree, None))
+        self.pushButtonDelete.clicked.connect(self.pushButtonDeleteClicked)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
@@ -124,6 +126,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if result != '':
             self.loadFile( result )
 
+    def pushButtonDeleteClicked(self):
+        message = "Deleting item \n\t" + self.currentItem.name + ".\nChanges are saved to file immediately and cannot be reverted."
+        msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
+        result = msgBox.exec_()
+        if result == QtWidgets.QMessageBox.Ok:
+            self.forest.itemPool.deleteItem(self.currentItem)
+            self.writeToFile()
+        
     def loadFile(self, filename):
         self.removeBranchTabs()
         self.tabWidgets = []
@@ -399,11 +410,19 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             
             # change
             if newParent is None:
-                message = "Removing node from the tree. Please make sure you don't orphan nodes."
+                message = "Removing node\n\t" + item.name + "\nfrom the tree. Please make sure you don't orphan nodes.\nChanges will be saved to file immediately and cannot be reverted."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-                msgBox.exec_()
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
+                result = msgBox.exec_()
+                
                 # remove node from old parent
-                item.removeFromTree(treeIndex)
+                if result == QtWidgets.QMessageBox.Ok:
+                    item.removeFromTree(treeIndex)
+                    
+                # or leave this function
+                else:
+                    return
+                
             else:
                 # remove node from old parent
                 item.removeFromTree(treeIndex)
