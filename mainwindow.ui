@@ -169,56 +169,20 @@
          <height>716</height>
         </rect>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>716</height>
+        </size>
+       </property>
        <attribute name="label">
         <string> Local Operations </string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="11" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Copy Parts of the Tree</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Copy Existing Nodes</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="15" column="0">
-         <spacer name="verticalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="0">
+       <layout class="QFormLayout" name="formLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::ExpandingFieldsGrow</enum>
+        </property>
+        <item row="2" column="0" colspan="2">
          <widget class="QLabel" name="label">
           <property name="font">
            <font>
@@ -234,142 +198,111 @@
           </property>
          </widget>
         </item>
-        <item row="10" column="0">
-         <spacer name="verticalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="5" column="0">
-         <spacer name="verticalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="4" column="0">
-         <widget class="QPushButton" name="pushButtonNewParent">
-          <property name="text">
-           <string>New Parent</string>
-          </property>
-         </widget>
-        </item>
-        <item row="19" column="0">
-         <spacer name="verticalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="21" column="0">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="13" column="0">
-         <widget class="QPushButton" name="pushButtonCopyChildrenSiblings">
-          <property name="text">
-           <string>Copy Children to Siblings</string>
-          </property>
-         </widget>
-        </item>
-        <item row="17" column="0">
-         <widget class="QPushButton" name="pushButtonRemove">
-          <property name="text">
-           <string>Remove from this Tree</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0">
-         <widget class="QPushButton" name="pushButtonCopyNodeParent">
-          <property name="text">
-           <string>Copy Node as Parent</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QPushButton" name="pushButtonNewSibling">
-          <property name="text">
-           <string>New Sibling</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
+        <item row="3" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonNewChild">
           <property name="text">
            <string>New Child</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="0">
+        <item row="4" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewSibling">
+          <property name="text">
+           <string>New Sibling</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewParent">
+          <property name="text">
+           <string>New Parent</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0" colspan="2">
+         <widget class="QLabel" name="label_2">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Copy Existing Nodes</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonCopyNodeChild">
           <property name="text">
            <string>Copy Node as Child</string>
           </property>
          </widget>
         </item>
-        <item row="18" column="0">
-         <widget class="QPushButton" name="pushButtonDelete">
-          <property name="text">
-           <string>Delete Item</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0">
+        <item row="9" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonCopyNodeSibling">
           <property name="text">
            <string>Copy Node as Sibling</string>
           </property>
          </widget>
         </item>
-        <item row="12" column="0">
+        <item row="10" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonCopyNodeParent">
+          <property name="text">
+           <string>Copy Node as Parent</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0" colspan="2">
+         <widget class="QLabel" name="label_3">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Copy Parts of the Tree</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Depth  </string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonCopyBranchSibling">
           <property name="text">
            <string>Copy Branch as Sibling</string>
           </property>
          </widget>
         </item>
-        <item row="20" column="0">
-         <spacer name="verticalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+        <item row="16" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonCopyChildrenSiblings">
+          <property name="text">
+           <string>Copy Children to Siblings</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
-        <item row="16" column="0">
+        <item row="18" column="0" colspan="2">
          <widget class="QLabel" name="label_4">
           <property name="font">
            <font>
@@ -385,8 +318,152 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <spacer name="verticalSpacer_8">
+        <item row="19" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonRemove">
+          <property name="text">
+           <string>Remove from this Tree</string>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonDelete">
+          <property name="text">
+           <string>Delete Item</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="6" column="0" colspan="2">
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="11" column="0" colspan="2">
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="17" column="0" colspan="2">
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="13" column="1">
+         <widget class="QComboBox" name="comboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>all levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1 level</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2 levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3 levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4 levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5 levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>6 levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>7 levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>8 levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>9 levels</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 levels</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="22" column="0" colspan="2">
+         <spacer name="verticalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="21" column="0" colspan="2">
+         <spacer name="verticalSpacer_7">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -405,8 +482,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>96</width>
-         <height>26</height>
+         <width>200</width>
+         <height>716</height>
         </rect>
        </property>
        <attribute name="label">

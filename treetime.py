@@ -104,6 +104,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.pushButtonCopyNodeChild.clicked.connect(lambda: self.createNode("child", True))
         self.pushButtonCopyNodeSibling.clicked.connect(lambda: self.createNode("sibling", True))
         self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
+        self.pushButtonCopyBranchSibling.clicked.connect(lambda: self.createNode("sibling", True, True))
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.pushButtonRemove.clicked.connect(lambda: self.moveToNewParent(self.currentItem, self.currentTree, None))
@@ -326,19 +327,28 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.writeToFile()
 
 
-    def createNode(self, insertas, copy):
+    def createNode(self, insertas, copy, recurse = False, srcItem = None, destItem = None):
         
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
             
-            sourceQNode = treeWidget.selectedItems()[0]
-            sourceNode = sourceQNode.sourceNode
-            sourceItem = sourceNode.item
-            parentNode = sourceNode.parent
-            parentQNode = sourceQNode.parent()
-            if parentQNode is None:
-                parentQNode = treeWidget.invisibleRootItem()
-            item = None
+            # set source and destination nodes and qnodes
+            if recurse and srcItem is not None and destItem is not None:
+                sourceItem = srcItem
+                sourceNode = srcItem.viewNodes[self.currentTree]
+                sourceQNode = sourceNode.viewNode
+                destNode = destItem.viewNodes[self.currentTree]
+                destQNode = destNode.viewNode
+            else:
+                sourceQNode = treeWidget.selectedItems()[0]
+                sourceNode = sourceQNode.sourceNode
+                sourceItem = sourceNode.item
+                destNode = sourceNode.parent
+                destQNode = sourceQNode.parent()
+                
+            if destQNode is None:
+                destQNode = treeWidget.invisibleRootItem()
+            
             if copy:
                 item = self.forest.itemPool.copyItem(sourceItem)
                 for n,t in enumerate(self.forest.children):
@@ -367,36 +377,41 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             
             elif insertas == "sibling":
                 
-                if parentNode is None or parentQNode is None:
+                if destNode is None or destQNode is None:
                     return
                 
                 # create default node and add item to it
-                node = parentNode.addItemAsChild(item)
+                node = destNode.addItemAsChild(item)
                 qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-                parentQNode.addChild(qnode)
+                destQNode.addChild(qnode)
                 
                 # expand parent and select new item
-                parentQNode.setExpanded(True)
+                destQNode.setExpanded(True)
             
             elif insertas == "parent":
             
-                if parentNode is None or parentQNode is None:
+                if destNode is None or destQNode is None:
                     return
                 
-                node = parentNode.addItemAsChild(item)
+                node = destNode.addItemAsChild(item)
                 
                 # move original node to be child of new parent
-                parentNode.removeChild(sourceNode)
+                destNode.removeChild(sourceNode)
                 node.addNodeAsChild(sourceNode)
-                parentQNode.removeChild(sourceQNode)
+                destQNode.removeChild(sourceQNode)
                 qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-                parentQNode.addChild(qnode)
+                destQNode.addChild(qnode)
                 
                 # expand parent and select new item
                 qnode.setExpanded(True)
             
-            treeWidget.setCurrentItem(qnode)
-            self.writeToFile()
+            if recurse:
+                for c in sourceNode.children:
+                    self.createNode(insertas, copy, recurse, c.item, node.item)
+            
+            if srcItem is None:
+                treeWidget.setCurrentItem(qnode)
+                self.writeToFile()
     
     
     def moveToNewParent(self, item, treeIndex, newParent):
