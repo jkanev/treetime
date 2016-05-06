@@ -211,25 +211,44 @@ class Field:
         s = string.split("\n      field-type ")
         name = json.loads(s[0])
         s = s[1].split("\n      own-fields ")
-        self.fieldType = json.loads(s[0])
+        try:
+            self.fieldType = json.loads(s[0])
+        except:
+            self.printReadError(name, "field-type", s[0]);
         s = s[1].split("\n      child-fields ")
-        self.ownFields = json.loads(s[0])
+        try:
+            self.ownFields = json.loads(s[0])
+        except:
+            self.printReadError(name, "own-fields", s[0]);
         s = s[1].split("\n      sibling-fields ")
-        self.childFields = json.loads(s[0])
+        try:
+            self.childFields = json.loads(s[0])
+        except:
+            self.printReadError(name, "child-fields", s[0]);
         s = s[1].split("\n      parent-fields ")
-        self.siblingFields = json.loads(s[0])
-        self.parentFields = json.loads(s[1])
+        try:
+            self.siblingFields = json.loads(s[0])
+        except:
+            self.printReadError(name, "sibling-fields", s[0]);
+        try:
+            self.parentFields = json.loads(s[1])
+        except:
+            self.printReadError(name, "parent-fields", s[0]);
+
         self.initFieldType()
         
         return name
 
-
+    def printReadError(self, name, parameter, string):
+        print('error reading field parameter "' + parameter + '" of field "' + name + '": definition string "' + string + '" cannot be parsed.')
 
 
 
 class Node:
-
-    """A tree structure consisting of nodes that are parents of nodes etc. A node is a view-object to display one item."""
+    """
+    A tree structure consisting of nodes that are parents of nodes etc. A node is a view-object to display one item.
+    """
+    
     def __init__(self, parent, tree, path):
         self.parent = parent
         self.children = []
@@ -246,8 +265,8 @@ class Node:
 
 
 
-    '''Applies the function to each node in the tree. The function must receive one parameter and return one parameter. The return value is used as parameter for the next function call. The value Parameter is used in the first call.'''
     def map(self, function, parameter, depthFirst):
+        ''' Applies the function to each node in the tree. The function must receive one parameter and return one parameter. The return value is used as parameter for the next function call. The value Parameter is used in the first call.'''
         
         # if depthFirst then recurse first and apply later
         if depthFirst:
@@ -261,6 +280,7 @@ class Node:
                 parameter = c.map(function, parameter, depthFirst)
                 
             return parameter
+
 
 
     def printForest(self, indent=0):
@@ -289,7 +309,9 @@ class Node:
             self.children[i].printForest(indent + 1)
 
 
+    
     def createPathTo(self, item, treeindex, nodeindex, viewtemplate):
+        """ Links an item into a tree, using the given path. Empty nodes get created on the way."""
         
         # either recurse deeper
         if nodeindex < len(item.trees[treeindex]):

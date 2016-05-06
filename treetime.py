@@ -30,7 +30,10 @@ import mainwindow
 
 
 class QNode(QtWidgets.QTreeWidgetItem):
-
+    """
+    The GUI counterpart of a node. Displays the contents of a node.
+    """
+    
     def __init__(self, sourceNode, fieldOrder):
         
         # initialise display
@@ -94,6 +97,9 @@ class QNode(QtWidgets.QTreeWidgetItem):
 
 
 class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
+    """
+    Implements the main part of the GUI.
+    """
 
     def __init__(self, filename=None):
         super().__init__()
@@ -456,6 +462,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             item.notifyFieldChange('')
             self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
+
 
 app = QtWidgets.QApplication(sys.argv)
 mainWindow = TreeTimeWindow()
