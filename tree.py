@@ -39,13 +39,43 @@ class Field:
         self.fieldType = fieldType
         if (self.fieldType != ""):
             self.initFieldType()
+
+    
+    def __deepcopy__(self, memo):
+        ''' Overload of the deepcopy function, to avoid copying the node recursively.'''
+
+        if memo is None:
+            memo = {}
         
+        fieldType = self.__class__
+        newField = fieldType.__new__(fieldType)
+        
+        # cache doesn't get copied
+        newField.cache = None
+        
+        # simple fields are copies
+        newField.ownFields = copy.deepcopy(self.ownFields)
+        newField.siblingFields = copy.deepcopy(self.siblingFields)
+        newField.childFields = copy.deepcopy(self.childFields)
+        newField.parentFields = copy.deepcopy(self.parentFields)
+        newField.fieldType = copy.deepcopy(self.fieldType)
+        
+        # the source node is a link
+        newField.sourceNode = self.sourceNode
+        
+        # functions are set
+        if (newField.fieldType != ""):
+            newField.initFieldType()
+        
+        memo[id(self)] = newField
+        return newField
+
 
     ''' Gets all values of all related fields in a list. Order is: own fields first, then child fields, then sibling fields, then parent fields. Item fields of the same name have precence over tree fields.'''
     def getFieldValues(self):
         
         values = []
-
+        
         # look in own fields
         node = self.sourceNode
         if node.item is not None: # don't try to get values from the root node

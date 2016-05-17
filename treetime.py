@@ -27,7 +27,7 @@ import os.path
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 import mainwindow
-
+sys.setrecursionlimit(50)
 
 class QNode(QtWidgets.QTreeWidgetItem):
     """
