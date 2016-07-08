@@ -36,8 +36,37 @@ class Item:
         self.deletionCallbacks = []
         self.selectionCallbacks = []
         self.clearCallbacks()
+
+
+    def __deepcopy__(self, memo):
+        ''' Overload of the deepcopy function, to avoid copying the node recursively.'''
         
+        if memo is None:
+            memo = {}
         
+        itemType = self.__class__
+        newItem = itemType.__new__(itemType)
+        
+        # fields and trees are complex
+        newItem.fields = copy.deepcopy(self.fields)
+        newItem.trees = copy.deepcopy(self.trees)
+        
+        # names are simple
+        newItem.name = self.name
+        newItem.parentNames = self.parentNames
+        
+        # everything else should be blank
+        self.viewNodes = []
+        self.nameChangeCallbacks = []
+        self.fieldChangeCallbacks = []
+        self.deletionCallbacks = []
+        self.selectionCallbacks = []
+        self.clearCallbacks()
+        
+        memo[id(self)] = newItem
+        return newItem
+
+
     def clearCallbacks(self):
         self.viewNodes = []
         self.nameChangeCallbacks = []
@@ -50,7 +79,7 @@ class Item:
             self.fieldChangeCallbacks += [None]
             self.deletionCallbacks += [None]
             self.selectionCallbacks += [None]
-        
+
 
     def addField(self, name, content):
         self.fields[name] = content
