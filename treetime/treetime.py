@@ -464,8 +464,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.writeToFile()
 
 
-app = QtWidgets.QApplication(sys.argv)
-mainWindow = TreeTimeWindow()
+    def run(self):
+        app = QtWidgets.QApplication(sys.argv)
+        mainWindow = TreeTimeWindow()
 
-mainWindow.show()
-sys.exit(app.exec_())
+        mainWindow.show()
+        sys.exit(app.exec_())
