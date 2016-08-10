@@ -11,5 +11,6 @@ setup (
     author_email='jkanev@zoho.com',
     url='https://github.com/jkanev/treetime',
     packages=['treetime'],
+    entry_points= { 'gui_scripts': ['treetime = treetime.__main__:main'] },
     package_data={'treetime': ['data/items.trt', 'doc/*.png']},
 )

@@ -19,7 +19,7 @@
 
 import copy
 import json
-import item
+from .item import *
 import datetime
 
 class Field:
@@ -641,7 +641,7 @@ class Forest(Node):
             s = f.read()
             s = s.split("--trees--")[1]
             s = s.split("--item-pool--")
-            self.itemPool = item.ItemPool()
+            self.itemPool = ItemPool()
             self.itemPool.readFromString(s[1])
             self.createPaths()
             self.readFromString(s[0])

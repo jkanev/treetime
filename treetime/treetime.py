@@ -20,13 +20,13 @@
 #!/usr/bin/python3
 
 import sys
-import item
-import tree
+from .item import *
+from .tree import *
+from .mainwindow import *
 import datetime
 import os.path
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
-import mainwindow
 sys.setrecursionlimit(50)
 
 class QNode(QtWidgets.QTreeWidgetItem):
@@ -96,7 +96,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
 
 
 
-class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
+class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
     Implements the main part of the GUI.
     """
@@ -149,7 +149,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.currentTree = 0
         self.currentItem = None
         if filename is not None and filename != '':
-            self.forest = tree.Forest(filename)
+            self.forest = Forest(filename)
             self.createBranchTabs()
             self.fillTreeWidgets()
             self.labelCurrentFile.setText(filename)
@@ -464,9 +464,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.writeToFile()
 
 
-    def run(self):
+class TreeTime():
+    
+    def __init__(self):
+        
         app = QtWidgets.QApplication(sys.argv)
         mainWindow = TreeTimeWindow()
 
         mainWindow.show()
         sys.exit(app.exec_())
+
