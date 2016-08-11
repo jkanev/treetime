@@ -91,15 +91,15 @@ class Item:
 
     def writeToString(self):
         string = self.name + "\n"
-        string += "   fields " + json.dumps(self.fields) + "\n"
-        string += "   trees " + json.dumps(self.trees) + "\n"
+        string += "    fields " + json.dumps(self.fields) + "\n"
+        string += "    trees " + json.dumps(self.trees) + "\n"
         return string
 
 
     def readFromString(self, string):
-        s = string.split("\n   fields ")
+        s = string.split("\n    fields ")
         self.name = s[0]
-        s = s[1].split("\n   trees ")
+        s = s[1].split("\n    trees ")
         self.fields = json.loads(s[0])
         self.trees = json.loads(s[1])
         self.clearCallbacks()

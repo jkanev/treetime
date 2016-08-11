@@ -149,12 +149,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.currentTree = 0
         self.currentItem = None
         if filename is not None and filename != '':
-            self.forest = Forest(filename)
-            self.createBranchTabs()
-            self.fillTreeWidgets()
-            self.labelCurrentFile.setText(filename)
-            self.settings.setValue('lastFile', filename)
-    
+            try:
+                self.forest = Forest(filename)
+                self.createBranchTabs()
+                self.fillTreeWidgets()
+                self.labelCurrentFile.setText(filename)
+                self.settings.setValue('lastFile', filename)
+            except:
+                self.pushButtonLoadFileClicked()
+        else:
+            self.pushButtonLoadFileClicked()
     
     def writeToFile(self):
         self.forest.writeToFile( self.labelCurrentFile.text() )

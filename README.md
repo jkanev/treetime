@@ -35,9 +35,11 @@ In TreeTime, the data item fields, the trees, and the fields that are displayed 
 
 1. If you don't have it yet, install python3
    - Debian, Ubuntu and related: on the command line, type "apt-get install python3"
+   - Other Linux distributions: install python3 with your default package manager
    - Windows, Mac and similar: download from https://www.python.org/downloads/
 2. If you don't have it yet, install PyQt5
    - Debian, Ubuntu and related: on the command line, type "apt-get install python3-pyqt5"
+   - Other Linux distributions: install pyqt5 with your default package manager
    - Windows, Mac and similar: "pip3 install pyqt5" (see http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
 3. Download this project from GitHub
 4. Install. In the command line, cd into the main directory, then type:

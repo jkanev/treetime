@@ -228,34 +228,34 @@ class Field:
         
         
     def writeToString(self):
-        string = "   field-type " + json.dumps(self.fieldType) + "\n"
-        string += "      own-fields " + json.dumps(self.ownFields) + "\n"
-        string += "      child-fields " + json.dumps(self.childFields) + "\n"
-        string += "      sibling-fields " + json.dumps(self.siblingFields) + "\n"
-        string += "      parent-fields " + json.dumps(self.parentFields) + "\n"
+        string = "    field-type " + json.dumps(self.fieldType) + "\n"
+        string += "        own-fields " + json.dumps(self.ownFields) + "\n"
+        string += "        child-fields " + json.dumps(self.childFields) + "\n"
+        string += "        sibling-fields " + json.dumps(self.siblingFields) + "\n"
+        string += "        parent-fields " + json.dumps(self.parentFields) + "\n"
         return string
 
 
     def readFromString(self, string):
         
-        s = string.split("\n      field-type ")
+        s = string.split("\n        field-type ")
         name = json.loads(s[0])
-        s = s[1].split("\n      own-fields ")
+        s = s[1].split("\n        own-fields ")
         try:
             self.fieldType = json.loads(s[0])
         except:
             self.printReadError(name, "field-type", s[0]);
-        s = s[1].split("\n      child-fields ")
+        s = s[1].split("\n        child-fields ")
         try:
             self.ownFields = json.loads(s[0])
         except:
             self.printReadError(name, "own-fields", s[0]);
-        s = s[1].split("\n      sibling-fields ")
+        s = s[1].split("\n        sibling-fields ")
         try:
             self.childFields = json.loads(s[0])
         except:
             self.printReadError(name, "child-fields", s[0]);
-        s = s[1].split("\n      parent-fields ")
+        s = s[1].split("\n        parent-fields ")
         try:
             self.siblingFields = json.loads(s[0])
         except:
@@ -561,13 +561,13 @@ class Tree(Node):
     def writeToString(self):
         string = "tree " + json.dumps(self.name) + "\n"
         for n,f in self.fields.items():
-            string += "   field " + json.dumps(n) + "\n"
-            string += "   " + f.writeToString()
+            string += "    field " + json.dumps(n) + "\n"
+            string += "    " + f.writeToString()
         return string
 
 
     def readFromString(self, string):
-        fieldStrings = string.split("\n   field ")
+        fieldStrings = string.split("\n    field ")
         for n,fs in enumerate(fieldStrings):
             if n==0:
                 self.name = json.loads(fs)
