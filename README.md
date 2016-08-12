@@ -1,4 +1,4 @@
-# Tree Time <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64">
+# Tree Time &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64">
 
 
 Tired of trying to organise your data in spread sheets? Use trees instead. TreeTime is a time planner, to-do list manager, test report tool, project manager, family ancestry editor, mind-mapping tool, etc. Using TreeTime you can categorise and organise your data items in tree structures. You can define several trees at the same time, each with a different structure, but on the same data.You can use functions (calculate sums, ratios and means) recursively up the branches of a tree. 
