@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=TreeTime
+GenericName=Graphical Tree Manager
+Comment=TreeTime is a graphical tool to analyse data using trees
+Exec=python3 -m treetime
+Type=Application
+Icon=/home/jacob/software/treetime/data/treetime-logo.png
+Categories=Office;Education;Qt;
