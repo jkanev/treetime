@@ -217,16 +217,23 @@ class Field:
             return 0.0
 
     def getValueRatio(self):
+        """
+        Returns the ration a/(b+c+d+e+...) of field values a,b,c,d,e,...
+        """
         values = self.getFieldValues()
-        sum = 0
-        for v in values:
-            sum += v
-        if sum != 0:
-            return values[0]/sum
-        else:
+        if len(values) < 2:
             return None
-        
-        
+        else:
+            denom = values[0]
+            sum = 0
+            for v in values[1:]:
+                sum += v
+            if sum != 0:
+                return denom/sum
+            else:
+                return None
+    
+    
     def writeToString(self):
         string = "    field-type " + json.dumps(self.fieldType) + "\n"
         string += "        own-fields " + json.dumps(self.ownFields) + "\n"
