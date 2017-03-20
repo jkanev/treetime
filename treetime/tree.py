@@ -420,15 +420,17 @@ class Node:
             c.renumberChildren()
 
 
-    """Creates a node and links it to the item. Updates the item's forest indexes."""
     def addItemAsChild(self, item):
-        
+        """
+        Creates a node and links it to the item. Updates the item's forest indexes.
+        """
         node = self.addChild()
         node.item = item
         node.name = item.name
         node.initFields(self.fields)
         node.registerCallbacks()
         item.trees[node.tree] = node.path
+        self.renumberChildren()
         return node
 
 
