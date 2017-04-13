@@ -4,7 +4,7 @@
 Tired of trying to organise your data in spread sheets? Use trees instead. TreeTime is a time planner, to-do list manager, test report tool, project manager, family ancestry editor, mind-mapping tool, etc. Using TreeTime you can categorise and organise your data items in tree structures. You can define several trees at the same time, each with a different structure, but on the same data.You can use functions (calculate sums, ratios and means) recursively up the branches of a tree. 
 
 <div id='id-contents'/>
-### Table of Contents ###
+###  Table of Contents  ###
 - [Concept](#id-concept)
 - [Installation](#id-installation)
 - [Usage](#id-usage)
@@ -13,7 +13,7 @@ Tired of trying to organise your data in spread sheets? Use trees instead. TreeT
 
 
 <div id='id-concept'/>
-## Concept ##
+##  Concept  ##
 [Table of Contents](#id-contents)
 
 Think about your data and what you want to organise. Data is usually a bunch of simple items which can be grouped or sorted and which are related to each other. If you want to organise work in a company such a simple item could be a Task. In a spreadsheet that would be a line in a table, with several columns for different properties of the task. In TreeTime a Task would be a data item. It could have several fields like planned completion date, planned effort, actual completion date, current progress, a name and a short description. You can think of several ways to organise your data items:
@@ -31,7 +31,7 @@ The concept of hierarchical categorisation can be applied to all sorts of data a
 In TreeTime, the data item fields, the trees, and the fields that are displayed in a tree are completely user defined. At the moment TreeTime can display texts as well as numbers and their sums, means and ratios, and names of the parent node in all different trees.
 
 <div id='id-installation'/>
-## Installation ##
+##  Installation  ##
 [Table of Contents](#id-installation)
 
 1. If you don't have it yet, install python3
@@ -50,7 +50,7 @@ In TreeTime, the data item fields, the trees, and the fields that are displayed 
    - on the command line, type: "python3 -m treetime"
 
 <div id='id-usage'/>
-## Usage ##
+##  Usage  ##
 [Table of Contents](#id-contents)
 
 Start the software by typing "python3 -m treetime". In the main dialog, go to "File Storage", click "Load other File" and select "items.trt". The GUI will come up with an example project. Several data items will have loaded (a project with three tasks and two week-planning entries) and are organised in three trees. The GUI is organised in three parts:
@@ -70,7 +70,7 @@ Change the name of a node by selecting the node and editing the name in the top 
 Change the parent of any node by typing a name of an existing node into the parent fields in the edit grid. The parent fields are the three lines underneath the item's name.
 
 <div id='id-roadmap'/>
-## Road-Map ##
+##  Road-Map  ##
 [Table of Contents](#id-contents)
 
 I deliberately didn't give any time estimates for this. I'm using the software myself to organise my own data, so I'm interested in keeping this going. Nevertheless I cannot promise any specific release dates. If you have any suggestions or would like me to implement some feature sooner than I suggested here, please just drop me an email.
@@ -78,7 +78,7 @@ I deliberately didn't give any time estimates for this. I'm using the software m
 - Done Mar. 2016: Implement remaining local functionality (Copy Branch as Sibling, Copy Children to Siblings, Remove from this Tree, Delete Item)
 - Done Aug. 2016: Created installable python package
 - Running: Create complete installer for Linux, Windows, possibly Android
-- Near Future: Bugfixing
+- Running: Bugfixing
 - Near Future: Release Version 0.1
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Mid Future: Bugfixing
@@ -99,7 +99,7 @@ I deliberately didn't give any time estimates for this. I'm using the software m
 - Far Future: A whole lot of other fancy things that will probably never get done
 
 <div id='id-dependencies'/>
-## Dependencies ##
+##  Dependencies  ##
 [Table of Contents](#id-contents)
 
 TreeTime depends on [`Python 3`](https://www.python.org/downloads/), [`Qt5`](http://www.qt.io/download/), and [`PyQt5`](https://pypi.python.org/pypi/PyQt5).
