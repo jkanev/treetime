@@ -56,14 +56,14 @@ class Item:
         newItem.parentNames = self.parentNames
         
         # everything else should be blank
-        self.viewNodes = []
-        self.nameChangeCallbacks = []
-        self.fieldChangeCallbacks = []
-        self.deletionCallbacks = []
-        self.selectionCallbacks = []
-        self.clearCallbacks()
+        newItem.viewNodes = []
+        newItem.nameChangeCallbacks = []
+        newItem.fieldChangeCallbacks = []
+        newItem.deletionCallbacks = []
+        newItem.selectionCallbacks = []
+        newItem.clearCallbacks()
         
-        memo[id(self)] = newItem
+        memo[id(newItem)] = newItem
         return newItem
 
 
@@ -219,6 +219,7 @@ class ItemPool:
         newitem = copy.deepcopy(item)
         newitem.viewNodes = []
         newitem.clearCallbacks()
+        newitem.name += " (copy)"
         self.items += [newitem]
         return newitem
 

@@ -373,7 +373,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 item = self.forest.itemPool.addNewItem()
                 for t in item.trees:
-                    t = []
+                    item.trees[t] = []
             
             if insertas == "child":
                 

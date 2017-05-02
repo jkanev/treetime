@@ -430,7 +430,6 @@ class Node:
         node.initFields(self.fields)
         node.registerCallbacks()
         item.trees[node.tree] = node.path
-        self.renumberChildren()
         return node
 
 
