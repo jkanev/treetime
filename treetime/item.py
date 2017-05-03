@@ -155,6 +155,8 @@ class Item:
             type = field["type"]
             if type == "string":
                 field["content"] = fieldContent
+            elif type == "text":
+                field["content"] = fieldContent
             elif type == "integer":
                 field["content"] = json.loads(fieldContent)
             else:

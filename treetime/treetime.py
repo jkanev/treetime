@@ -272,9 +272,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 for key in self.currentItem.fields:
                     name = QtWidgets.QTableWidgetItem(key)
                     name.setFlags(nonEditFlags)
-                    value = QtWidgets.QTableWidgetItem(str(self.currentItem.fields[key]["content"]))
+                    if self.currentItem.fields[key]['type'] == 'text':
+                        text = str(self.currentItem.fields[key]["content"])
+                        widget = QtWidgets.QPlainTextEdit(text)
+                        widget.textChanged.connect( lambda row=n: self.tableWidgetCellChanged(row, 1) )
+                        self.tableWidget.setCellWidget(n, 1, widget)
+                    else:
+                        value = QtWidgets.QTableWidgetItem(str(self.currentItem.fields[key]["content"]))
+                        self.tableWidget.setItem(n,1,value)
                     self.tableWidget.setItem(n,0,name)
-                    self.tableWidget.setItem(n,1,value)
                     n += 1
             
             self.locked = False
@@ -326,7 +332,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # one of the fields has been changed
                 else:
                     fieldName = self.tableWidget.item(row,0).text()
-                    newValue = self.tableWidget.item(row,1).text()
+                    fieldType = self.currentItem.fields[fieldName]['type']
+                    if fieldType == 'text':
+                        newValue = self.tableWidget.cellWidget(row,1).toPlainText()
+                    else:
+                        newValue = self.tableWidget.item(row,1).text()
                     result = self.currentItem.changeFieldContent(fieldName, newValue)
                     if result is not True:
                         message = "Couldn't update field content.\n" + str(result)
