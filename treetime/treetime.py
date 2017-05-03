@@ -382,9 +382,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         parent.addChild(newQNode)
             else:
                 item = self.forest.itemPool.addNewItem()
-                for t in item.trees:
-                    item.trees[t] = []
-            
+
             if insertas == "child":
                 
                 # create default node and add item to it
