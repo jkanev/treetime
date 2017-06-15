@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.5.1
+# Created by: PyQt5 UI code generator 5.7
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -24,6 +24,7 @@ class Ui_MainWindow(object):
         self.fileIo.setGeometry(QtCore.QRect(0, 0, 200, 716))
         self.fileIo.setObjectName("fileIo")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.fileIo)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
@@ -59,6 +60,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.addItem(spacerItem1)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
+        self.label_7 = QtWidgets.QLabel(self.fileIo)
+        self.label_7.setObjectName("label_7")
+        self.verticalLayout.addWidget(self.label_7)
         spacerItem3 = QtWidgets.QSpacerItem(20, 127, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem3)
         self.toolBox.addItem(self.fileIo, "")
@@ -68,6 +72,7 @@ class Ui_MainWindow(object):
         self.pageTree.setObjectName("pageTree")
         self.formLayout = QtWidgets.QFormLayout(self.pageTree)
         self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.ExpandingFieldsGrow)
+        self.formLayout.setContentsMargins(0, 0, 0, 0)
         self.formLayout.setObjectName("formLayout")
         self.label = QtWidgets.QLabel(self.pageTree)
         font = QtGui.QFont()
@@ -173,9 +178,10 @@ class Ui_MainWindow(object):
         self.formLayout.setItem(21, QtWidgets.QFormLayout.SpanningRole, spacerItem9)
         self.toolBox.addItem(self.pageTree, "")
         self.pageGlobal = QtWidgets.QWidget()
-        self.pageGlobal.setGeometry(QtCore.QRect(0, 0, 200, 716))
+        self.pageGlobal.setGeometry(QtCore.QRect(0, 0, 96, 26))
         self.pageGlobal.setObjectName("pageGlobal")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.pageGlobal)
+        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_3.setObjectName("gridLayout_3")
         spacerItem10 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_3.addItem(spacerItem10, 0, 0, 1, 1)
@@ -220,7 +226,14 @@ class Ui_MainWindow(object):
         self.labelCurrentFile.setText(_translate("MainWindow", "[current file name]"))
         self.pushButtonLoadFile.setText(_translate("MainWindow", "Load other File"))
         self.pushButtonSaveToFile.setText(_translate("MainWindow", "Save to other File"))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.fileIo), _translate("MainWindow", "File Storage"))
+        self.label_7.setText(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Noto Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime</p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Version 0.0</p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     New versions,<br />     source code and <br />     documentation at <br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">github.com/jkanev/treetime</span></a></p></body></html>"))
+        self.toolBox.setItemText(self.toolBox.indexOf(self.fileIo), _translate("MainWindow", "Application"))
         self.label.setText(_translate("MainWindow", "Insert New Nodes"))
         self.pushButtonNewChild.setText(_translate("MainWindow", "New Child"))
         self.pushButtonNewSibling.setText(_translate("MainWindow", "New Sibling"))

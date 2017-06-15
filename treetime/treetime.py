@@ -120,7 +120,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
         self.locked = True
-        self.settings = QtCore.QSettings('', 'TreeTime')
+        self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
         self.loadFile(filename or self.settings.value('lastFile'))
 
     def pushButtonSaveToFileClicked(self):
