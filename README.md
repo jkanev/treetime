@@ -45,13 +45,20 @@ In TreeTime, the data item fields, the trees, and the fields that are displayed 
 2. If you don't have it yet, install PyQt5
    - Debian, Ubuntu and related: on the command line, type "apt-get install python3-pyqt5"
    - Other Linux distributions: install pyqt5 with your default package manager
-   - Windows, Mac and similar: "pip3 install pyqt5" (see http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
-3. Download this project from GitHub
-4. Install. In the command line, cd into the main directory, then type:
-   - python3 setup.py build
-   - sudo python3 setup.py install
+   - Windows, Mac and similar: Open a command line and type "py -m install PyQt5" (Windows) or  "pip install PyQt5" (Mac, untested) (see http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+3. Download this project from GitHub as a zip file (https://github.com/jkanev/treetime/archive/master.zip) and unzip
+4. Install: in the command line, cd into the main directory, then type:
+   - Linux:
+      - python3 setup.py build
+      - sudo python3 setup.py install
+   - Windows:
+      - py setup.py build
+      - py setup.py install
 5. Execute
-   - on the command line, type: "python3 -m treetime"
+   - Linux
+      - on the command line, type: "python3 -m treetime"
+   - Windows
+      - on the command line, type: "py -m treetime"
 
 <div id='id-usage'/>
 

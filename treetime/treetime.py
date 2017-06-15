@@ -25,6 +25,7 @@ from .tree import *
 from .mainwindow import *
 import datetime
 import os.path
+import platform
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 sys.setrecursionlimit(50)
@@ -123,13 +124,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.loadFile(filename or self.settings.value('lastFile'))
 
     def pushButtonSaveToFileClicked(self):
-        result = QtWidgets.QFileDialog.getSaveFileName(self, "Save data file", "", ".trt")[0]
+        result = QtWidgets.QFileDialog.getSaveFileName(self, "Save data file", '', '*.trt')[0]
         if result != '':
             self.labelCurrentFile.setText(result)
             self.writeToFile()
 
     def pushButtonLoadFileClicked(self):
-        result = QtWidgets.QFileDialog.getOpenFileName(self, "Load data file", "", ".trt")[0]
+        result = QtWidgets.QFileDialog.getOpenFileName(self, "Load data file", '', '*.trt')[0]
         if result != '':
             self.loadFile( result )
 
@@ -481,6 +482,8 @@ class TreeTime():
     def __init__(self):
         
         app = QtWidgets.QApplication(sys.argv)
+        if platform.system() == "Windows":
+            app.setStyle("Fusion")
         mainWindow = TreeTimeWindow()
 
         mainWindow.show()
