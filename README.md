@@ -38,6 +38,16 @@ In TreeTime, the data item fields, the trees, and the fields that are displayed 
 ##  Installation  ##
 [Table of Contents](#id-installation)
 
+### Using pre-compiled Binaries ###
+
+Go to [github.com/jkanev/treetime/releases/tag/v0.0](https://github.com/jkanev/treetime/releases/tag/v0.0) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there.
+Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
+
+Mac users please use the Python code (see below). There is no executable for Mac.
+(If anybody can help building an executable for other platforms I'd be delighted.)
+
+### Using script code with Python ###
+
 1. If you don't have it yet, install python3
    - Debian, Ubuntu and related: on the command line, type "apt-get install python3"
    - Other Linux distributions: install python3 with your default package manager
@@ -90,8 +100,10 @@ I deliberately didn't give any time estimates for this. I'm using the software m
 - Done Feb. 2016: Implement selection (the same item gets selected in all trees, changing a tab shows the same item)
 - Done Mar. 2016: Implement remaining local functionality (Copy Branch as Sibling, Copy Children to Siblings, Remove from this Tree, Delete Item)
 - Done Aug. 2016: Created installable python package
-- Running: Create complete installer for Linux, Windows, possibly Android
+- Done June 2017: Create deployable packages for Linux and Windows
+- Done June 2017: Made pre-release v0.0 available
 - Running: Bugfixing
+- Running: Writing documentation and creating example data files
 - Near Future: Release Version 0.1
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Mid Future: Bugfixing
