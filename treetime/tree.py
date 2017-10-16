@@ -139,7 +139,10 @@ class Field:
         elif self.fieldType == "node-name":
             self.getValue = self.getValueNodeName
             self.getString = self.getStringUnchanged
-        
+        elif self.fieldType == "node-path":
+            self.getValue = self.getValueNodePath
+            self.getString = self.getStringUnchanged
+
         
     def getStringPercent(self):
         if self.sourceNode and self.getValue:
@@ -185,6 +188,32 @@ class Field:
                     parent = node.parent
                     if parent is not None:
                         s += parent.name
+            return s
+
+
+    def getValueNodePath(self):
+        if self.cache is not None:
+            return self.cache
+        else:
+            s = ""
+            item = self.sourceNode.item
+            if item is None:
+                return s
+            for t in self.parentFields:
+                # find tree
+                tree = self.sourceNode
+                while tree.parent is not None:
+                    tree = tree.parent
+                tree = tree.children[t]
+                # find node in tree
+                path = item.trees[t]
+                node = tree.findNode(path)
+                if node and node.parent:
+                    parent = node.parent
+                    s += parent.name
+                    while parent.parent and parent.parent.parent and parent.parent.parent.parent : # don't display forest or tree names
+                        parent = parent.parent
+                        s = parent.name + " | " + s
             return s
 
 
@@ -484,9 +513,9 @@ class Node:
             
     def notifyParentNameChange(self, tree, newName):
         for f in self.fields:
-            if self.fields[f].fieldType == "node-name":
+            if self.fields[f].fieldType in ('node-name', 'node-path'):
                 if tree in self.fields[f].parentFields:
-                    self.fields[f].cache = newName
+                    self.fields[f].cache = self.fields[f].getString()
                     self.notifyFieldChange(f,False)
 
 
