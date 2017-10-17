@@ -91,9 +91,9 @@ class Field:
             for c in node.children:
                 if f in c.fields:
                     values += [c.fields[f].getValue()]
-                elif f in c.item.fields:
+                elif c.item and c.item.fields and f in c.item.fields:
                     values += [c.item.fields[f]["content"]]
-        
+
         # look in sibling fields
         node = self.sourceNode.parent
         for f in self.siblingFields:
@@ -328,6 +328,7 @@ class Node:
         self.nameChangeCallback = None
         self.fieldChangeCallback = None
         self.deletionCallback = None
+        self.moveCallback = None
 
 
 
@@ -377,7 +378,9 @@ class Node:
 
     
     def createPathTo(self, item, treeindex, nodeindex, viewtemplate):
-        """ Links an item into a tree, using the given path. Empty nodes get created on the way."""
+        """
+        Links an item into a tree, using the given path. Empty nodes get created on the way.
+        """
         
         # either recurse deeper
         if nodeindex < len(item.trees[treeindex]):
@@ -403,6 +406,7 @@ class Node:
             self.item.registerNameChangeCallback(self.tree, self.notifyNameChange)
             self.item.registerFieldChangeCallback(self.tree, lambda x: self.notifyFieldChange(x, True))
             self.item.registerDeletionCallback(self.tree, self.notifyDeletion)
+            self.item.registerMoveCallback(self.tree, self.notifyMove)
             self.item.registerSelectionCallback(self.tree, lambda x: self.notifySelection(x))
             self.item.registerViewNode(self.tree, self)
 
@@ -460,16 +464,21 @@ class Node:
 
 
     def renumberChildren(self):
+        """
+        Correct the paths after children have been removed or added.
+        """
         for i,c in enumerate(self.children):
             c.path = self.path + [i]
-            c.item.trees[self.tree] = self.path + [i]
-            c.renumberChildren()
+            if c.item:
+                c.item.trees[self.tree] = self.path + [i]
+                c.renumberChildren()
 
 
     def addItemAsChild(self, item):
         """
         Creates a node and links it to the item. Updates the item's forest indexes.
         """
+        oldPath = item.trees[node.tree]
         node = self.addChild()
         node.item = item
         node.name = item.name
@@ -515,6 +524,9 @@ class Node:
     def registerDeletionCallback(self, callback):
         self.deletionCallback = callback
 
+    def registerMoveCallback(self, callback):
+        self.moveCallback = callback
+
     def registerSelectionCallback(self, callback):
         self.selectionCallback = callback
 
@@ -523,31 +535,26 @@ class Node:
         """
         Callback used to notify a node of a name change. Changes the name, then
         recreates strings for the fiels 'node-name' and 'node-path'.
-        Recurses down the tree to update the node-path strings of all children.
+        Recurses down the tree to update the node-path strings of all children by calling the function
+        notifyParentNameChange.
         """
 
-        # function to recurse down the tree
-        def notifyParentNameChange(node, tree):
-            for f in node.fields:
-                if node.fields[f].fieldType in ('node-name', 'node-path'):
-                    if tree in node.fields[f].parentFields:
-                        node.fields[f].cache = node.fields[f].getString()
-                        node.notifyFieldChange(f, False)
-                    for c in node.children:
-                        for n in c.item.viewNodes:
-                            if n is not None:
-                                notifyParentNameChange(n, self.tree)
+        # if name is not false, set new name and notify GUI
+        if newName:
+            self.name = newName
+            if self.nameChangeCallback is not None:
+                self.nameChangeCallback(newName)
 
-        # notify name change and start recursion
-        self.name = newName
-        if self.nameChangeCallback is not None:
-            self.nameChangeCallback(newName)
+        # always adapt all my fields in all trees (better: call the callback from the item without recursion)
+        if self.item:
+            for v in self.item.viewNodes:
+                v and v.notifyFieldChange(False, False)
+
+        # notify all children, recursive, but only update their fields
         for c in self.children:
-            for n in c.item.viewNodes:
-                if n is not None:
-                    notifyParentNameChange(n, self.tree)
-            
-            
+            c.notifyNameChange(False)
+
+
     def notifyFieldChange(self, fieldName, recursion):
         """
         Callback, called whenever a field in a related item has changed.
@@ -557,15 +564,12 @@ class Node:
             for f in self.fields:
                 self.fieldChangeCallback(f, self.fields[f].getString())
         
-        # build list of children
         if recursion:
-                    
-            # notify all siblings, non-recursive
             if self.parent is not None:
+                # notify all siblings, non-recursive
                 for c in self.parent.children:
                     if c is not self:
                         c.notifyFieldChange(fieldName, False)
-                    
                 # notify all parents, recursive
                 self.parent.notifyFieldChange(fieldName, True)
             
@@ -573,31 +577,64 @@ class Node:
 
     def notifyDeletion(self):
         """
-        Callback, called whenever the underlying item was deleted.
+        Callback, called when the underlying item was deleted or removed from this tree.
+        Recursion removes the complete child branch in this tree.
         """
 
         # unlink item
         self.item = None
         
-        # remove myself from my parent
+        # tell the GUI layer to remove my QNode from its parent
         if self.deletionCallback is not None:
             self.deletionCallback()
             
+        # recurse down my children
+        for c in self.children:
+            c.item.removeFromTree(self.tree)
+
         # make parent renumber children
         self.parent.removeChild(self)
 
 
-    '''Callback, called whenever the underlying item was selected.'''
+
+    def notifyMove(self):
+        """
+        Callback, called when the underlying item moved to a different parent within the tree.
+        Recursion renumbers all children in the new and in the old parent.
+        """
+
+
+        # find new parent and remember old parent
+        oldParent = self.parent
+        tree = self
+        while tree.parent.parent is not None:
+            tree = tree.parent
+        path = self.item.trees[self.tree]
+        newParent = tree.findNode(path[0:-1])
+
+        # move node
+        oldParent.removeChild(self)
+        newParent.addNodeAsChild(self)
+
+        # tell the GUI layer to move my QNode to its new parent
+        if self.moveCallback is not None:
+            self.moveCallback()
+
+
     def notifySelection(self, select):
-        
-        # remove myself from my parent
+        """
+        Callback, called whenever the underlying item was selected.
+        """
+
+        # tell the GUI layer to select my QNode
         if self.selectionCallback is not None:
             self.selectionCallback(select)
 
 
-'''A tree inside a forest. One item can appear several times in the forest, but only once in each tree.'''
 class Tree(Node):
-
+    """
+    A tree inside a forest. One item can appear several times in the forest, but only once in each tree.
+    """
 
     def __init__(self, parent, index):
         """Initialise"""
@@ -605,15 +642,13 @@ class Tree(Node):
         super().__init__(parent, index, [])
         self.fields = {}
         self.name = ""
-        #self.fields["description"] = Field(None, ["description"], [], "itemString")
-        #self.fields["single sums"] = Field(None, ["amount"], ["single sums"], "itemSum")
-        #self.fields["single percentage"] = Field(None, ["amount"], [], "itemPercent")
-        #self.fields["total percentage"] = Field(None, [], ["single sums"], "nodePercent")
 
 
-    """Sort the item into the forest, creating existing nodes on the fly if missing."""
     def createPathTo(self, item, treeindex):
-        
+        """
+        Sort the item into the forest, creating existing nodes on the fly if missing.
+        """
+
         # per tree: loop over all nodes, creating if necessary
         # per node: create final node and link it to item
         if item.trees[treeindex]:
@@ -622,9 +657,11 @@ class Tree(Node):
                 self.addChild()
             self.children[n].createPathTo(item, treeindex, 1, self.fields)
 
-    """Sort the item into the forest, creating existing nodes on the fly if missing."""
     def findNode(self, path):
-        
+        """
+        Sort the item into the forest, creating existing nodes on the fly if missing.
+        """
+
         # per tree: loop over all nodes, creating if necessary
         return super().findNode(path, 0)
 

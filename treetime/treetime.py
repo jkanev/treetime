@@ -77,6 +77,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.sourceNode.registerFieldChangeCallback(self.notifyFieldChange)
         self.sourceNode.registerDeletionCallback(self.notifyDeletion)
         self.sourceNode.registerSelectionCallback(lambda x: self.notifySelection(x))
+        self.sourceNode.registerMoveCallback(self.notifyMove)
         self.sourceNode.registerViewNode(self)
 
 
@@ -97,7 +98,15 @@ class QNode(QtWidgets.QTreeWidgetItem):
             self.parent().removeChild(self)
         else:
             print("I have no parent, so I'll stay.")
-    
+
+
+    def notifyMove(self):
+
+        # unlink from parent
+        self.parent().removeChild(self)
+        newParent = self.sourceNode.parent.viewNode
+        newParent.addChild(self)
+
     def notifySelection(self, select):
         self.setSelected(select)
 
@@ -450,7 +459,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             
             # change
             if newParent is None:
-                message = "Removing node\n\t" + item.name + "\nfrom the tree. Please make sure you don't orphan nodes.\nChanges will be saved to file immediately and cannot be reverted."
+                message = "Removing node\n\t" + item.name + "\nfrom the tree.\n" \
+                          "This will also remove all descendents (children, grandchildren, ...) from the tree.\n" \
+                          "Please make sure you don't orphan nodes.\n" \
+                          "Changes will be saved to file immediately and cannot be reverted."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
                 msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
                 result = msgBox.exec_()
@@ -464,18 +476,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     return
                 
             else:
-                # remove node from old parent
-                item.removeFromTree(treeIndex)
-                
                 # assign node to new parent
-                if node is None:
-                    node = newParent.addItemAsChild(item)
-                else:
-                    node.item = item
-                    node.registerCallbacks()
-                    newParent.addNodeAsChild(node)
-                newQNode = QNode(node, tree.fieldOrder)
-                newParent.viewNode.addChild(newQNode)
+                item.moveInTree(treeIndex, newParent.item.trees[treeIndex])
+                #if node is None:
+                #    node = newParent.addItemAsChild(item)
+                #else:
+                #    node.item = item
+                #    node.registerCallbacks()
+                #    newParent.addNodeAsChild(node)
+                #newQNode = QNode(node, tree.fieldOrder)
+                #newParent.viewNode.addChild(newQNode)
             
             # save change
             item.notifyFieldChange('')

@@ -34,6 +34,7 @@ class Item:
         self.nameChangeCallbacks = []
         self.fieldChangeCallbacks = []
         self.deletionCallbacks = []
+        self.moveCallbacks = []
         self.selectionCallbacks = []
         self.clearCallbacks()
 
@@ -60,6 +61,7 @@ class Item:
         newItem.nameChangeCallbacks = []
         newItem.fieldChangeCallbacks = []
         newItem.deletionCallbacks = []
+        newItem.moveCallbacks = []
         newItem.selectionCallbacks = []
         newItem.clearCallbacks()
         
@@ -72,12 +74,14 @@ class Item:
         self.nameChangeCallbacks = []
         self.fieldChangeCallbacks = []
         self.deletionCallbacks = []
+        self.moveCallbacks = []
         self.selectionCallbacks = []
         for t in self.trees:
             self.viewNodes += [None]
             self.nameChangeCallbacks += [None]
             self.fieldChangeCallbacks += [None]
             self.deletionCallbacks += [None]
+            self.moveCallbacks += [None]
             self.selectionCallbacks += [None]
 
 
@@ -132,6 +136,10 @@ class Item:
         self.deletionCallbacks[tree] = callback
 
 
+    def registerMoveCallback(self, tree, callback):
+        self.moveCallbacks[tree] = callback
+
+
     def changeName(self, newName):
         self.name = newName
         for c in self.nameChangeCallbacks:
@@ -179,15 +187,29 @@ class Item:
                 f(fieldName)
 
 
-    ''' Remove this item from the tree, and have it call all removal callbacks. '''
     def removeFromTree(self, treeIndex):
-        
-        self.trees[treeIndex] = [];
+        """
+        Remove this item from the tree, and have it call all removal callbacks.
+        This triggers a recursion, deleting the whole child branch from the tree
+        """
+
+        self.trees[treeIndex] = []
         if self.deletionCallbacks[treeIndex] is not None:
-            self.deletionCallbacks[treeIndex]();
+            self.deletionCallbacks[treeIndex]()
             self.registerDeletionCallback(treeIndex, None)
             self.registerFieldChangeCallback(treeIndex, None)
             self.registerNameChangeCallback(treeIndex, None)
+            self.registerViewNode(treeIndex, None)
+
+
+    def moveInTree(self, treeIndex, parentPath):
+        """
+        Move this item to a different parent at the new path
+        """
+        self.trees[treeIndex] = parentPath + [0]
+        if self.moveCallbacks[treeIndex] is not None:
+            self.moveCallbacks[treeIndex]()
+
 
 
 class ItemPool:
