@@ -478,7 +478,6 @@ class Node:
         """
         Creates a node and links it to the item. Updates the item's forest indexes.
         """
-        oldPath = item.trees[node.tree]
         node = self.addChild()
         node.item = item
         node.name = item.name
