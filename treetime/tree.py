@@ -395,7 +395,10 @@ class Node:
 
         
     def registerCallbacks(self, register=True):
-        # register callbacks with source node
+        """
+        Register callbacks from the parent (QNode), so changes from the tree layer
+        can be shown in the QT GUI layer
+        """
         if self.item is not None:
             self.item.registerNameChangeCallback(self.tree, self.notifyNameChange)
             self.item.registerFieldChangeCallback(self.tree, lambda x: self.notifyFieldChange(x, True))
@@ -404,9 +407,16 @@ class Node:
             self.item.registerViewNode(self.tree, self)
 
     def registerViewNode(self, viewNode):
+        """
+        Register the respective QT GUI view node with the node
+        """
         self.viewNode = viewNode
         
+
     def findNode(self, path, currentIndex):
+        """
+        Recursive function to walk down a path in a tree and return the node at the last step
+        """
         
         # either recurse deeper
         if currentIndex < len(path):
@@ -421,16 +431,23 @@ class Node:
 
 
     def addChild(self):
+        """
+        Add a child to a node. The child is a new copy of the default node.
+        """
         node = Node(self, self.tree, self.path + [len(self.children)])
         self.children += [node]
         return node
 
 
     def addNodeAsChild(self, node):
+        """
+        Add an existing node to a new parent.
+        """
         self.children += [node]
         node.parent = self
         self.renumberChildren()
         node.item.notifyFieldChange("")
+        self.notifyNameChange(self.name)
 
     
     def removeChild(self, child):
@@ -456,9 +473,9 @@ class Node:
         node = self.addChild()
         node.item = item
         node.name = item.name
-        node.initFields(self.fields)
         node.registerCallbacks()
         item.trees[node.tree] = node.path
+        node.initFields(self.fields)
         return node
 
 
@@ -474,8 +491,10 @@ class Node:
             self.notifyFieldChange(name, True)
 
 
-    '''Finds the first node of a given name in the tree.'''
     def findNodeByName(self, name):
+        """
+        Finds the first node of a given name in the tree.
+        """
         if self.name == name:
             return self
         else:
@@ -489,7 +508,6 @@ class Node:
     def registerNameChangeCallback(self, callback):
         self.nameChangeCallback = callback
 
-
     def registerFieldChangeCallback(self, callback):
         self.fieldChangeCallback = callback
 
@@ -502,26 +520,39 @@ class Node:
 
 
     def notifyNameChange(self, newName):
+        """
+        Callback used to notify a node of a name change. Changes the name, then
+        recreates strings for the fiels 'node-name' and 'node-path'.
+        Recurses down the tree to update the node-path strings of all children.
+        """
+
+        # function to recurse down the tree
+        def notifyParentNameChange(node, tree):
+            for f in node.fields:
+                if node.fields[f].fieldType in ('node-name', 'node-path'):
+                    if tree in node.fields[f].parentFields:
+                        node.fields[f].cache = node.fields[f].getString()
+                        node.notifyFieldChange(f, False)
+                    for c in node.children:
+                        for n in c.item.viewNodes:
+                            if n is not None:
+                                notifyParentNameChange(n, self.tree)
+
+        # notify name change and start recursion
         self.name = newName
         if self.nameChangeCallback is not None:
             self.nameChangeCallback(newName)
         for c in self.children:
             for n in c.item.viewNodes:
                 if n is not None:
-                    n.notifyParentNameChange(self.tree, newName)
+                    notifyParentNameChange(n, self.tree)
             
             
-    def notifyParentNameChange(self, tree, newName):
-        for f in self.fields:
-            if self.fields[f].fieldType in ('node-name', 'node-path'):
-                if tree in self.fields[f].parentFields:
-                    self.fields[f].cache = self.fields[f].getString()
-                    self.notifyFieldChange(f,False)
-
-
-    '''Callback, called whenever a field in a related item has changed.'''
     def notifyFieldChange(self, fieldName, recursion):
-        
+        """
+        Callback, called whenever a field in a related item has changed.
+        """
+
         if self.fieldChangeCallback is not None:
             for f in self.fields:
                 self.fieldChangeCallback(f, self.fields[f].getString())
@@ -540,9 +571,11 @@ class Node:
             
 
 
-    '''Callback, called whenever the underlying item was deleted.'''
     def notifyDeletion(self):
-        
+        """
+        Callback, called whenever the underlying item was deleted.
+        """
+
         # unlink item
         self.item = None
         

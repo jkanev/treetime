@@ -144,9 +144,12 @@ class Item:
                 c(select)
 
 
-    ''' Edit the content of a field. The content is expected to be a string and will be converted accourding to the field type. '''
     def changeFieldContent(self, fieldName, fieldContent):
-        
+        """
+        Edit the content of a field. The content is expected to be a string and
+        will be converted accourding to the field type.
+        """
+
         if fieldName not in self.fields:
             return "A field with name " + fieldName + " does not exist in node " + self.name + "."
         else:
@@ -168,7 +171,9 @@ class Item:
 
 
     def notifyFieldChange(self, fieldName):
-        # notify GUI of field change
+        """
+        notify GUI of field change
+        """
         for f in self.fieldChangeCallbacks:
             if f is not None:
                 f(fieldName)
@@ -180,10 +185,10 @@ class Item:
         self.trees[treeIndex] = [];
         if self.deletionCallbacks[treeIndex] is not None:
             self.deletionCallbacks[treeIndex]();
-            self.registerDeletionCallback(treeIndex, None);
-            self.registerFieldChangeCallback(treeIndex, None);
-            self.registerNameChangeCallback(treeIndex, None);
-    
+            self.registerDeletionCallback(treeIndex, None)
+            self.registerFieldChangeCallback(treeIndex, None)
+            self.registerNameChangeCallback(treeIndex, None)
+
 
 class ItemPool:
     def __init__(self):
