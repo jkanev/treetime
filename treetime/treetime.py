@@ -453,12 +453,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
         
-            # find tree and node
-            tree = self.forest.children[treeIndex]
-            node = item.viewNodes[treeIndex]
+            # find old parent
+            oldParent = item.viewNodes[treeIndex]
             
-            # change
-            if newParent is None:
+            # either remove node from tree
+            if oldParent and not newParent:
+
+                # question to user: Really remove?
                 message = "Removing node\n\t" + item.name + "\nfrom the tree.\n" \
                           "This will also remove all descendents (children, grandchildren, ...) from the tree.\n" \
                           "Please make sure you don't orphan nodes.\n" \
@@ -467,25 +468,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
                 result = msgBox.exec_()
                 
-                # remove node from old parent
+                # remove if user has confirmed
                 if result == QtWidgets.QMessageBox.Ok:
                     item.removeFromTree(treeIndex)
-                    
-                # or leave this function
                 else:
                     return
-                
-            else:
-                # assign node to new parent
+
+            # or move node within the tree
+            elif oldParent and newParent:
                 item.moveInTree(treeIndex, newParent.item.trees[treeIndex])
-                #if node is None:
-                #    node = newParent.addItemAsChild(item)
-                #else:
-                #    node.item = item
-                #    node.registerCallbacks()
-                #    newParent.addNodeAsChild(node)
-                #newQNode = QNode(node, tree.fieldOrder)
-                #newParent.viewNode.addChild(newQNode)
+
+            # or add node to tree
+            elif not oldParent and newParent:
+                tree = self.forest.children[treeIndex]
+                node = newParent.addItemAsChild(item)
+                newQNode = QNode(node, tree.fieldOrder)
+                newParent.viewNode.addChild(newQNode)
             
             # save change
             item.notifyFieldChange('')

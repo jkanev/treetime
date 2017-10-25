@@ -197,6 +197,7 @@ class Item:
         if self.deletionCallbacks[treeIndex] is not None:
             self.deletionCallbacks[treeIndex]()
             self.registerDeletionCallback(treeIndex, None)
+            self.registerMoveCallback(treeIndex, None)
             self.registerFieldChangeCallback(treeIndex, None)
             self.registerNameChangeCallback(treeIndex, None)
             self.registerViewNode(treeIndex, None)
