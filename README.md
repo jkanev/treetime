@@ -1,7 +1,11 @@
 #  <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64">&nbsp; &nbsp; &nbsp; &nbsp;Tree Time
 
 
-Tired of trying to organise your data in spread sheets? Use trees instead. TreeTime is a time planner, to-do list manager, test report tool, project manager, family ancestry editor, mind-mapping tool, etc. Using TreeTime you can categorise and organise your data items in tree structures. You can define several trees at the same time, each with a different structure, but on the same data.You can use functions (calculate sums, ratios and means) recursively up the branches of a tree. 
+Tired of trying to organise your data in spread sheets? Use trees instead. TreeTime is a time planner, to-do list
+manager, test report tool, project manager, family ancestry editor, mind-mapping tool, etc. Using TreeTime you can
+categorise and organise your data items in tree structures. You can define several trees at the same time, each with a
+different structure, but on the same data. You can use functions (calculate sums, ratios and means) recursively up the
+branches of a tree. 
 
 <div id='id-contents'/>
 
@@ -33,6 +37,7 @@ The concept of hierarchical categorisation can be applied to all sorts of data a
 
 In TreeTime, the data item fields, the trees, and the fields that are displayed in a tree are completely user defined. At the moment TreeTime can display texts as well as numbers and their sums, means and ratios, and names of the parent node in all different trees.
 
+
 <div id='id-installation'/>
 
 ##  Installation  ##
@@ -46,6 +51,11 @@ Executable bundles have been created with pyinstaller ([www.pyinstaller.org](htt
 Mac users please use the Python code (see below). There is no executable for Mac.
 (If anybody can help building an executable for other platforms I'd be delighted.)
 
+### Using pip ###
+
+On the command line, first type "pip install PyQt5", then type "pip install TreeTime" (or "pip3 install TreeTime",
+depending on your installation).
+
 ### Using script code with Python ###
 
 1. If you don't have it yet, install python3
@@ -55,7 +65,8 @@ Mac users please use the Python code (see below). There is no executable for Mac
 2. If you don't have it yet, install PyQt5
    - Debian, Ubuntu and related: on the command line, type "apt-get install python3-pyqt5"
    - Other Linux distributions: install pyqt5 with your default package manager
-   - Windows, Mac and similar: Open a command line and type "py -m pip install PyQt5" (Windows) or  "pip install PyQt5" (Mac, untested) (see http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+   - Windows, Mac and similar: Open a command line and type "py -m pip install PyQt5" (Windows) or 
+     "pip install PyQt5" (Mac, untested) (see http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
 3. Download this project from GitHub as a zip file (https://github.com/jkanev/treetime/archive/master.zip) and unzip
 4. Install: in the command line, cd into the main directory, then type:
    - Linux:
@@ -66,30 +77,42 @@ Mac users please use the Python code (see below). There is no executable for Mac
       - py setup.py install
 5. Execute
    - Linux
-      - on the command line, type: "python3 -m treetime"
+      - either, on the command line, type: "python3 -m treetime"
+      - or register the provided desktop file (data/treetime.desktop) with KDE or Gnome and execute from the KDE or
+        Gnome main menu
    - Windows
       - on the command line, type: "py -m treetime"
+
 
 <div id='id-usage'/>
 
 ##  Usage  ##
 [Table of Contents](#id-contents)
 
-Start the software by typing "python3 -m treetime". In the main dialog, go to "File Storage", click "Load other File" and select "items.trt". The GUI will come up with an example project. Several data items will have loaded (a project with three tasks and two week-planning entries) and are organised in three trees. The GUI is organised in three parts:
+Start the software by typing "python3 -m treetime" or using your OSes main menu (see 'Execute' from the previous
+section). In the main dialog, go to "File Storage", click "Load other File" and select "items.trt". The GUI will come
+up with an example project. Several data items will have loaded (a project with three tasks and two week-planning
+entries) and are organised in three trees. The GUI is organised in three parts:
 - A button box on the left. Execute tree structure operations from here.
 - An editing grid in the middle, showing the contents of the selected data item. Edit single data items here.
 - A tab view with tress spanning the center-right. View and analyse your data here.
 
 ![Screenshot 1](doc/screenshot01.png)
 
-Access each single tree by clicking a tab on the main tree-view widget. Branches and children can be sorted, branches can be folded and unfolded. Data content is shown via analytic fields that are defined per tree. In the example project you will see a sum, a percentage, and text display. 
+Access each single tree by clicking a tab on the main tree-view widget. Branches and children can be sorted, branches
+can be folded and unfolded. Data content is shown via analytic fields that are defined per tree. In the example project
+you will see a sum, a percentage, and text display. 
 
 ![Screenshot 2](doc/screenshot02.png)
 
-Add and move single nodes and branches by using the buttons on the left (New Child, New Sibling, New Parent, Copy Node as Child, Copy Node as Sibling, Copy Node as Parent, Copy Branch as Sibling (not implemented yet), copy Children to Siblings (not implemented yet), Remove from this Tree (not implemented yet), Delete Item (not implemented yet).
+Add and move single nodes and branches by using the buttons on the left (New Child, New Sibling, New Parent, Copy Node
+as Child, Copy Node as Sibling, Copy Node as Parent, Copy Branch as Sibling, copy Children to Siblings (not implemented
+yet), Remove from this Tree (this can also be done from the data item's parent menus), Delete Item.
 
 Change the name of a node by selecting the node and editing the name in the top of the edit grid in the middle.
-Change the parent of any node by typing a name of an existing node into the parent fields in the edit grid. The parent fields are the three lines underneath the item's name.
+Change the parent of any node by typing a name of an existing node into the parent fields in the edit grid. The parent
+menus (for selecting or changing a node's parent) are the lines underneath the item's name.
+
 
 <div id='id-roadmap'/>
 
@@ -97,13 +120,16 @@ Change the parent of any node by typing a name of an existing node into the pare
 [Table of Contents](#id-contents)
 
 I deliberately didn't give any time estimates for this. I'm using the software myself to organise my own data, so I'm interested in keeping this going. Nevertheless I cannot promise any specific release dates. If you have any suggestions or would like me to implement some feature sooner than I suggested here, please just drop me an email.
-- Done Feb. 2016: Implement selection (the same item gets selected in all trees, changing a tab shows the same item)
-- Done Mar. 2016: Implement remaining local functionality (Copy Branch as Sibling, Copy Children to Siblings, Remove from this Tree, Delete Item)
-- Done Aug. 2016: Created installable python package
+- Done February 2016: Implement selection (the same item gets selected in all trees, changing a tab shows the same item)
+- Done March 2016: Implement remaining local functionality (Copy Branch as Sibling, Copy Children to Siblings, Remove from this Tree, Delete Item)
+- Done August 2016: Created installable python package
+- Done May 2017: Implemented new field type _text_
 - Done June 2017: Create deployable packages for Linux and Windows
 - Done June 2017: Made pre-release v0.0 available
+- Done October 2017: Implemented new field type _node-path_, re-wrote the way nodes move to new parents
+- Done November 2017: Uploaded package to pypi.python.org, TreeTime can now be installed using pip
 - Running: Bugfixing
-- Running: Writing documentation and creating example data files
+- Running: Write documentation on readthedocs.io and create example data files
 - Near Future: Release Version 0.1
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Mid Future: Bugfixing
