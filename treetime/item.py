@@ -249,7 +249,6 @@ class ItemPool:
         newitem = copy.deepcopy(item)
         newitem.viewNodes = []
         newitem.clearCallbacks()
-        newitem.name += " (copy)"
         self.items += [newitem]
         return newitem
 
