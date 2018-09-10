@@ -276,7 +276,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     buttonbox = QtWidgets.QDialogButtonBox()
                     if not len(path):
                         button = QtWidgets.QToolButton()
-                        button.setText("...")
+                        button.setText("+")
                         button.setToolButtonStyle(1)  # 1 - text only
                         button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
                         button.setMenu(self.createParentMenu(treeNumber, self.forest))
@@ -336,7 +336,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # root node
         if not parent.parent:
-            action = QtWidgets.QAction("Add to Tree", menu)
+            action = QtWidgets.QAction("Add to Top Level", menu)
             action.triggered.connect(lambda checked, t=treeIndex, p=self.forest.children[treeIndex]: self.moveCurrentItemToNewParent(t, p))
             menu.addAction(action)
             parent = self.forest.children[treeIndex]
@@ -351,7 +351,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 menu.addSeparator()
 
         # all other nodes
-        for c in parent.children:
+        for c in sorted(parent.children, key=lambda x: x.name):
             action = QtWidgets.QAction(c.name, menu)
             action.triggered.connect(lambda checked, t=treeIndex, p=c: self.moveCurrentItemToNewParent(t, p))
             menu.addAction(action)
