@@ -258,15 +258,36 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 # go through all lines of the table
                 n = 0
-                
+
+                # empty line
+                empty0 = QtWidgets.QTableWidgetItem("")
+                empty0.setFlags(nonEditFlags)
+                empty1 = QtWidgets.QTableWidgetItem("")
+                empty1.setFlags(nonEditFlags)
+                self.tableWidget.setItem(n, 0, empty0)
+                self.tableWidget.setItem(n, 1, empty1)
+                n += 1
+
                 # add name
                 name = QtWidgets.QTableWidgetItem("")
                 name.setFlags(nonEditFlags)
                 value = QtWidgets.QTableWidgetItem(self.currentItem.name)
-                self.tableWidget.setItem(n,0,name)
-                self.tableWidget.setItem(n,1,value)
+                font = name.font()
+                font.setPointSize(font.pointSize() + 3)
+                value.setFont(font)
+                self.tableWidget.setItem(n, 0, name)
+                self.tableWidget.setItem(n, 1, value)
                 n += 1
                 
+                # empty line
+                empty2 = QtWidgets.QTableWidgetItem("")
+                empty2.setFlags(nonEditFlags)
+                empty3 = QtWidgets.QTableWidgetItem("")
+                empty3.setFlags(nonEditFlags)
+                self.tableWidget.setItem(n, 0, empty2)
+                self.tableWidget.setItem(n, 1, empty3)
+                n += 1
+
                 # add all parents in tree parent path
                 for treeNumber, path in enumerate(self.currentItem.trees):
                     tree = self.forest.children[treeNumber]
@@ -309,6 +330,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.tableWidget.setCellWidget(n, 1, buttonbox)
                     n += 1
                     
+                # empty line
+                empty4 = QtWidgets.QTableWidgetItem("")
+                empty4.setFlags(nonEditFlags)
+                empty5 = QtWidgets.QTableWidgetItem("")
+                empty5.setFlags(nonEditFlags)
+                self.tableWidget.setItem(n, 0, empty4)
+                self.tableWidget.setItem(n, 1, empty5)
+                n += 1
+
                 # add item fields
                 for key in self.currentItem.fields:
                     name = QtWidgets.QTableWidgetItem(key)
@@ -376,18 +406,18 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if column == 1:
                 
                 # the node name has been changed
-                if row == 0:
+                if row == 1:
                     newName = self.tableWidget.item(row,column).text()
                     self.currentItem.changeName(newName)
                 
                 # one of the fields has been changed
                 else:
-                    fieldName = self.tableWidget.item(row,0).text()
+                    fieldName = self.tableWidget.item(row, 0).text()
                     fieldType = self.currentItem.fields[fieldName]['type']
                     if fieldType == 'text':
-                        newValue = self.tableWidget.cellWidget(row,1).toPlainText()
+                        newValue = self.tableWidget.cellWidget(row, 1).toPlainText()
                     else:
-                        newValue = self.tableWidget.item(row,1).text()
+                        newValue = self.tableWidget.item(row, 1).text()
                     result = self.currentItem.changeFieldContent(fieldName, newValue)
                     if result is not True:
                         message = "Couldn't update field content.\n" + str(result)

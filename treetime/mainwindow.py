@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.7
+# Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -24,7 +24,6 @@ class Ui_MainWindow(object):
         self.fileIo.setGeometry(QtCore.QRect(0, 0, 200, 716))
         self.fileIo.setObjectName("fileIo")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.fileIo)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
@@ -72,7 +71,6 @@ class Ui_MainWindow(object):
         self.pageTree.setObjectName("pageTree")
         self.formLayout = QtWidgets.QFormLayout(self.pageTree)
         self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.ExpandingFieldsGrow)
-        self.formLayout.setContentsMargins(0, 0, 0, 0)
         self.formLayout.setObjectName("formLayout")
         self.label = QtWidgets.QLabel(self.pageTree)
         font = QtGui.QFont()
@@ -178,10 +176,9 @@ class Ui_MainWindow(object):
         self.formLayout.setItem(21, QtWidgets.QFormLayout.SpanningRole, spacerItem9)
         self.toolBox.addItem(self.pageTree, "")
         self.pageGlobal = QtWidgets.QWidget()
-        self.pageGlobal.setGeometry(QtCore.QRect(0, 0, 96, 26))
+        self.pageGlobal.setGeometry(QtCore.QRect(0, 0, 200, 716))
         self.pageGlobal.setObjectName("pageGlobal")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.pageGlobal)
-        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_3.setObjectName("gridLayout_3")
         spacerItem10 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_3.addItem(spacerItem10, 0, 0, 1, 1)
@@ -204,8 +201,9 @@ class Ui_MainWindow(object):
         self.tabWidget.setDocumentMode(False)
         self.tabWidget.setObjectName("tabWidget")
         self.horizontalLayout.addWidget(self.tabWidget)
-        self.horizontalLayout.setStretch(1, 1)
-        self.horizontalLayout.setStretch(2, 3)
+        self.horizontalLayout.setStretch(0, 1)
+        self.horizontalLayout.setStretch(1, 3)
+        self.horizontalLayout.setStretch(2, 5)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")

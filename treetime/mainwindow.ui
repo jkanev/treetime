@@ -14,7 +14,7 @@
    <string>Tree Time</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,3">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,3,5">
     <item>
      <widget class="QToolBox" name="toolBox">
       <property name="minimumSize">
@@ -495,8 +495,8 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>96</width>
-         <height>26</height>
+         <width>200</width>
+         <height>716</height>
         </rect>
        </property>
        <attribute name="label">
