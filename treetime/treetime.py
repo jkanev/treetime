@@ -129,7 +129,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonCopyBranchSibling.clicked.connect(lambda: self.createNode("sibling", True, True))
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
-        self.pushButtonRemove.clicked.connect(lambda: self.moveToNewParent(self.currentItem, self.currentTree, None))
+        self.pushButtonRemove.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
         self.pushButtonDelete.clicked.connect(self.pushButtonDeleteClicked)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
@@ -267,21 +267,46 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.tableWidget.setItem(n,1,value)
                 n += 1
                 
-                # add tree parents
-                for treeNumber,path in enumerate(self.currentItem.trees):
+                # add all parents in tree parent path
+                for treeNumber, path in enumerate(self.currentItem.trees):
                     tree = self.forest.children[treeNumber]
                     name = QtWidgets.QTableWidgetItem(tree.name)
                     name.setFlags(nonEditFlags)
-                    self.tableWidget.setItem(n,0,name)
-                    parent = tree.findNode(path).parent
-                    parentName = parent.name
-                    if parentName == "":
-                        parentName == "          "
-                    menu = QtWidgets.QMenu(parent.name)
-                    menu.addAction(parentName, lambda a=self.currentItem, b=treeNumber, c=tree: self.showChildMenu(a,b,c))
-                    self.tableWidget.setCellWidget(n, 1, menu)
-                    # parent = QtWidgets.QTableWidgetItem(parent)
-                    # self.tableWidget.setItem(n,1,parent)
+                    self.tableWidget.setItem(n, 0, name)
+                    buttonbox = QtWidgets.QDialogButtonBox()
+                    if not len(path):
+                        button = QtWidgets.QToolButton()
+                        button.setText("...")
+                        button.setToolButtonStyle(1)  # 1 - text only
+                        button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                        button.setMenu(self.createParentMenu(treeNumber, self.forest))
+                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+                    elif len(path) == 1:
+                        parent = tree.findNode(path).parent
+                        button = QtWidgets.QToolButton()
+                        button.setArrowType(4)     # 4 - rightarrow
+                        button.setToolButtonStyle(0)     # 0 - icon only
+                        button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                        button.setMenu(self.createParentMenu(treeNumber, parent))
+                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+                    else:
+                        for p in range(1, len(path)):
+                            parent = tree.findNode(path[0:p])
+                            button = QtWidgets.QToolButton()
+                            button.setArrowType(4)     # 4 - rightarrow
+                            button.setText(parent.name)
+                            button.setToolButtonStyle(1)     # 2 - text beside icon
+                            button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                            button.setMenu(self.createParentMenu(treeNumber, parent.parent))
+                            buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+                        button = QtWidgets.QToolButton()
+                        button.setArrowType(4)     # 4 - rightarrow
+                        button.setToolButtonStyle(0)     # 0 - icon only
+                        button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                        button.setMenu(self.createParentMenu(treeNumber, parent))
+                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+
+                    self.tableWidget.setCellWidget(n, 1, buttonbox)
                     n += 1
                     
                 # add item fields
@@ -302,23 +327,36 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.locked = False
     
     
-    '''Displays a menu with possible children to select, at the current mouse cursor position. '''
-    def showChildMenu(self, item, treeIndex, parent, parentMenu=None):
-        isRoot = False
-        if parentMenu is None:
-            isRoot = True
-            parentMenu = QtWidgets.QMenu()
-        if parentMenu.isEmpty():
-            parentMenu.addAction(parent.name, lambda x=item, y=treeIndex, z=parent: self.moveToNewParent(x,y,z))
-            if isRoot:
-                parentMenu.addAction("(None)", lambda x=item, y=treeIndex: self.moveToNewParent(x,y,None))
-            parentMenu.addSeparator()
-            for c in parent.children:
-                submenu = QtWidgets.QMenu(c.name, parentMenu)
-                submenu.aboutToShow.connect(lambda a=item, b=treeIndex, c=c, d=submenu: self.showChildMenu(a,b,c,d))
-                parentMenu.addMenu(submenu)
-        if isRoot:
-            parentMenu.exec(QtGui.QCursor.pos())
+    def createParentMenu(self, treeIndex, parent):
+        """
+        Displays a menu with possible children to select, at the current mouse cursor position.
+        """
+
+        menu = QtWidgets.QMenu()
+
+        # root node
+        if not parent.parent:
+            action = QtWidgets.QAction("Add to Tree", menu)
+            action.triggered.connect(lambda checked, t=treeIndex, p=self.forest.children[treeIndex]: self.moveCurrentItemToNewParent(t, p))
+            menu.addAction(action)
+            parent = self.forest.children[treeIndex]
+            menu.addSeparator()
+
+        # top level node only
+        else:
+            if not parent.parent.parent:
+                action = QtWidgets.QAction("Remove from Tree", menu)
+                action.triggered.connect(lambda checked, t=treeIndex, p=False: self.moveCurrentItemToNewParent(t, p))
+                menu.addAction(action)
+                menu.addSeparator()
+
+        # all other nodes
+        for c in parent.children:
+            action = QtWidgets.QAction(c.name, menu)
+            action.triggered.connect(lambda checked, t=treeIndex, p=c: self.moveCurrentItemToNewParent(t, p))
+            menu.addAction(action)
+
+        return menu
 
 
     '''Called when the user selects another tree in the tab widget.'''
@@ -328,8 +366,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     
     
-    ''' Called when the user wants to change the item name, field content or parent via the grid'''
     def tableWidgetCellChanged(self, row, column):
+        """
+        Called when the user wants to change the item name, field content or parent via the grid
+        """
+
         if not self.locked:
             self.locked = True
             if column == 1:
@@ -338,12 +379,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if row == 0:
                     newName = self.tableWidget.item(row,column).text()
                     self.currentItem.changeName(newName)
-                
-                # one of the parents has been changed
-                elif row <= len(self.forest.children):
-                    newParent = self.tableWidget.item(row,1).text()
-                    tree = self.tableWidget.item(row,0).text()
-                    self.moveToNewParent(tree, newParent)
                 
                 # one of the fields has been changed
                 else:
@@ -448,19 +483,26 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.writeToFile()
     
     
-    def moveToNewParent(self, item, treeIndex, newParent):
+    def moveCurrentItemToNewParent(self, treeIndex, newParent):
         
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
-        
+
+            # error message if recursion is tried
+            if newParent and (newParent.item == self.currentItem):
+                message = "You are trying to set\n" + self.currentItem.name + "\nto be its own parent. This is not supported."
+                msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
+                return msgBox.exec_()
+
             # find old parent
-            oldParent = item.viewNodes[treeIndex]
+            oldParent = self.currentItem.viewNodes[treeIndex]
             
             # either remove node from tree
             if oldParent and not newParent:
 
                 # question to user: Really remove?
-                message = "Removing node\n\t" + item.name + "\nfrom the tree.\n" \
+                message = "Removing node\n\t" + self.currentItem.name + "\nfrom the tree.\n" \
                           "This will also remove all descendents (children, grandchildren, ...) from the tree.\n" \
                           "Please make sure you don't orphan nodes.\n" \
                           "Changes will be saved to file immediately and cannot be reverted."
@@ -470,23 +512,23 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 # remove if user has confirmed
                 if result == QtWidgets.QMessageBox.Ok:
-                    item.removeFromTree(treeIndex)
+                    self.currentItem.removeFromTree(treeIndex)
                 else:
                     return
 
             # or move node within the tree
             elif oldParent and newParent:
-                item.moveInTree(treeIndex, newParent.item.trees[treeIndex])
+                self.currentItem.moveInTree(treeIndex, newParent.item.trees[treeIndex])
 
             # or add node to tree
             elif not oldParent and newParent:
                 tree = self.forest.children[treeIndex]
-                node = newParent.addItemAsChild(item)
+                node = newParent.addItemAsChild(self.currentItem)
                 newQNode = QNode(node, tree.fieldOrder)
                 newParent.viewNode.addChild(newQNode)
             
             # save change
-            item.notifyFieldChange('')
+            self.currentItem.notifyFieldChange('')
             self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
 
