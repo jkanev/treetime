@@ -137,6 +137,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.locked = True
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
         self.loadFile(filename or self.settings.value('lastFile'))
+        self.showMaximized()
 
     def pushButtonSaveToFileClicked(self):
         result = QtWidgets.QFileDialog.getSaveFileName(self, "Save data file", '', '*.trt')[0]
@@ -210,16 +211,24 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.locked = False
 
     def fillTreeWidgets(self):
+        """
+        Fills all tree tabs by creating all nodes
+        """
+
+        # for each tree in the forest
         for n,c in enumerate(self.forest.children):
             self.treeWidgets[n].itemSelectionChanged.connect(lambda x=n: self.treeSelectionChanged(x))
             self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
             root = self.treeWidgets[n].invisibleRootItem()
             c.viewNode = root
+
+            # add branch
             for b in c.children:
                 parent = QNode(b, c.fieldOrder)
-                #self.treeWidgets[n].addTopLevelItem( parent )
                 root.addChild(parent)
-            # self.treeWidgets[n].expandAll()
+
+            # expand name column so all names are readable
+            self.treeWidgets[n].resizeColumnToContents(0)
 
 
     def treeSelectionChanged(self, treeIndex):
