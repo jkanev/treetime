@@ -390,10 +390,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 menu.addSeparator()
 
         # all other nodes
+        currentNode = self.currentItem.viewNodes[treeIndex]
         for c in sorted(parent.children, key=lambda x: x.name):
-            action = QtWidgets.QAction(c.name, menu)
-            action.triggered.connect(lambda checked, t=treeIndex, p=c: self.moveCurrentItemToNewParent(t, p))
-            menu.addAction(action)
+            if c != currentNode:
+                action = QtWidgets.QAction(c.name, menu)
+                action.triggered.connect(lambda checked, t=treeIndex, p=c: self.moveCurrentItemToNewParent(t, p))
+                menu.addAction(action)
 
         return menu
 
