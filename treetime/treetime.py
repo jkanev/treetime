@@ -527,21 +527,24 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
 
+            # save current item
+            item = self.currentItem
+
             # error message if recursion is tried
-            if newParent and (newParent.item == self.currentItem):
-                message = "You are trying to set\n" + self.currentItem.name + "\nto be its own parent. This is not supported."
+            if newParent and (newParent.item == item):
+                message = "You are trying to set\n" + item.name + "\nto be its own parent. This is not supported."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
                 msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
                 return msgBox.exec_()
 
             # find old parent
-            oldParent = self.currentItem.viewNodes[treeIndex]
+            oldParent = item.viewNodes[treeIndex]
             
             # either remove node from tree
             if oldParent and not newParent:
 
                 # question to user: Really remove?
-                message = "Removing node\n\t" + self.currentItem.name + "\nfrom the tree.\n" \
+                message = "Removing node\n\t" + item.name + "\nfrom the tree.\n" \
                           "This will also remove all descendents (children, grandchildren, ...) from the tree.\n" \
                           "Please make sure you don't orphan nodes.\n" \
                           "Changes will be saved to file immediately and cannot be reverted."
@@ -551,23 +554,26 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 # remove if user has confirmed
                 if result == QtWidgets.QMessageBox.Ok:
-                    self.currentItem.removeFromTree(treeIndex)
+                    item.removeFromTree(treeIndex)
                 else:
                     return
 
             # or move node within the tree
             elif oldParent and newParent:
-                self.currentItem.moveInTree(treeIndex, newParent.item.trees[treeIndex])
+                item.moveInTree(treeIndex, newParent.item.trees[treeIndex])
 
             # or add node to tree
             elif not oldParent and newParent:
                 tree = self.forest.children[treeIndex]
-                node = newParent.addItemAsChild(self.currentItem)
+                node = newParent.addItemAsChild(item)
                 newQNode = QNode(node, tree.fieldOrder)
                 newParent.viewNode.addChild(newQNode)
             
             # save change
-            self.currentItem.notifyFieldChange('')
+            item.notifyFieldChange('')
+
+            # select new item after moving
+            treeWidget.setCurrentItem(item.viewNodes[self.currentTree].viewNode)
             self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
 
