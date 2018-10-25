@@ -541,7 +541,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # find old parent
             oldParent = item.viewNodes[treeIndex]
-            
+            disappeared = False
+
             # either remove node from tree
             if oldParent and not newParent:
 
@@ -551,12 +552,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                           "Please make sure you don't orphan nodes.\n" \
                           "Changes will be saved to file immediately and cannot be reverted."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-                msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
                 result = msgBox.exec_()
                 
                 # remove if user has confirmed
                 if result == QtWidgets.QMessageBox.Ok:
                     item.removeFromTree(treeIndex)
+                    if treeIndex == self.currentTree:
+                        disappeared = True     # remember that we've removed a node from the current tree
                 else:
                     return
 
@@ -574,9 +577,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # save change
             item.notifyFieldChange('')
 
-            # select new item after moving
-            treeWidget.setCurrentItem(item.viewNodes[self.currentTree].viewNode)
-            self.treeSelectionChanged(self.currentTree)
+            # select new item after moving, if it is still part of the current tree
+            if not disappeared:
+                treeWidget.setCurrentItem(item.viewNodes[self.currentTree].viewNode)
+                self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
 
 class TreeTime():
