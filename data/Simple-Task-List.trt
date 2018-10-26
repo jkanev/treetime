@@ -1,0 +1,194 @@
+--trees--
+
+tree "Time Plan"
+    field "Project"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [1]
+    field "Priority"
+        field-type "sum"
+        own-fields ["priority (0-9)"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Status"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [2]
+    field "Planned hours"
+        field-type "sum"
+        own-fields ["planned hours"]
+        child-fields ["Planned hours"]
+        sibling-fields []
+        parent-fields []
+    field "Actual hours"
+        field-type "sum"
+        own-fields ["actual hours"]
+        child-fields ["Actual hours"]
+        sibling-fields []
+        parent-fields []
+
+tree "Projects"
+    field "Planning"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [0]
+    field "Planned hours"
+        field-type "sum"
+        own-fields ["planned hours"]
+        child-fields ["Planned hours"]
+        sibling-fields []
+        parent-fields []
+    field "Actual hours"
+        field-type "sum"
+        own-fields ["actual hours"]
+        child-fields ["Actual hours"]
+        sibling-fields []
+        parent-fields []
+    field "Priority"
+        field-type "sum"
+        own-fields ["priority (0-9)"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Progress"
+        field-type "ratio-percent"
+        own-fields ["Actual hours", "Planned hours"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+
+tree "Status"
+    field "Actual hours"
+        field-type "sum"
+        own-fields ["actual hours"]
+        child-fields ["Actual hours"]
+        sibling-fields []
+        parent-fields []
+    field "Planned hours"
+        field-type "sum"
+        own-fields ["planned hours"]
+        child-fields ["planned hours"]
+        sibling-fields []
+        parent-fields []
+    field "Priority"
+        field-type "sum"
+        own-fields ["priority (0-9)"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Progress"
+        field-type "ratio-percent"
+        own-fields ["Actual hours", "Planned hours"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+
+--item-pool--
+
+item New Task
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [], []]
+
+item 2018 Quarter 4
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1], [], []]
+
+item 2018 Week 45
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 0], [], []]
+
+item 2018 Week 46
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 1], [], []]
+
+item Build Robot
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [0], []]
+
+item Learn
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [0, 0], []]
+
+item Make
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 12, "type": "integer"}, "priority (0-9)": {"content": 0, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [0, 1], []]
+
+item To Do
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 0, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [], [0]]
+
+item Running
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 0, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [], [1]]
+
+item Unplanned
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 0, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [], [2]]
+
+item Finished
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 0, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [], [3]]
+
+item Cancelled
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 0, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [], [4]]
+
+item _To be planned
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[0], [], []]
+
+item Article on Bees
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [1], []]
+
+item Write
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [1, 0], []]
+
+item Do research on bees
+    fields {"actual hours": {"content": 5, "type": "integer"}, "planned hours": {"content": 8, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 1, 1], [1, 0, 0], [1, 0]]
+
+item Write up findings on bees
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 9, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 1, 2], [1, 0, 1], [0, 1]]
+
+item Publish
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[], [1, 1], []]
+
+item Negotiate with publisher
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 6, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 1, 3], [1, 1, 0], [0, 0]]
+
+item Finalise article and send to publisher
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 0, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[0, 0], [1, 1, 1], [2, 0]]
+
+item Design robot and discuss with others
+    fields {"actual hours": {"content": 2, "type": "integer"}, "planned hours": {"content": 5, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 0, 2], [0, 1, 0], [1, 1]]
+
+item Buy parts and assembly robot
+    fields {"actual hours": {"content": 8, "type": "integer"}, "planned hours": {"content": 8, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 1, 0], [0, 1, 1], [3, 0]]
+
+item Find articles about robots
+    fields {"actual hours": {"content": 5, "type": "integer"}, "planned hours": {"content": 5, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 0, 0], [0, 0, 0], [3, 2]]
+
+item Talk to others about robots
+    fields {"actual hours": {"content": 3, "type": "integer"}, "planned hours": {"content": 3, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
+    trees [[1, 0, 1], [0, 0, 1], [3, 1]]
+
+item README
+    fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "This is a small project plan template.\n\nAdd projects, workpackages and tasks in the [Projects] tab, using the [New Child], [New Sibling] or [New Parent] buttons.\n\nCreate a time plan in the [Time Plan] tab.\n\nAdd project tasks to the time plan by editing a task in the [Projects] tab and selecting a [Time Plan] entry in the task overview.", "type": "text"}, "done": {"content": "Choose task status in the same way. Planned hours and actual hours will be summed up the tree. Project status is calculated from actual vs. planned hours.\n\nTo start, you can remove all projects and time plan entries, or edit them.", "type": "text"}}
+    trees [[2], [], []]
+

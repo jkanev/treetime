@@ -15,7 +15,7 @@ setup (
     url='https://github.com/jkanev/treetime',
     packages=['treetime'],
     entry_points={'gui_scripts': ['treetime = treetime.__main__:main']},
-    package_data={'treetime': ['data/items.trt', 'doc/*.png']},
+    package_data={'treetime': ['data/Simple-Task-List.trt', 'doc/*.png']},
     # according to some people on the web install_requiring PyQt5 should work, but as my system gives me an error for
     # this, I'll comment it out. Please install it separately (pip3 PyQt5 apparently works)
     # install_requires=['PyQt5'],
