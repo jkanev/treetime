@@ -180,7 +180,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     firstTree = self.treeWidgets[0]
                     items = firstTree.topLevelItemCount()
                     if items:
-                        firstTree.topLevelItem(items - 1).setSelected(True)
+                        firstTree.topLevelItem(0).setSelected(True)
             except:
                 self.pushButtonLoadFileClicked()
         else:
@@ -213,7 +213,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             newTree.setWordWrap(True)
             newTree.headerItem().setText(0, "1")
             newTree.setColumnCount(len(c.fieldOrder))
-            newTree.setSortingEnabled(True)
             newGridLayout.addWidget(newTree, 0, 0, 1, 1)
             self.treeWidgets += [newTree]
         
@@ -237,6 +236,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 root.addChild(parent)
             # expand name column so all names are readable
             self.treeWidgets[n].resizeColumnToContents(0)
+
+            # init sorting
+            self.treeWidgets[n].setSortingEnabled(True)
+            self.treeWidgets[n].sortItems(0, 0)
 
 
     def treeSelectionChanged(self, treeIndex):
