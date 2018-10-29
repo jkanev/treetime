@@ -151,9 +151,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.loadFile( result )
 
     def pushButtonDeleteClicked(self):
-        message = "Deleting item \n\t" + self.currentItem.name + ".\nChanges are saved to file immediately and cannot be reverted."
+        message = "Deleting node \"" + self.currentItem.name + "\". \n\n" \
+                  "This will remove all descendents (children, grandchildren, ...) from the tree \"" \
+                  + self.forest.children[self.currentTree].name +"\".\n" \
+                  "Changes are saved to file immediately and cannot be reverted."
         msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
         result = msgBox.exec_()
         if result == QtWidgets.QMessageBox.Ok:
             self.forest.itemPool.deleteItem(self.currentItem)
@@ -412,8 +415,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.currentTree = tree
         self.treeSelectionChanged(tree)
 
-    
-    
+
     def tableWidgetCellChanged(self, row, column):
         """
         Called when the user wants to change the item name, field content or parent via the grid
@@ -449,86 +451,102 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def createNode(self, insertas, copy, recurse = False, srcItem = None, destItem = None):
         
         treeWidget = self.treeWidgets[self.currentTree]
-        if len(treeWidget.selectedItems()):
-            
-            # set source and destination nodes and qnodes
-            if recurse and srcItem is not None and destItem is not None:
-                sourceItem = srcItem
-                sourceNode = srcItem.viewNodes[self.currentTree]
-                sourceQNode = sourceNode.viewNode
-                destNode = destItem.viewNodes[self.currentTree]
-                destQNode = destNode.viewNode
-            else:
-                sourceQNode = treeWidget.selectedItems()[0]
-                sourceNode = sourceQNode.sourceNode
-                sourceItem = sourceNode.item
-                destNode = sourceNode.parent
-                destQNode = sourceQNode.parent()
-                
-            if destQNode is None:
-                destQNode = treeWidget.invisibleRootItem()
-            
-            if copy:
-                item = self.forest.itemPool.copyItem(sourceItem)
-                for n,t in enumerate(self.forest.children):
-                    if n != self.currentTree and item.trees[n] != []:
-                        oldNode = t.findNode(item.trees[n])
-                        newNode = oldNode.parent.addItemAsChild(item)
-                        newQNode = QNode(newNode, self.forest.children[n].fieldOrder)
-                        parent = oldNode.viewNode.parent()
-                        if parent is None:
-                            parent = self.treeWidgets[n].invisibleRootItem()
-                        parent.addChild(newQNode)
-            else:
-                item = self.forest.itemPool.addNewItem()
 
-            if insertas == "child":
-                
-                # create default node and add item to it
-                node = sourceNode.addItemAsChild(item)
-                qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-                sourceQNode.addChild(qnode)
-                
-                # expand parent and select new item
-                sourceQNode.setExpanded(True)
-            
-            elif insertas == "sibling":
-                
-                if destNode is None or destQNode is None:
-                    return
-                
-                # create default node and add item to it
-                node = destNode.addItemAsChild(item)
-                qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-                destQNode.addChild(qnode)
-                
-                # expand parent and select new item
-                destQNode.setExpanded(True)
-            
-            elif insertas == "parent":
-            
-                if destNode is None or destQNode is None:
-                    return
-                
-                node = destNode.addItemAsChild(item)
-                
-                # move original node to be child of new parent
-                destNode.removeChild(sourceNode)
-                node.addNodeAsChild(sourceNode)
-                destQNode.removeChild(sourceQNode)
-                qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
-                destQNode.addChild(qnode)
-                
-                # expand parent and select new item
-                qnode.setExpanded(True)
-            
-            if recurse:
-                for c in sourceNode.children:
-                    self.createNode(insertas, copy, recurse, c.item, node.item)
-            
-            if srcItem is None:
-                treeWidget.setCurrentItem(qnode)
-                self.writeToFile()
+        # set source and destination nodes and qnodes
+        if recurse and srcItem is not None and destItem is not None:
+            sourceItem = srcItem
+            sourceNode = srcItem.viewNodes[self.currentTree]
+            sourceQNode = sourceNode.viewNode
+            destNode = destItem.viewNodes[self.currentTree]
+            destQNode = destNode.viewNode
+        elif len(treeWidget.selectedItems()):
+            sourceQNode = treeWidget.selectedItems()[0]
+            sourceNode = sourceQNode.sourceNode
+            sourceItem = sourceNode.item
+            destNode = sourceNode.parent
+            destQNode = sourceQNode.parent()
+        else:
+            sourceQNode = treeWidget.invisibleRootItem()
+            sourceNode = self.forest.children[self.currentTree]
+            sourceItem = sourceNode.item
+            destQNode = sourceQNode
+            destNode = sourceNode
+            insertas = 'root'
+
+        if destQNode is None:
+            destQNode = treeWidget.invisibleRootItem()
+
+        if copy:
+            item = self.forest.itemPool.copyItem(sourceItem)
+            for n,t in enumerate(self.forest.children):
+                if n != self.currentTree and item.trees[n] != []:
+                    oldNode = t.findNode(item.trees[n])
+                    newNode = oldNode.parent.addItemAsChild(item)
+                    newQNode = QNode(newNode, self.forest.children[n].fieldOrder)
+                    parent = oldNode.viewNode.parent()
+                    if parent is None:
+                        parent = self.treeWidgets[n].invisibleRootItem()
+                    parent.addChild(newQNode)
+        else:
+            item = self.forest.itemPool.addNewItem()
+
+        if insertas == "root":
+
+            # create default node and add item to it
+            node = sourceNode.addItemAsChild(item)
+            qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+            sourceQNode.addChild(qnode)
+
+            # expand new entry
+            qnode.setExpanded(True)
+
+        if insertas == "child":
+
+            # create default node and add item to it
+            node = sourceNode.addItemAsChild(item)
+            qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+            sourceQNode.addChild(qnode)
+
+            # expand parent and select new item
+            sourceQNode.setExpanded(True)
+
+        elif insertas == "sibling":
+
+            if destNode is None or destQNode is None:
+                return
+
+            # create default node and add item to it
+            node = destNode.addItemAsChild(item)
+            qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+            destQNode.addChild(qnode)
+
+            # expand parent and select new item
+            destQNode.setExpanded(True)
+
+        elif insertas == "parent":
+
+            if destNode is None or destQNode is None:
+                return
+
+            node = destNode.addItemAsChild(item)
+
+            # move original node to be child of new parent
+            destNode.removeChild(sourceNode)
+            node.addNodeAsChild(sourceNode)
+            destQNode.removeChild(sourceQNode)
+            qnode = QNode(node, self.forest.children[self.currentTree].fieldOrder)
+            destQNode.addChild(qnode)
+
+            # expand parent and select new item
+            qnode.setExpanded(True)
+
+        if recurse:
+            for c in sourceNode.children:
+                self.createNode(insertas, copy, recurse, c.item, node.item)
+
+        if srcItem is None:
+            treeWidget.setCurrentItem(qnode)
+            self.writeToFile()
     
     
     def moveCurrentItemToNewParent(self, treeIndex, newParent):
@@ -554,10 +572,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if oldParent and not newParent:
 
                 # question to user: Really remove?
-                message = "Removing node\n\t" + item.name + "\nfrom the tree.\n" \
-                          "This will also remove all descendents (children, grandchildren, ...) from the tree.\n" \
-                          "Please make sure you don't orphan nodes.\n" \
-                          "Changes will be saved to file immediately and cannot be reverted."
+                message = "Removing node \"" + item.name + "\" from the tree \"" \
+                          + self.forest.children[self.currentTree].name +"\".\n\n" \
+                          "This will remove all descendents (children, grandchildren, ...). " \
+                          "Changes are saved to file immediately and cannot be reverted."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
                 msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
                 result = msgBox.exec_()
@@ -589,6 +607,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 treeWidget.setCurrentItem(item.viewNodes[self.currentTree].viewNode)
                 self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
+
 
 class TreeTime():
     

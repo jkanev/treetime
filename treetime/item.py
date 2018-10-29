@@ -259,6 +259,6 @@ class ItemPool:
         return newitem
 
     def deleteItem(self, item):
-        for i,t in enumerate(item.trees):
+        for i, t in enumerate(item.trees):
             item.removeFromTree(i)
         self.items.remove(item)

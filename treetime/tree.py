@@ -616,7 +616,6 @@ class Node:
         Recursion renumbers all children in the new and in the old parent.
         """
 
-
         # find new parent and remember old parent
         oldParent = self.parent
         tree = self
