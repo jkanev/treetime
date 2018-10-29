@@ -140,7 +140,7 @@ item Cancelled
     fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 0, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
     trees [[], [], [4]]
 
-item _To be planned
+item To be planned
     fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
     trees [[0], [], []]
 
@@ -188,7 +188,7 @@ item Talk to others about robots
     fields {"actual hours": {"content": 3, "type": "integer"}, "planned hours": {"content": 3, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
     trees [[1, 0, 1], [0, 0, 1], [3, 1]]
 
-item README
+item _README_
     fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "This is a small project plan template.\n\nAdd projects, workpackages and tasks in the [Projects] tab, using the [New Child], [New Sibling] or [New Parent] buttons.\n\nCreate a time plan in the [Time Plan] tab.\n\nAdd project tasks to the time plan by editing a task in the [Projects] tab and selecting a [Time Plan] entry in the task overview.", "type": "text"}, "done": {"content": "Choose task status in the same way. Planned hours and actual hours will be summed up the tree. Project status is calculated from actual vs. planned hours.\n\nTo start, you can remove all projects and time plan entries, or edit them.", "type": "text"}}
     trees [[2], [], []]
 

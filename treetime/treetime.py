@@ -172,6 +172,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.fillTreeWidgets()
                 self.labelCurrentFile.setText(filename)
                 self.settings.setValue('lastFile', filename)
+                # select first item
+                if len(self.treeWidgets):
+                    firstTree = self.treeWidgets[0]
+                    items = firstTree.topLevelItemCount()
+                    if items:
+                        firstTree.topLevelItem(items - 1).setSelected(True)
             except:
                 self.pushButtonLoadFileClicked()
         else:
