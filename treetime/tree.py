@@ -17,10 +17,7 @@
 
 # -*- coding:utf-8 -*-
 
-import copy
-import json
 from .item import *
-import datetime
 
 class Field:
     """A set of instructions to view/display the content of data items. Fields are part of nodes, and are stored in templates."""
@@ -123,16 +120,16 @@ class Field:
             self.getString = self.getStringUnchanged
         elif self.fieldType == "sum":
             self.getValue = self.getValueSum
-            self.getString = self.getStringUnchanged
+            self.getString = self.getStringRounded
         elif self.fieldType == "mean":
             self.getValue = self.getValueMean
-            self.getString = self.getStringUnchanged
+            self.getString = self.getStringRounded
         elif self.fieldType == "mean-percent":
             self.getValue = self.getValueMean
             self.getString = self.getStringPercent
         elif self.fieldType == "ratio":
             self.getValue = self.getValueRatio
-            self.getString = self.getStringUnchanged
+            self.getString = self.getStringRounded
         elif self.fieldType == "ratio-percent":
             self.getValue = self.getValueRatio
             self.getString = self.getStringPercent
@@ -149,9 +146,9 @@ class Field:
             v = self.getValue();
             if v:
                 whitespace = ""
-                if v<0.1:
+                if v < 0.1:
                     whitespace = "  "
-                elif v<1.0:
+                elif v < 1.0:
                     whitespace = " "
                 return whitespace + str(round(100*v)) + " %"
             else:
@@ -163,6 +160,17 @@ class Field:
     def getStringUnchanged(self):
         if self.sourceNode and self.getValue:
             return str(self.getValue())
+        else:
+            return "[undefined]"
+
+
+    def getStringRounded(self):
+        if self.sourceNode and self.getValue:
+            value = self.getValue()
+            if value:
+                return str(round(value, 2))
+            else:
+                return ""
         else:
             return "[undefined]"
 
@@ -221,7 +229,8 @@ class Field:
         values = self.getFieldValues()
         s = ""
         for v in values:
-            s += str(v)
+            if v:
+                s += str(v)
         return s
 
 
@@ -229,7 +238,10 @@ class Field:
         values = self.getFieldValues()
         sum = 0
         for v in values:
-            sum += v
+            if v:     # either sum up using the value
+                sum += v
+            else:     # or the neutral element for addtion (0)
+                sum += 0
         return sum
 
 
@@ -238,12 +250,13 @@ class Field:
         sum = 0.0
         n = 0.0
         for v in values:
-            n += 1.0
-            sum += v
+            if v:     # in case of 'None', use neutal elements of 0 for addition, and 1 for multiplication
+                n += 1.0
+                sum += v
         if n > 0.0:
             return sum/n
         else:
-            return 0.0
+            return None
 
     def getValueRatio(self):
         """
@@ -256,7 +269,8 @@ class Field:
             denom = values[0]
             sum = 0
             for v in values[1:]:
-                sum += v
+                if v:
+                    sum += v
             if sum != 0:
                 return denom/sum
             else:

@@ -164,15 +164,21 @@ class Item:
             # update field content
             field = self.fields[fieldName]
             type = field["type"]
-            if type == "string":
-                field["content"] = fieldContent
-            elif type == "text":
-                field["content"] = fieldContent
-            elif type == "integer":
-                field["content"] = json.loads(fieldContent)
+            if fieldContent:
+                if type == "string":
+                    field["content"] = fieldContent
+                elif type == "text":
+                    field["content"] = fieldContent
+                elif type == "integer":
+                    try:
+                        field["content"] = json.loads(fieldContent)
+                    except json.JSONDecodeError:
+                        field["content"] = None
+                else:
+                    return "A field of type " + type + " cannot be edited."
             else:
-                return "A field of type " + type + " cannot be edited."
-            
+                field["content"] = None
+
             self.notifyFieldChange(fieldName)
         
         return True

@@ -51,7 +51,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
         # build reverse field order dictionary
         self.fieldOrder = {}
         for i,f in enumerate(fieldOrder):
-            self.fieldOrder[f] = i+1 # plus one because column 0 is the node name
+            self.fieldOrder[f] = i+1     # plus one because column 0 is the node name
         
         # recurse
         for c in sourceNode.children:
@@ -222,7 +222,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
 
         # for each tree in the forest
-        for n,c in enumerate(self.forest.children):
+        for n, c in enumerate(self.forest.children):
             self.treeWidgets[n].itemSelectionChanged.connect(lambda x=n: self.treeSelectionChanged(x))
             self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
             root = self.treeWidgets[n].invisibleRootItem()
@@ -232,7 +232,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             for b in c.children:
                 parent = QNode(b, c.fieldOrder)
                 root.addChild(parent)
-
             # expand name column so all names are readable
             self.treeWidgets[n].resizeColumnToContents(0)
 
@@ -361,12 +360,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     if self.currentItem.fields[key]['type'] == 'text':
                         text = str(self.currentItem.fields[key]["content"])
                         widget = QtWidgets.QPlainTextEdit(text)
-                        widget.textChanged.connect( lambda row=n: self.tableWidgetCellChanged(row, 1) )
+                        widget.textChanged.connect(lambda row=n: self.tableWidgetCellChanged(row, 1))
                         self.tableWidget.setCellWidget(n, 1, widget)
                     else:
-                        value = QtWidgets.QTableWidgetItem(str(self.currentItem.fields[key]["content"]))
-                        self.tableWidget.setItem(n,1,value)
-                    self.tableWidget.setItem(n,0,name)
+                        value = self.currentItem.fields[key]["content"]
+                        value = value and str(value) or ""     # display "None" values as empty string
+                        value = QtWidgets.QTableWidgetItem(value)
+                        self.tableWidget.setItem(n, 1, value)
+                    self.tableWidget.setItem(n, 0, name)
                     n += 1
             
             self.locked = False
