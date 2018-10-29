@@ -364,7 +364,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     name = QtWidgets.QTableWidgetItem(key)
                     name.setFlags(nonEditFlags)
                     if self.currentItem.fields[key]['type'] == 'text':
-                        text = str(self.currentItem.fields[key]["content"])
+                        text = self.currentItem.fields[key]["content"]
+                        text = text and str(text) or ""     # display "None" values as empty string
                         widget = QtWidgets.QPlainTextEdit(text)
                         widget.textChanged.connect(lambda row=n: self.tableWidgetCellChanged(row, 1))
                         self.tableWidget.setCellWidget(n, 1, widget)
