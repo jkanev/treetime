@@ -134,6 +134,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonCopyNodeSibling.clicked.connect(lambda: self.createNode("sibling", True))
         self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
         self.pushButtonCopyBranchSibling.clicked.connect(lambda: self.createNode("sibling", True, True))
+        self.pushButtonNewFromTemplate.clicked.connect(self.pushButtonNewFromTemplateClicked)
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.pushButtonRemove.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
@@ -152,7 +153,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.cboxTheme.currentTextChanged.connect(self.cboxThemeTextChanged)
 
         # load last file
-        self.loadFile(filename or self.settings.value('lastFile'))
+        lastFile = self.settings.value('lastFile')
+        if lastFile:
+            self.loadFile(lastFile)
+            self.setWindowTitle("TreeTime - " + lastFile)
+            self.settings.setValue('fileDir', os.path.dirname(lastFile))
+            self.settings.setValue('lastFile', lastFile)
+            self.labelCurrentFile.setText(lastFile)
+        else:
+            self.pushButtonLoadFileClicked()
 
         # show window
         self.showMaximized()
@@ -180,15 +189,45 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
 
     def pushButtonSaveToFileClicked(self):
-        result = QtWidgets.QFileDialog.getSaveFileName(self, "Save data file", '', '*.trt')[0]
-        if result != '':
-            self.labelCurrentFile.setText(result)
+        """
+        Callback for the save-file button. Saves the current data to a new file and keeps that file connected.
+        """
+        fileDir = self.settings.value('fileDir') or ''
+        file = QtWidgets.QFileDialog.getSaveFileName(self, "Save new Data File", fileDir, '*.trt')[0]
+        if file != '':
+            self.labelCurrentFile.setText(file)
             self.writeToFile()
+            self.setWindowTitle("TreeTime - " + file)
+            self.settings.setValue('fileDir', os.path.dirname(file))
+            self.settings.setValue('lastFile', file)
 
     def pushButtonLoadFileClicked(self):
-        result = QtWidgets.QFileDialog.getOpenFileName(self, "Load data file", '', '*.trt')[0]
-        if result != '':
-            self.loadFile(result)
+        """
+        Callback for the load-file button. Loads new file and keeps that file connected.
+        """
+        fileDir = self.settings.value('fileDir') or ''
+        file = QtWidgets.QFileDialog.getOpenFileName(self, "Load Data File", fileDir, '*.trt')[0]
+        if file != '':
+            self.loadFile(file)
+            self.setWindowTitle("TreeTime - " + file)
+            self.settings.setValue('fileDir', os.path.dirname(file))
+            self.settings.setValue('lastFile', file)
+            self.labelCurrentFile.setText(file)
+
+    def pushButtonNewFromTemplateClicked(self):
+        """
+        Callback for the new-from-template button. Loads new file and immediately saves it to a different file.
+        """
+
+        # First load template file
+        templateDir = self.settings.value('templateDir') or ''
+        template = QtWidgets.QFileDialog.getOpenFileName(self, "Load Template", templateDir, '*.trt')[0]
+        if template != '':
+            self.loadFile(template)
+            self.settings.setValue('templateDir', os.path.dirname(template))
+
+            # Then save as new file
+            self.pushButtonSaveToFileClicked()
 
     def pushButtonDeleteClicked(self):
         message = "Deleting node \"" + self.currentItem.name + "\". \n\n" \
@@ -215,11 +254,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.createBranchTabs()
                 self.fillTreeWidgets()
 
-                # show file name in gui and save in settings
-                self.labelCurrentFile.setText(filename)
-                self.setWindowTitle("TreeTime - " + filename)
-                self.settings.setValue('lastFile', filename)
-
                 # select first item
                 if len(self.treeWidgets):
                     firstTree = self.treeWidgets[0]
@@ -232,7 +266,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.pushButtonLoadFileClicked()
     
     def writeToFile(self):
-        self.forest.writeToFile( self.labelCurrentFile.text() )
+        self.forest.writeToFile(self.labelCurrentFile.text())
     
     
     def removeBranchTabs(self):
@@ -320,7 +354,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # create non-edit flags
                 nonEditFlags = QtCore.Qt.ItemFlags()
                 nonEditFlags != QtCore.Qt.ItemIsEnabled
-                
+
                 # go through all lines of the table
                 n = 0
 

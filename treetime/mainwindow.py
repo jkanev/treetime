@@ -104,7 +104,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addItem(spacerItem5)
         self.toolBox.addItem(self.fileIo, "")
         self.pageTree = QtWidgets.QWidget()
-        self.pageTree.setGeometry(QtCore.QRect(0, 0, 200, 716))
+        self.pageTree.setGeometry(QtCore.QRect(0, 0, 210, 735))
         self.pageTree.setMinimumSize(QtCore.QSize(200, 716))
         self.pageTree.setObjectName("pageTree")
         self.formLayout = QtWidgets.QFormLayout(self.pageTree)
@@ -214,7 +214,7 @@ class Ui_MainWindow(object):
         self.formLayout.setItem(21, QtWidgets.QFormLayout.SpanningRole, spacerItem11)
         self.toolBox.addItem(self.pageTree, "")
         self.pageGlobal = QtWidgets.QWidget()
-        self.pageGlobal.setGeometry(QtCore.QRect(0, 0, 96, 26))
+        self.pageGlobal.setGeometry(QtCore.QRect(0, 0, 210, 735))
         self.pageGlobal.setObjectName("pageGlobal")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.pageGlobal)
         self.gridLayout_3.setObjectName("gridLayout_3")
@@ -243,15 +243,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setStretch(1, 3)
         self.horizontalLayout.setStretch(2, 5)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
         self.actionQuit = QtWidgets.QAction(MainWindow)
         self.actionQuit.setObjectName("actionQuit")
 
         self.retranslateUi(MainWindow)
-        self.toolBox.setCurrentIndex(0)
+        self.toolBox.setCurrentIndex(1)
         self.tabWidget.setCurrentIndex(-1)
         self.actionQuit.triggered.connect(MainWindow.close)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -263,8 +259,8 @@ class Ui_MainWindow(object):
         self.labelCurrentFile.setText(_translate("MainWindow", "[current file name]"))
         self.label_5.setText(_translate("MainWindow", "Load and Save"))
         self.pushButtonNewFromTemplate.setText(_translate("MainWindow", "New from Template"))
-        self.pushButtonLoadFile.setText(_translate("MainWindow", "Load other File"))
-        self.pushButtonSaveToFile.setText(_translate("MainWindow", "Save to other File"))
+        self.pushButtonLoadFile.setText(_translate("MainWindow", "Load File"))
+        self.pushButtonSaveToFile.setText(_translate("MainWindow", "Save As"))
         self.label_9.setText(_translate("MainWindow", "Look and Feel"))
         self.label_10.setText(_translate("MainWindow", "About"))
         self.label_7.setText(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -272,7 +268,7 @@ class Ui_MainWindow(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Noto Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime</p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Version 0.0</p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Version 2018-10</p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     New versions,<br />     source code and <br />     documentation at <br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">github.com/jkanev/treetime</span></a></p></body></html>"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.fileIo), _translate("MainWindow", "File"))
         self.label.setText(_translate("MainWindow", "Insert New Nodes"))
