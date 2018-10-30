@@ -118,8 +118,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
 
     def __init__(self, filename=None):
+        """
+        Initialise the application, connect all button signals to application functions, load theme and last file
+        """
+
+        # initialise main window
         super().__init__()
         self.setupUi(self)
+
+        # connect all button signals
         self.pushButtonNewChild.clicked.connect(lambda: self.createNode("child", False))
         self.pushButtonNewSibling.clicked.connect(lambda: self.createNode("sibling", False))
         self.pushButtonNewParent.clicked.connect(lambda: self.createNode("parent", False))
@@ -135,9 +142,42 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
         self.locked = True
+
+        # init application settings
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
+
+        # init themes and set last theme
+        self.fillThemeBox()
+        self.cboxThemeTextChanged()
+        self.cboxTheme.currentTextChanged.connect(self.cboxThemeTextChanged)
+
+        # load last file
         self.loadFile(filename or self.settings.value('lastFile'))
+
+        # show window
         self.showMaximized()
+
+
+    def fillThemeBox(self):
+        """
+        Fills the theme selection box with all themes the system is capable of
+        """
+        for k in QtWidgets.QStyleFactory.keys():
+            self.cboxTheme.addItem(k)
+        current = self.settings.value('theme')
+        if current:
+            self.cboxTheme.setCurrentText(current)
+
+
+    def cboxThemeTextChanged(self):
+        """
+        Callback from the theme selector combo box. Sets a new theme and stores it in the settings.
+        """
+        application = QtWidgets.QApplication.instance()
+        style = self.cboxTheme.currentText()
+        self.settings.setValue('theme', style)
+        application.setStyle(QtWidgets.QStyleFactory.create(style))
+
 
     def pushButtonSaveToFileClicked(self):
         result = QtWidgets.QFileDialog.getSaveFileName(self, "Save data file", '', '*.trt')[0]
@@ -148,7 +188,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def pushButtonLoadFileClicked(self):
         result = QtWidgets.QFileDialog.getOpenFileName(self, "Load data file", '', '*.trt')[0]
         if result != '':
-            self.loadFile( result )
+            self.loadFile(result)
 
     def pushButtonDeleteClicked(self):
         message = "Deleting node \"" + self.currentItem.name + "\". \n\n" \
@@ -170,11 +210,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.currentItem = None
         if filename is not None and filename != '':
             try:
+                # load file
                 self.forest = Forest(filename)
                 self.createBranchTabs()
                 self.fillTreeWidgets()
+
+                # show file name in gui and save in settings
                 self.labelCurrentFile.setText(filename)
+                self.setWindowTitle("TreeTime - " + filename)
                 self.settings.setValue('lastFile', filename)
+
                 # select first item
                 if len(self.treeWidgets):
                     firstTree = self.treeWidgets[0]
@@ -239,7 +284,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # init sorting
             self.treeWidgets[n].setSortingEnabled(True)
-            self.treeWidgets[n].sortItems(0, 0)
+            self.treeWidgets[n].sortItems(0, QtCore.Qt.AscendingOrder)
 
 
     def treeSelectionChanged(self, treeIndex):
