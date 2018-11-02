@@ -578,7 +578,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         parent = self.treeWidgets[n].invisibleRootItem()
                     parent.addChild(newQNode)
         else:
-            item = self.forest.itemPool.addNewItem()
+            # add new item by copying the first type
+            item = self.forest.itemPool.copyItem(self.forest.itemTypes.items[0])
 
         if insertas == "root":
 

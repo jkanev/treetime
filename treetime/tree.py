@@ -691,21 +691,23 @@ class Tree(Node):
             if n==0:
                 self.name = json.loads(fs)
             else:
-                f = Field();
+                f = Field()
                 name = f.readFromString(fs)
                 self.fields[name] = f
                 self.fieldOrder += [name]
 
 
 class Forest(Node):
-    """ The trunk node containing trees, that contain the nodes. Also manages the node templates."""
-
+    """
+    The trunk node containing trees, that contain the nodes. Also manages the node templates.
+    """
 
     def __init__(self, filename):
         """Initialise"""
         
         super().__init__(None, None, [])
         self.itemPool = None
+        self.itemTypes = None
         self.readFromFile(filename)
 
 
@@ -747,23 +749,39 @@ class Forest(Node):
 
     def writeToFile(self, filename):
         treeString = self.writeToString()
+        typeString = self.itemTypes.writeToString()
         itemString = self.itemPool.writeToString()
         with open(filename, "w") as f:
             f.write("--trees--\n\n")
             f.write(treeString)
+            f.write("--item-types--\n\n")
+            f.write(typeString)
             f.write("--item-pool--\n\n")
             f.write(itemString)
 
 
     def readFromFile(self, filename):
         with open(filename, "r") as f:
+
+            # chop up string into trees, types, and items part
             s = f.read()
             s = s.split("--trees--")[1]
-            s = s.split("--item-pool--")
+            s = s.split("--item-types--")
+            treeString = s[0]
+            s = s[1].split("--item-pool--")
+            typeString = s[0]
+            itemString = s[1]
+
+            # create item pool
+            self.itemTypes = ItemPool()
+            self.itemTypes.readFromString(typeString)
+
+            # create type pool
             self.itemPool = ItemPool()
-            self.itemPool.readFromString(s[1])
+            self.itemPool.readFromString(itemString)
             self.createPaths()
-            self.readFromString(s[0])
-        self.createPaths()
-        
+
+            # create trees
+            self.readFromString(treeString)
+
 

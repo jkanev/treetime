@@ -90,11 +90,13 @@ tree "Status"
         sibling-fields []
         parent-fields []
 
---item-pool--
+--item-types--
 
 item New Task
     fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}
     trees [[], [], []]
+
+--item-pool--
 
 item 2018 Quarter 4
     fields {"actual hours": {"content": 0, "type": "integer"}, "planned hours": {"content": 0, "type": "integer"}, "priority (0-9)": {"content": 5, "type": "integer"}, "to do": {"content": "", "type": "text"}, "done": {"content": "", "type": "text"}}

@@ -218,40 +218,50 @@ class Item:
             self.moveCallbacks[treeIndex]()
 
 
-
 class ItemPool:
+    """
+    A pool of items. Used to store all the tree nodes (items). The tree-related information is handled in the node
+    classes.
+    """
+
     def __init__(self):
+        """
+        Construct
+        """
         self.items = []
-        self.defaultItem = None
-        
+
     def writeToString(self):
+        """
+        Writes the whole pool to a re-loadable string
+        """
         string = ""
         for it in self.items:
             string += "item " + it.writeToString() + "\n"
         return string
         
     def readFromString(self, string):
+        """
+        Reads the pool from a string
+        """
         string = string.split("\n\nitem ") # items are separated by empty lines and the keyword "item"
         for s in string:
             if s != "":
                 it = Item("")
                 it.readFromString(s)
                 self.items += [it]
-                if self.defaultItem is None:
-                    self.defaultItem = it
 
     def printpool(self):
+        """
+        Prints a list of items. This is a debug function.
+        """
         for it in self.items:
             it.printitem()
-            
-
-    """Adds a copy of the default item to the list and returns a reference to it"""
-    def addNewItem(self):
-        return self.copyItem(self.defaultItem)
 
 
-    """Adds a copy of the default item to the list and returns a reference to it"""
     def copyItem(self, item):
+        """
+        Adds a copy of an item to the list and returns a reference to it
+        """
         newitem = copy.deepcopy(item)
         newitem.viewNodes = []
         newitem.clearCallbacks()
@@ -259,6 +269,9 @@ class ItemPool:
         return newitem
 
     def deleteItem(self, item):
+        """
+        Removes an item from the pool
+        """
         for i, t in enumerate(item.trees):
             item.removeFromTree(i)
         self.items.remove(item)
