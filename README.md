@@ -1,7 +1,7 @@
 #  <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64">&nbsp; &nbsp; &nbsp; &nbsp;Tree Time
 
 
-TreeTime is a general data oranisation and data management tool. You can use it to plan your time, as a to-do list
+TreeTime is a general data organisation and data management tool. You can use it to plan your time, as a to-do list
 manager, test report tool, project manager, family ancestry editor, mind-mapping tool, and similar. In TreeTime, data
 is not organised in lists or spreadsheets, but in trees. A tree is a hierarchical structure that lets you systemise
 your data into units and sub-units. Trees are a far more natural concept than lists. TreeTime uses several trees to categorise data at the same time. In addition,
