@@ -783,5 +783,6 @@ class Forest(Node):
 
             # create trees
             self.readFromString(treeString)
+            self.createPaths()     # atm we still need this twice. Fix it.
 
 
