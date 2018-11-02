@@ -1,11 +1,11 @@
 #  <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64">&nbsp; &nbsp; &nbsp; &nbsp;Tree Time
 
 
-Tired of trying to organise your data in spread sheets? Use trees instead. TreeTime is a time planner, to-do list
-manager, test report tool, project manager, family ancestry editor, mind-mapping tool, etc. Using TreeTime you can
-categorise and organise your data items in tree structures. You can define several trees at the same time, each with a
-different structure, but on the same data. You can use functions (calculate sums, ratios and means) recursively up the
-branches of a tree. 
+TreeTime is a general data oranisation and data management tool. You can use it to plan your time, as a to-do list
+manager, test report tool, project manager, family ancestry editor, mind-mapping tool, and similar. In TreeTime, data
+is not organised in lists or spreadsheets, but in trees. A tree is a hierarchical structure that lets you systemise
+your data into units and sub-units. Trees are a far more natural concept than lists. TreeTime uses several trees to categorise data at the same time. In addition,
+you can use functions (calculate sums, ratios and means) recursively up and down the trees.
 
 <div id='id-contents'/>
 
@@ -23,20 +23,36 @@ branches of a tree.
 ## Concept ##
 [Table of Contents](#id-contents)
 
-Think about your data and what you want to organise. Data is usually a bunch of simple items which can be grouped or sorted and which are related to each other. If you want to organise work in a company such a simple item could be a Task. In a spreadsheet that would be a line in a table, with several columns for different properties of the task. In TreeTime a Task would be a data item. It could have several fields like planned completion date, planned effort, actual completion date, current progress, a name and a short description. You can think of several ways to organise your data items:
-- Tasks can be part of a work package which can be part of a project which can be part of a product release.
-- Tasks can be done by persons which belong to a team which belongs to a department which belongs to a company.
-- Tasks may be planned to finish on a certain date, which may be part of a weekly plan, which may be part of a quarterly plan, which may be part of a yearly plan.
+### What is a Tree? ###
 
-Each of these ways to categorise the data is a tree in TreeTime. For each of these trees you may be interested in different things: 
-- If you look at your Tasks organised into Projects and Workpackages you might want to see the effort per task, summed effort per Workpackage, or per Project.
-- If you look at your Data organised into Persons and Departments you might want to see the ratio of effort in one team compared to all other teams, or the percentage of effort of one department compared to all other departments.
-- If you look at your Tasks organised into planned completion periods you might want to see the total progress for tasks you planned for this year, this month or this week.
+A "tree" is a data structure, much like a table or a list. Using a tree you can naturally package your information into
+boxes and sub-boxes and sub-sub-boxes. Some examples:
 
-The concept of hierarchical categorisation can be applied to all sorts of data and will feel a lot more natural and easier to use than organising the same data in spread sheets. Examples are your family ancestory tree, your personal to-do list, a collection of facts you want to gather about a certain topic, a script for a play with different actors, stories and sub-stories, documentation and test instructions for software testing, and lots more.
+If you want to organise your work tasks you could sort them into work packages, that are part of projects, that
+are part of products. Alternatively, if you plan a larger project, you can sort all tasks by responsible persons, who
+are part of teams, that are part of departments, that are part of branches. You can also make a time plan, where a 
+year consists of quarters, that consist of weeks, that contain a number of tasks. You can have an address book where you
+have a hierarchy of friends / colleagues / aquaintances, or you can sort knowledge about animals into kingdom / class /
+species.
 
-In TreeTime, the data item fields, the trees, and the fields that are displayed in a tree are completely user defined. At the moment TreeTime can display texts as well as numbers and their sums, means and ratios, and names of the parent node in all different trees.
+The nice thing about trees is that you can define mathematical functions on them. The planned hours can be added up,
+the task priority can be used to calculate mean priority per work package and project, work hours can be calculated
+per person and team.
 
+The concept of hierarchical categorisation can be applied to all sorts of data and will feel a lot more natural and
+easier to use than organising the same data in spread sheets. 
+
+### How do I use TreeTime? ###
+
+The core concept of TreeTime is the idea to use severa different trees on the same data items. Different trees are in
+different tabs of the tree. If you, for instance, organise information about animals, you can have kingdom / class / species in one
+tab, habitat (continent / country / area) in another, and switch between them. If you organise tasks, you can switch
+between a year/quarter/week/day breakdown, a company/department/team/person tree, or a product/project/package/task
+overview.
+
+In TreeTime, the structure of your data (whether you store priority, hours, and a description for a task, or expected
+life span, habitat and number of legs for an animal), the trees themselves, the calculated values in the trees are
+completely user defined. 
 
 <div id='id-installation'/>
 
@@ -45,7 +61,7 @@ In TreeTime, the data item fields, the trees, and the fields that are displayed 
 
 ### Using pre-compiled Binaries ###
 
-Go to [github.com/jkanev/treetime/releases/tag/v0.0](https://github.com/jkanev/treetime/releases/tag/v0.0) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there.
+Go to [github.com/jkanev/treetime/releases/tag/v0.0](https://github.com/jkanev/treetime/releases/tag/v0.0) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directroy and run TreeTime.exe from the new folder.
 Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
 Mac users please use the Python code (see below). There is no executable for Mac.
@@ -59,14 +75,7 @@ depending on your installation).
 ### Using script code with Python ###
 
 1. If you don't have it yet, install python3
-   - Debian, Ubuntu and related: on the command line, type "apt-get install python3"
-   - Other Linux distributions: install python3 with your default package manager
-   - Windows, Mac and similar: download from https://www.python.org/downloads/
-2. If you don't have it yet, install PyQt5
-   - Debian, Ubuntu and related: on the command line, type "apt-get install python3-pyqt5"
-   - Other Linux distributions: install pyqt5 with your default package manager
-   - Windows, Mac and similar: Open a command line and type "py -m pip install PyQt5" (Windows) or 
-     "pip install PyQt5" (Mac, untested) (see http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+2. If you don't have it yet, install PyQt5 (use pip on the command line)
 3. Download this project from GitHub as a zip file (https://github.com/jkanev/treetime/archive/master.zip) and unzip
 4. Install: in the command line, cd into the main directory, then type:
    - Linux:
@@ -75,14 +84,7 @@ depending on your installation).
    - Windows:
       - py setup.py build
       - py setup.py install
-5. Execute
-   - Linux
-      - either, on the command line, type: "python3 -m treetime"
-      - or register the provided desktop file (data/treetime.desktop) with KDE or Gnome and execute from the KDE or
-        Gnome main menu
-   - Windows
-      - on the command line, type: "py -m treetime"
-
+5. You can now execute the software normally, 
 
 <div id='id-usage'/>
 
@@ -90,9 +92,8 @@ depending on your installation).
 [Table of Contents](#id-contents)
 
 Start the software by typing "python3 -m treetime" or using your OSes main menu (see 'Execute' from the previous
-section). In the main dialog, go to "File Storage", click "Load other File" and select "items.trt". The GUI will come
-up with an example project. Several data items will have loaded (a project with three tasks and two week-planning
-entries) and are organised in three trees. The GUI is organised in three parts:
+section). In the main dialog, go to "File" / "New from Template", select "Simple-Task-List.trt" and in the next dialog give a file name for the new file.
+The GUI is organised in three parts:
 - A button box on the left. Execute tree structure operations from here.
 - An editing grid in the middle, showing the contents of the selected data item. Edit single data items here.
 - A tab view with tress spanning the center-right. View and analyse your data here.
@@ -106,13 +107,17 @@ you will see a sum, a percentage, and text display.
 ![Screenshot 2](doc/screenshot02.png)
 
 Add and move single nodes and branches by using the buttons on the left (New Child, New Sibling, New Parent, Copy Node
-as Child, Copy Node as Sibling, Copy Node as Parent, Copy Branch as Sibling, copy Children to Siblings (not implemented
-yet), Remove from this Tree (this can also be done from the data item's parent menus), Delete Item.
+as Child, Copy Node as Sibling, Copy Node as Parent, Copy Branch as Sibling, copy Children to Siblings, Remove from this Tree (this can also be done from the data item's parent menus), Delete Item. Change the name of a node by selecting the node and editing the name in the top of the edit grid in the middle.
 
-Change the name of a node by selecting the node and editing the name in the top of the edit grid in the middle.
 Change the parent of any node by typing a name of an existing node into the parent fields in the edit grid. The parent
 menus (for selecting or changing a node's parent) are the lines underneath the item's name.
 
+![Screenshot 2](doc/screenshot03.png)
+
+TreeTime lets you select different themes and will try to use the default colours that are defined with your operating
+system.
+
+![Screenshot 2](doc/screenshot04.png)
 
 <div id='id-roadmap'/>
 
@@ -128,6 +133,8 @@ I deliberately didn't give any time estimates for this. I'm using the software m
 - Done June 2017: Made pre-release v0.0 available
 - Done October 2017: Implemented new field type _node-path_, re-wrote the way nodes move to new parents
 - Done November 2017: Uploaded package to pypi.python.org, TreeTime can now be installed using pip
+- Done October 2018: Re-implemented the parent selection mechanism. The old cascaded menus have been replaced with single drop down lists.
+- Done October 2018: Re-furbished the GUI and removed a couple of bugs. Slighty changed the data file format. Tested pyqtdeploy for deployment instead of pyinstaller.
 - Running: Bugfixing
 - Running: Write documentation on readthedocs.io and create example data files
 - Near Future: Release Version 0.1
