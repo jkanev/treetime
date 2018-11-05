@@ -3,7 +3,7 @@
 
 Note: If your looking for the phylogenetics software of the same name, you can find it here: [github.com/neherlab/treetime](https://github.com/neherlab/treetime).
 
-_TreeTime_ is a general data oranisation and data management tool using linked trees. It can be a time planner, a to-do list manager, a test report tool, a project planner, a family ancestry editor, a mind-mapping tool, and similar. In _TreeTime_, data is not organised in lists or spreadsheets, but in trees. A tree is a hierarchical structure that lets you systemise your data into units and sub-units. Trees are a far more natural concept than lists. _TreeTime_ uses several trees to categorise data at the same time. In addition, you can use functions (calculate sums, ratios and means) recursively up and down the trees.  
+_TreeTime_ is a general data organisation, management and analysis tool using linked trees. It can be a time planner, a to-do list manager, a test report tool, a project planner, a family ancestry editor, a mind-mapping tool, and similar. In _TreeTime_, data is not organised in lists or spreadsheets, but in linked trees. A tree is a hierarchical structure that lets you systemise your data into units and sub-units. Data items are shared between several different linked trees. Mathematical functions (sum, difference, mean, ratio) can be calculated recursively.
 
 <div id='id-contents'/>
 
