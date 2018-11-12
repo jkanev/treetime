@@ -35,10 +35,14 @@ The concept of hierarchical categorisation can be applied to all sorts of data a
 ### What are linked Trees? ### 
 
 The core concept of _TreeTime_ are linked trees. Linked trees are separate trees that share the same data. One piece of data (a _node_) can be in several trees at the same time, but in different place of the tree. A tree is much like a way of sorting, and linked trees sort the same data in different ways.
-![Screenshot 1](doc/linked-trees.png)
-Node _E_ is right at the bottom of _Tree 1_, as a child of _A_ and _B_, and in _Tree 2_ it is a child of _C_. Node _D_ is a child of _A_ and _B_ in _Tree 1_, and a child of _C_ and _B_ in _Tree 2_.
+![Screenshot 1](doc/linked-trees.png)  
+Node _E_ is right at the bottom of _Tree 1_, as a child of _A_ and _B_, and in _Tree 2_ it is a child of _D_. In _TreeTime_ any kind of number or text can be stored in a node. In this example, let us have a field we call "value" in the node items and use A=1, B=2, etc; and a field we call "Sum" that sums up the current value, and the values of all children. In _TreeTime_, looking at item _E_ and _Tree 1_ this looks like this:  
+![Screenshot 1](doc/abcde01.png)  
+Clicking on the other tab shows the second tree while the same items stays selected:
+![Screenshot 1](doc/abcde02.png)
+Note how the values are summed up the branches. Apart from sums, _TreeTime_ also offers means, ratios, or differences, using different combinations of parent, child, or sibling fields.
 
-If you, for instance, organise information about animals, you might want to see the animal's taxonomy (kingdom/class/family/species), but also their habitat (continent/country/area), and switch between both views. If you organise tasks, you could switch between a year/quarter/week/day breakdown, a company/department/team/person tree, and a product/project/package/task overview.
+Linked trees are a natural and powerful way to structure data. If you, for instance, organise information about animals, you might want to see the animal's taxonomy (kingdom/class/family/species), but also their habitat (continent/country/area), and switch between both views. If you organise tasks, you could switch between a year/quarter/week/day breakdown, a company/department/team/person tree, and a product/project/package/task overview.
 
 In _TreeTime_, the structure of your data (whether you store priority, hours, and a description for a task, or expected life span, habitat and number of legs for an animal), the trees themselves, and the calculated values within the trees are completely user defined. Data is stored in text files, changes are saved on the fly, and when opening _TreeTime_, the software is automatically connected to the last used file.
 
