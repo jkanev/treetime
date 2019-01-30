@@ -165,9 +165,7 @@ class Item:
             field = self.fields[fieldName]
             type = field["type"]
             if fieldContent:
-                if type == "string":
-                    field["content"] = fieldContent
-                elif type == "text":
+                if type in ("string", "text", "url"):
                     field["content"] = fieldContent
                 elif type == "integer":
                     try:

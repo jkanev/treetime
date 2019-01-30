@@ -111,6 +111,53 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.setSelected(select)
 
 
+class UrlWidget(QtWidgets.QWidget):
+    """
+    Special custom widget class for URL fields
+    """
+
+
+    def __init__(self, url, callback, parent=None):
+        """
+        Initialise
+        """
+
+        # init
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.url = url
+        self.callback = callback
+
+        # create line edit control and open button
+        linewidget = QtWidgets.QLineEdit(url)
+        linewidget.textChanged.connect(self.textChanged)
+        openbutton = QtWidgets.QPushButton("Open")
+        openbutton.clicked.connect(self.buttonClicked)
+
+        # put them next to each other
+        layout = QtWidgets.QHBoxLayout(self)
+        layout.addWidget(openbutton)
+        layout.addWidget(linewidget)
+
+    def textChanged(self, text):
+        """
+        Callback, to save the new text and notify the parent that the text has changed
+        """
+        self.url = text
+        self.callback()
+
+    def toPlainText(self):
+        """
+        Callback, called by the GUI to retrieve (possibly changed) URL
+        """
+        return self.url
+
+    def buttonClicked(self):
+        """
+        Callback, called when the button has been clicked. Opens the URL with the system
+        default software.
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(self.url))
+
 
 class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
@@ -455,6 +502,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         widget = QtWidgets.QPlainTextEdit(text)
                         widget.textChanged.connect(lambda row=n: self.tableWidgetCellChanged(row, 3))
                         self.tableWidget.setCellWidget(n, 3, widget)
+                    elif self.currentItem.fields[key]['type'] == 'url':
+                        value = self.currentItem.fields[key]["content"]
+                        value = value and str(value) or ""  # display "None" values as empty string
+                        widget = UrlWidget(value, lambda row=n: self.tableWidgetCellChanged(row, 3))
+                        self.tableWidget.setCellWidget(n, 3, widget)
                     else:
                         value = self.currentItem.fields[key]["content"]
                         value = value and str(value) or ""     # display "None" values as empty string
@@ -524,7 +576,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 else:
                     fieldName = self.tableWidget.item(row, 1).text()
                     fieldType = self.currentItem.fields[fieldName]['type']
-                    if fieldType == 'text':
+                    if fieldType in ('text', 'url'):
                         newValue = self.tableWidget.cellWidget(row, 3).toPlainText()
                     else:
                         newValue = self.tableWidget.item(row, 3).text()
