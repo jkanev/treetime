@@ -139,6 +139,7 @@ Past
 - Done October 2018: Re-implemented the parent selection mechanism. The old cascaded menus have been replaced with single drop down lists.
 - Done October 2018: Re-furbished the GUI and removed a couple of bugs. Slighty changed the data file format. Implemented theme selection. Tested pyqtdeploy for deployment instead of pyinstaller. Updated the description.
 - Done November 2018: Released version 2018-10
+- Done January 2019: Implemented new field type "URL"
 
 Current
 - Running: Bugfixing
@@ -146,7 +147,7 @@ Current
 
 Future
 - Near Future: Implement search function
-- Near Future: Implement more data item field types (URLs, timers, date/time/time-span)
+- Near Future: Implement more data item field types (timers, date/time/time-span)
 - Near Future: Release next version
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Mid Future: Bugfixing
