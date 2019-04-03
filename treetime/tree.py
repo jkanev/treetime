@@ -121,6 +121,9 @@ class Field:
         elif self.fieldType == "sum":
             self.getValue = self.getValueSum
             self.getString = self.getStringRounded
+        elif self.fieldType == "difference":
+            self.getValue = self.getValueDifference
+            self.getString = self.getStringRounded
         elif self.fieldType == "mean":
             self.getValue = self.getValueMean
             self.getString = self.getStringRounded
@@ -243,6 +246,28 @@ class Field:
             else:     # or the neutral element for addtion (0)
                 sum += 0
         return sum
+
+
+    def getValueDifference(self):
+        """
+        Calculates different a - b - c - d of values a,b,c,d
+        """
+        values = self.getFieldValues()
+        difference = 0
+        first = True
+        for v in values:
+            if first:
+                if v:
+                    difference = v     # first element is positive
+                else:
+                    difference = 0     # or the neutral element for addtion (0)
+                first = False
+            else:
+                if v:
+                    difference -= v     # all other elements are negative
+                else:
+                    difference += 0     # or the neutral element for addtion (0)
+        return difference
 
 
     def getValueMean(self):
