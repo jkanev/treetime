@@ -415,7 +415,56 @@ class Node:
             self.children[i].printForest(indent + 1)
 
 
-    
+    def to_txt(self, lastitem=[]):
+
+        text = ""
+
+        # create leading tree graphics
+        pre_node_prefix = ""
+        first_line_prefix = ""
+        line_prefix = ""
+        if len(lastitem) > 1:
+            for i in range(len(lastitem)-1):
+                if lastitem[i]:
+                    pre_node_prefix += "    "
+                    first_line_prefix += "    "
+                    line_prefix += "    "
+                else:
+                    pre_node_prefix += " │  "
+                    first_line_prefix += " │  "
+                    line_prefix += " │  "
+        if len(lastitem):
+            if lastitem[-1]:
+                pre_node_prefix += " │  "
+                first_line_prefix += " ┕━ "
+                line_prefix += "    "
+            else:
+                pre_node_prefix += " │  "
+                first_line_prefix += " ┝━ "
+                line_prefix += " │  "
+
+        # append item content and print
+        text += pre_node_prefix + "\n"
+        text += first_line_prefix + self.name + "\n"
+        for name, field in self.fields.items():
+            value = field.getString()
+            if value:
+                text += line_prefix + name + ": " + value + "\n"
+
+        # recurse
+        if len(self.children) > 1:
+            childprefix = lastitem.copy()
+            childprefix.append(False)
+            for i in range(len(self.children)-1):
+                text += self.children[i].to_txt(childprefix)
+        if len(self.children):
+            childprefix = lastitem.copy()
+            childprefix.append(True)
+            text += self.children[-1].to_txt(childprefix)
+
+        # return
+        return text
+
     def createPathTo(self, item, treeindex, nodeindex, viewtemplate):
         """
         Links an item into a tree, using the given path. Empty nodes get created on the way.
