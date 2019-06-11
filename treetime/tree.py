@@ -18,6 +18,7 @@
 # -*- coding:utf-8 -*-
 
 from .item import *
+from textwrap import wrap
 
 class Field:
     """A set of instructions to view/display the content of data items. Fields are part of nodes, and are stored in templates."""
@@ -447,9 +448,14 @@ class Node:
         text += pre_node_prefix + "\n"
         text += first_line_prefix + self.name + "\n"
         for name, field in self.fields.items():
-            value = field.getString()
-            if value:
-                text += line_prefix + name + ": " + value + "\n"
+            lines = wrap(field.getString(), 70)
+            first = True
+            for l in lines:
+                if first:
+                    text += line_prefix + name + ": " + l + "\n"
+                    first = False
+                else:
+                    text += line_prefix + "    " + l + "\n"
 
         # recurse
         if len(self.children) > 1:
