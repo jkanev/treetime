@@ -140,11 +140,12 @@ Past
 - Done October 2018: Re-furbished the GUI and removed a couple of bugs. Slighty changed the data file format. Implemented theme selection. Tested pyqtdeploy for deployment instead of pyinstaller. Updated the description.
 - Done November 2018: Released version 2018-10
 - Done January 2019: Implemented new field type "URL"
-
-Current
+- Done June 2020: Fixed problem with protected cells (typing into a cell without data could cause a crash), and fixed file selection dialog (now only offers *.trt files).
+  
+Present
 - Running: Bugfixing
 - Running: Write documentation on readthedocs.io and create example more example and template data files
-
+  
 Future
 - Near Future: Implement search function
 - Near Future: Implement more data item field types (timers, date/time/time-span)
