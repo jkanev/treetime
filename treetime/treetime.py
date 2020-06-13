@@ -314,6 +314,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.treeWidgets = []
         self.currentTree = 0
         self.currentItem = None
+        self.gridInitialised = False
         if filename is not None and filename != '':
             try:
                 # load file
@@ -389,15 +390,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def _protectCells(self, row, columns):
 
-        nonEditFlags = QtCore.Qt.ItemFlags()
-        empties = []
-        for i in columns:
-            if not self.tableWidget.item(row, i):
-                empties.append(QtWidgets.QTableWidgetItem(""))
-                empties[-1].setFlags(nonEditFlags)
-                self.tableWidget.setItem(row, i, empties[-1])
-            else:
-                self.tableWidget.item(row, i).setFlags(nonEditFlags)
+        if not self.gridInitialised:
+            nonEditFlags = QtCore.Qt.ItemFlags()
+            empties = []
+            for i in columns:
+                if not self.tableWidget.item(row, i):
+                    empties.append(QtWidgets.QTableWidgetItem(""))
+                    empties[-1].setFlags(nonEditFlags)
+                    self.tableWidget.setItem(row, i, empties[-1])
+                else:
+                    self.tableWidget.item(row, i).setFlags(nonEditFlags)
 
     def treeSelectionChanged(self, treeIndex):
         
@@ -406,10 +408,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.locked = True
 
             # init
-            self.tableWidget.clear()
             selectedItems = self.treeWidgets[treeIndex].selectedItems()
 
-            n = 0
+            # we have something tow write
             if selectedItems != []:
                 
                 qnode = selectedItems[0]
@@ -435,9 +436,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # go through all lines of the table
                 n = 0
-
-                # create array of empty widgets
-                empties = []
 
                 # empty line
                 self._protectCells(0, [0, 1, 2, 3, 4])
@@ -532,11 +530,18 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self._protectCells(n, [0, 2, 4])
                     n += 1
 
+            # an empty page, clear an initialise
+            else:
+                self.tableWidget.clear()
+                self.gridInitialised = False
+                n = 0
+
             # empty lines to fill the 20 lines in the main view
             if n < 20:
                 for k in range(n, 20):
                     self._protectCells(k, [0, 1, 2, 3, 4])
 
+            self.gridInitialised = True
             self.locked = False
     
     
