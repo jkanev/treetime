@@ -260,7 +260,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Callback for the load-file button. Loads new file and keeps that file connected.
         """
         fileDir = self.settings.value('fileDir') or ''
-        file = QtWidgets.QFileDialog.getOpenFileName(self, "Load Data File", fileDir, '*.trt')[0]
+        file = QtWidgets.QFileDialog.getOpenFileName(self, "Load Data File", fileDir, 'TreeTime Files (*.trt)')[0]
         if file != '':
             self.loadFile(file)
             self.setWindowTitle("TreeTime - " + file)
@@ -387,6 +387,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.treeWidgets[n].setSortingEnabled(True)
             self.treeWidgets[n].sortItems(0, QtCore.Qt.AscendingOrder)
 
+    def _protectCells(self, row, columns):
+
+        nonEditFlags = QtCore.Qt.ItemFlags()
+        empties = []
+        for i in columns:
+            if not self.tableWidget.item(row, i):
+                empties.append(QtWidgets.QTableWidgetItem(""))
+                empties[-1].setFlags(nonEditFlags)
+                self.tableWidget.setItem(row, i, empties[-1])
+            else:
+                self.tableWidget.item(row, i).setFlags(nonEditFlags)
 
     def treeSelectionChanged(self, treeIndex):
         
@@ -397,7 +408,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # init
             self.tableWidget.clear()
             selectedItems = self.treeWidgets[treeIndex].selectedItems()
-            
+
+            n = 0
             if selectedItems != []:
                 
                 qnode = selectedItems[0]
@@ -424,13 +436,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # go through all lines of the table
                 n = 0
 
+                # create array of empty widgets
+                empties = []
+
                 # empty line
-                empty0 = QtWidgets.QTableWidgetItem("")
-                empty0.setFlags(nonEditFlags)
-                empty1 = QtWidgets.QTableWidgetItem("")
-                empty1.setFlags(nonEditFlags)
-                self.tableWidget.setItem(n, 1, empty0)
-                self.tableWidget.setItem(n, 3, empty1)
+                self._protectCells(0, [0, 1, 2, 3, 4])
                 n += 1
 
                 # add name
@@ -442,15 +452,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 value.setFont(font)
                 self.tableWidget.setItem(n, 1, name)
                 self.tableWidget.setItem(n, 3, value)
+                self._protectCells(n, [0, 2, 4])
                 n += 1
                 
                 # empty line
-                empty2 = QtWidgets.QTableWidgetItem("")
-                empty2.setFlags(nonEditFlags)
-                empty3 = QtWidgets.QTableWidgetItem("")
-                empty3.setFlags(nonEditFlags)
-                self.tableWidget.setItem(n, 1, empty2)
-                self.tableWidget.setItem(n, 3, empty3)
+                self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
 
                 # add all parents in tree parent path
@@ -494,15 +500,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
 
                     self.tableWidget.setCellWidget(n, 3, buttonbox)
+                    self._protectCells(n, [0, 2, 4])
                     n += 1
                     
                 # empty line
-                empty4 = QtWidgets.QTableWidgetItem("")
-                empty4.setFlags(nonEditFlags)
-                empty5 = QtWidgets.QTableWidgetItem("")
-                empty5.setFlags(nonEditFlags)
-                self.tableWidget.setItem(n, 1, empty4)
-                self.tableWidget.setItem(n, 3, empty5)
+                self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
 
                 # add item fields
@@ -527,8 +529,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         value = QtWidgets.QTableWidgetItem(value)
                         self.tableWidget.setItem(n, 3, value)
                     self.tableWidget.setItem(n, 1, name)
+                    self._protectCells(n, [0, 2, 4])
                     n += 1
-            
+
+            # empty lines to fill the 20 lines in the main view
+            if n < 20:
+                for k in range(n, 20):
+                    self._protectCells(k, [0, 1, 2, 3, 4])
+
             self.locked = False
     
     
