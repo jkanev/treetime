@@ -21,9 +21,10 @@ import copy
 import json
 
 
-
-"""The list/forest item containing the actual data"""
 class Item:
+    """
+    The list/forest item containing the actual data
+    """
 
     def __init__(self, name, fieldstring='{}', treestring='[]'):
         self.name = name

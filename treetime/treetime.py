@@ -28,7 +28,9 @@ import os.path
 import platform
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
-sys.setrecursionlimit(50)
+# Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
+# sys.setrecursionlimit(50)
+
 
 class QNode(QtWidgets.QTreeWidgetItem):
     """
@@ -231,7 +233,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if current:
             self.cboxTheme.setCurrentText(current)
 
-
     def cboxThemeTextChanged(self):
         """
         Callback from the theme selector combo box. Sets a new theme and stores it in the settings.
@@ -240,7 +241,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         style = self.cboxTheme.currentText()
         self.settings.setValue('theme', style)
         application.setStyle(QtWidgets.QStyleFactory.create(style))
-
 
     def pushButtonSaveToFileClicked(self):
         """
@@ -335,12 +335,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def writeToFile(self):
         self.forest.writeToFile(self.labelCurrentFile.text())
-    
-    
+
     def removeBranchTabs(self):
             self.tabWidget.clear()
             self.tabWidgets = []
-
 
     def createBranchTabs(self):
         
@@ -544,7 +542,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.gridInitialised = True
             self.locked = False
     
-    
     def createParentMenu(self, treeIndex, parent):
         """
         Displays a menu with possible children to select, at the current mouse cursor position.
@@ -578,12 +575,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         return menu
 
-
-    '''Called when the user selects another tree in the tab widget.'''
     def tabWidgetCurrentChanged(self, tree):
+        '''Called when the user selects another tree in the tab widget.
+        '''
+
         self.currentTree = tree
         self.treeSelectionChanged(tree)
-
 
     def tableWidgetCellChanged(self, row, column):
         """
@@ -615,7 +612,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 
             self.locked = False
             self.writeToFile()
-
 
     def createNode(self, insertas, copy, recurse = False, srcItem = None, destItem = None):
         
@@ -718,7 +714,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             treeWidget.setCurrentItem(qnode)
             self.writeToFile()
     
-    
     def moveCurrentItemToNewParent(self, treeIndex, newParent):
         
         treeWidget = self.treeWidgets[self.currentTree]
@@ -779,7 +774,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.writeToFile()
 
 
-class TreeTime():
+class TreeTime:
     
     def __init__(self):
         
