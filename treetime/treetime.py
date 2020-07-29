@@ -546,7 +546,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         Displays a menu with possible children to select, at the current mouse cursor position.
         """
-
+        print("createParentMenu({},{})".format(treeIndex, parent))
         menu = QtWidgets.QMenu()
 
         # root node
@@ -573,6 +573,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 action.triggered.connect(lambda checked, t=treeIndex, p=c: self.moveCurrentItemToNewParent(t, p))
                 menu.addAction(action)
 
+        print("createParentMenu done")
         return menu
 
     def tabWidgetCurrentChanged(self, tree):
@@ -715,7 +716,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.writeToFile()
     
     def moveCurrentItemToNewParent(self, treeIndex, newParent):
-        
+        print("moveCurrentItemToNewParent({},{})".format(treeIndex, newParent))
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
 
@@ -772,6 +773,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 treeWidget.setCurrentItem(item.viewNodes[self.currentTree].viewNode)
                 self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
+            print("moveCurrentItemToNewParent done")
 
 
 class TreeTime:
