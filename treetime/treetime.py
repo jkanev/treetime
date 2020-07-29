@@ -408,9 +408,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # init
             selectedItems = self.treeWidgets[treeIndex].selectedItems()
 
-            # we have something tow write
+            # we have something to write
             if selectedItems != []:
-                
+
                 qnode = selectedItems[0]
                 
                 # unselect previous item in all trees
@@ -462,6 +462,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     name.setFlags(nonEditFlags)
                     name.setTextAlignment(0x82)
                     self.tableWidget.setItem(n, 1, name)
+                    self.tableWidget.removeCellWidget(n, 3)     # should not be necessary, but prevents an occasional
+                                                                # segfault in the qt library on parent change
                     buttonbox = QtWidgets.QDialogButtonBox()
                     if not len(path):
                         button = QtWidgets.QToolButton()
@@ -546,7 +548,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         Displays a menu with possible children to select, at the current mouse cursor position.
         """
-        print("createParentMenu({},{})".format(treeIndex, parent))
         menu = QtWidgets.QMenu()
 
         # root node
@@ -573,7 +574,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 action.triggered.connect(lambda checked, t=treeIndex, p=c: self.moveCurrentItemToNewParent(t, p))
                 menu.addAction(action)
 
-        print("createParentMenu done")
         return menu
 
     def tabWidgetCurrentChanged(self, tree):
@@ -716,7 +716,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.writeToFile()
     
     def moveCurrentItemToNewParent(self, treeIndex, newParent):
-        print("moveCurrentItemToNewParent({},{})".format(treeIndex, newParent))
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
 
@@ -773,7 +772,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 treeWidget.setCurrentItem(item.viewNodes[self.currentTree].viewNode)
                 self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
-            print("moveCurrentItemToNewParent done")
 
 
 class TreeTime:
