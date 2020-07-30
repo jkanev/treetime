@@ -20,8 +20,12 @@
 from .item import *
 from textwrap import wrap
 
+
 class Field:
-    """A set of instructions to view/display the content of data items. Fields are part of nodes, and are stored in templates."""
+    """
+    A set of instructions to view/display the content of data items.
+    Fields are part of nodes, and are stored in templates.
+    """
 
     def __init__(self, node=None, ownFields=[], childFields=[], siblingFields=[], parentFields=[], fieldType=None):
         """Initialises the class, links the source node, field type, and sets the evaluation method."""
@@ -38,7 +42,6 @@ class Field:
         if (self.fieldType != ""):
             self.initFieldType()
 
-    
     def __deepcopy__(self, memo):
         ''' Overload of the deepcopy function, to avoid copying the node recursively.'''
 
@@ -68,10 +71,12 @@ class Field:
         memo[id(self)] = newField
         return newField
 
-
-    ''' Gets all values of all related fields in a list. Order is: own fields first, then child fields, then sibling fields, then parent fields. Item fields of the same name have precence over tree fields.'''
     def getFieldValues(self):
-        
+        """ Gets all values of all related fields in a list.
+        Order is: own fields first, then child fields, then sibling fields, then parent fields.
+        Item fields of the same name have precence over tree fields.
+        """
+
         values = []
         
         # look in own fields
@@ -113,7 +118,6 @@ class Field:
         # return
         return values
 
-
     def initFieldType(self):
         
         if self.fieldType == "string":
@@ -144,7 +148,6 @@ class Field:
             self.getValue = self.getValueNodePath
             self.getString = self.getStringUnchanged
 
-        
     def getStringPercent(self):
         if self.sourceNode and self.getValue:
             v = self.getValue();
@@ -160,13 +163,11 @@ class Field:
         else:
             return ""
 
-
     def getStringUnchanged(self):
         if self.sourceNode and self.getValue:
             return str(self.getValue())
         else:
             return "[undefined]"
-
 
     def getStringRounded(self):
         if self.sourceNode and self.getValue:
@@ -177,7 +178,6 @@ class Field:
                 return ""
         else:
             return "[undefined]"
-
 
     def getValueNodeName(self):
         if self.cache is not None:
@@ -201,7 +201,6 @@ class Field:
                     if parent is not None:
                         s += parent.name
             return s
-
 
     def getValueNodePath(self):
         if self.cache is not None:
@@ -228,7 +227,6 @@ class Field:
                         s = parent.name + " | " + s
             return s
 
-
     def getValueString(self):
         values = self.getFieldValues()
         s = ""
@@ -236,7 +234,6 @@ class Field:
             if v:
                 s += str(v)
         return s
-
 
     def getValueSum(self):
         values = self.getFieldValues()
@@ -247,7 +244,6 @@ class Field:
             else:     # or the neutral element for addtion (0)
                 sum += 0
         return sum
-
 
     def getValueDifference(self):
         """
@@ -269,7 +265,6 @@ class Field:
                 else:
                     difference += 0     # or the neutral element for addtion (0)
         return difference
-
 
     def getValueMean(self):
         values = self.getFieldValues()
@@ -302,7 +297,6 @@ class Field:
             else:
                 return None
     
-    
     def writeToString(self):
         string = "    field-type " + json.dumps(self.fieldType) + "\n"
         string += "        own-fields " + json.dumps(self.ownFields) + "\n"
@@ -310,7 +304,6 @@ class Field:
         string += "        sibling-fields " + json.dumps(self.siblingFields) + "\n"
         string += "        parent-fields " + json.dumps(self.parentFields) + "\n"
         return string
-
 
     def readFromString(self, string):
         
@@ -349,7 +342,6 @@ class Field:
         print('error reading field parameter "' + parameter + '" of field "' + name + '": definition string "' + string + '" cannot be parsed.')
 
 
-
 class Node:
     """
     A tree structure consisting of nodes that are parents of nodes etc. A node is a view-object to display one item.
@@ -370,8 +362,6 @@ class Node:
         self.deletionCallback = None
         self.moveCallback = None
 
-
-
     def map(self, function, parameter, depthFirst):
         ''' Applies the function to each node in the tree. The function must receive one parameter and return one parameter. The return value is used as parameter for the next function call. The value Parameter is used in the first call.'''
         
@@ -387,8 +377,6 @@ class Node:
                 parameter = c.map(function, parameter, depthFirst)
                 
             return parameter
-
-
 
     def printForest(self, indent=0):
         
@@ -414,7 +402,6 @@ class Node:
         # recurse
         for i in range(len(self.children)):
             self.children[i].printForest(indent + 1)
-
 
     def to_txt(self, lastitem=[]):
 
@@ -490,7 +477,6 @@ class Node:
             self.initFields(viewtemplate)
             self.registerCallbacks()
 
-        
     def registerCallbacks(self, register=True):
         """
         Register callbacks from the parent (QNode), so changes from the tree layer
@@ -509,7 +495,6 @@ class Node:
         Register the respective QT GUI view node with the node
         """
         self.viewNode = viewNode
-        
 
     def findNode(self, path, currentIndex):
         """
@@ -527,7 +512,6 @@ class Node:
         else:
             return self
 
-
     def addChild(self):
         """
         Add a child to a node. The child is a new copy of the default node.
@@ -535,7 +519,6 @@ class Node:
         node = Node(self, self.tree, self.path + [len(self.children)])
         self.children += [node]
         return node
-
 
     def addNodeAsChild(self, node):
         """
@@ -547,7 +530,6 @@ class Node:
         node.item.notifyFieldChange("")
         self.notifyNameChange(self.name)
 
-    
     def removeChild(self, child):
         if child in self.children:
             self.registerCallbacks(False)
@@ -556,17 +538,16 @@ class Node:
             for f in self.fields:
                 self.notifyFieldChange(f, True)
 
-
     def renumberChildren(self):
         """
         Correct the paths after children have been removed or added.
         """
-        for i,c in enumerate(self.children):
+        for i, c in enumerate(self.children):
             c.path = self.path + [i]
             if c.item:
+                # print("{} {}".format(c.path, c.item.name))
                 c.item.trees[self.tree] = self.path + [i]
                 c.renumberChildren()
-
 
     def addItemAsChild(self, item):
         """
@@ -580,7 +561,6 @@ class Node:
         node.initFields(self.fields)
         return node
 
-
     def initFields(self, fields):
         self.fields = copy.deepcopy(fields)
         
@@ -591,7 +571,6 @@ class Node:
         # and only then send notification
         for name,field in self.fields.items():
             self.notifyFieldChange(name, True)
-
 
     def findNodeByName(self, name):
         """
@@ -606,13 +585,11 @@ class Node:
                     return found
         return None
 
-
     def registerNameChangeCallback(self, callback):
         self.nameChangeCallback = callback
 
     def registerFieldChangeCallback(self, callback):
         self.fieldChangeCallback = callback
-
 
     def registerDeletionCallback(self, callback):
         self.deletionCallback = callback
@@ -622,7 +599,6 @@ class Node:
 
     def registerSelectionCallback(self, callback):
         self.selectionCallback = callback
-
 
     def notifyNameChange(self, newName):
         """
@@ -647,7 +623,6 @@ class Node:
         for c in self.children:
             c.notifyNameChange(False)
 
-
     def notifyFieldChange(self, fieldName, recursion):
         """
         Callback, called whenever a field in a related item has changed.
@@ -665,8 +640,6 @@ class Node:
                         c.notifyFieldChange(fieldName, False)
                 # notify all parents, recursive
                 self.parent.notifyFieldChange(fieldName, True)
-            
-
 
     def notifyDeletion(self):
         """
@@ -687,8 +660,6 @@ class Node:
 
         # make parent renumber children
         self.parent.removeChild(self)
-
-
 
     def notifyMove(self):
         """
@@ -712,7 +683,6 @@ class Node:
         if self.moveCallback is not None:
             self.moveCallback()
 
-
     def notifySelection(self, select):
         """
         Callback, called whenever the underlying item was selected.
@@ -735,7 +705,6 @@ class Tree(Node):
         self.fields = {}
         self.name = ""
 
-
     def createPathTo(self, item, treeindex):
         """
         Sort the item into the forest, creating existing nodes on the fly if missing.
@@ -757,13 +726,19 @@ class Tree(Node):
         # per tree: loop over all nodes, creating if necessary
         return super().findNode(path, 0)
 
+    def renumberChildren(self):
+        """
+        Correct the paths after children have been removed or added.
+        """
+        for i, c in enumerate(self.children):
+            c.renumberChildren()
+
     def writeToString(self):
         string = "tree " + json.dumps(self.name) + "\n"
         for n,f in self.fields.items():
             string += "    field " + json.dumps(n) + "\n"
             string += "    " + f.writeToString()
         return string
-
 
     def readFromString(self, string):
         fieldStrings = string.split("\n    field ")
@@ -791,10 +766,11 @@ class Forest(Node):
         self.readFromFile(filename)
 
 
-    """Sort all items from the itempool into the forest, creating the forest structure as defined by the
-    items' node indexes"""
     def createPaths(self):
-        
+        """
+        Sort all items from the itempool into the forest,
+        creating the forest structure as defined by the items' node indexes
+        """
         for item in self.itemPool.items:
             self.createPathTo(item)
 
@@ -812,6 +788,12 @@ class Forest(Node):
     def addTree(self):
         self.children += [Tree(self, len(self.children))]
 
+    def renumberChildren(self):
+        """
+        Correct the paths after children have been removed or added.
+        """
+        for i, c in enumerate(self.children):
+            c.renumberChildren()
 
     def writeToString(self):
         s = ""
@@ -852,17 +834,19 @@ class Forest(Node):
             typeString = s[0]
             itemString = s[1]
 
-            # create item pool
-            self.itemTypes = ItemPool()
-            self.itemTypes.readFromString(typeString)
+        # create item pool
+        self.itemTypes = ItemPool()
+        self.itemTypes.readFromString(typeString)
 
-            # create type pool
-            self.itemPool = ItemPool()
-            self.itemPool.readFromString(itemString)
-            self.createPaths()
+        # create type pool
+        self.itemPool = ItemPool()
+        self.itemPool.readFromString(itemString)
+        self.createPaths()
 
-            # create trees
-            self.readFromString(treeString)
-            self.createPaths()     # atm we still need this twice. Fix it.
+        # create trees
+        self.readFromString(treeString)
+        self.createPaths()     # atm we still need this twice. Fix it.
 
-
+        # # better safe than sorry
+        # self.renumberChildren()
+        # self.writeToFile(filename)

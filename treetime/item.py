@@ -39,7 +39,6 @@ class Item:
         self.selectionCallbacks = []
         self.clearCallbacks()
 
-
     def __deepcopy__(self, memo):
         ''' Overload of the deepcopy function, to avoid copying the node recursively.'''
         
@@ -69,7 +68,6 @@ class Item:
         memo[id(newItem)] = newItem
         return newItem
 
-
     def clearCallbacks(self):
         self.viewNodes = []
         self.nameChangeCallbacks = []
@@ -85,21 +83,17 @@ class Item:
             self.moveCallbacks += [None]
             self.selectionCallbacks += [None]
 
-
     def addField(self, name, content):
         self.fields[name] = content
 
-
     def removeField(self, name, content):
         del self.fields[name]
-
 
     def writeToString(self):
         string = self.name + "\n"
         string += "    fields " + json.dumps(self.fields) + "\n"
         string += "    trees " + json.dumps(self.trees) + "\n"
         return string
-
 
     def readFromString(self, string):
         s = string.split("\n    fields ")
@@ -116,30 +110,23 @@ class Item:
             for subkey in self.fields[key]:
                 print("        ", subkey, ":", self.fields[key][subkey])
 
-
     def registerViewNode(self, tree, node):
         self.viewNodes[tree] = node
-        
 
     def registerNameChangeCallback(self, tree, callback):
         self.nameChangeCallbacks[tree] = callback
 
-
     def registerSelectionCallback(self, tree, callback):
         self.selectionCallbacks[tree] = callback
-
 
     def registerFieldChangeCallback(self, tree, callback):
         self.fieldChangeCallbacks[tree] = callback
 
-
     def registerDeletionCallback(self, tree, callback):
         self.deletionCallbacks[tree] = callback
 
-
     def registerMoveCallback(self, tree, callback):
         self.moveCallbacks[tree] = callback
-
 
     def changeName(self, newName):
         self.name = newName
@@ -151,7 +138,6 @@ class Item:
         for c in self.selectionCallbacks:
             if c is not None:
                 c(select)
-
 
     def changeFieldContent(self, fieldName, fieldContent):
         """
@@ -182,7 +168,6 @@ class Item:
         
         return True
 
-
     def notifyFieldChange(self, fieldName):
         """
         notify GUI of field change
@@ -190,7 +175,6 @@ class Item:
         for f in self.fieldChangeCallbacks:
             if f is not None:
                 f(fieldName)
-
 
     def removeFromTree(self, treeIndex):
         """
@@ -206,7 +190,6 @@ class Item:
             self.registerFieldChangeCallback(treeIndex, None)
             self.registerNameChangeCallback(treeIndex, None)
             self.registerViewNode(treeIndex, None)
-
 
     def moveInTree(self, treeIndex, parentPath):
         """
@@ -234,7 +217,7 @@ class ItemPool:
         Writes the whole pool to a re-loadable string
         """
         string = ""
-        for it in self.items:
+        for it in self.items:     # sorted(self.items, key=lambda e: e.trees):
             string += "item " + it.writeToString() + "\n"
         return string
         
@@ -255,7 +238,6 @@ class ItemPool:
         """
         for it in self.items:
             it.printitem()
-
 
     def copyItem(self, item):
         """
