@@ -62,14 +62,12 @@ class QNode(QtWidgets.QTreeWidgetItem):
         
         # register callbacks
         self.registerCallbacks()
-        
 
     def parent(self):
         """
         Returns the parent of a node
         """
         return super().parent() or self.treeWidget().invisibleRootItem() or None
-
 
     def registerCallbacks(self):
         """
@@ -82,10 +80,8 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.sourceNode.registerMoveCallback(self.notifyMove)
         self.sourceNode.registerViewNode(self)
 
-
     def notifyNameChange(self, newName):
         super().setText(0, newName)
-
 
     def notifyFieldChange(self, fieldName, fieldContent):
         if fieldName in self.fieldOrder:
@@ -100,7 +96,6 @@ class QNode(QtWidgets.QTreeWidgetItem):
             self.parent().removeChild(self)
         else:
             print("I have no parent, so I'll stay.")
-
 
     def notifyMove(self):
 
@@ -221,7 +216,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # show window
         self.showMaximized()
-
 
     def fillThemeBox(self):
         """
@@ -415,11 +409,18 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 # unselect previous item in all trees
                 if self.currentItem is not None:
-                    self.currentItem.select(False)
-                
+                    try:
+                        self.currentItem.select(False)
+                    except:
+                        print("warning: Unselecting of {} didn't work".format(self.currentItem.name))
+                        pass
+
                 # select current item in all trees
                 self.currentItem = qnode.sourceNode.item
                 if self.currentItem is None:
+                    self.tableWidget.clear()
+                    self.gridInitialised = False
+                    self.locked = False
                     return
                 self.currentItem.select(True)
                 
@@ -782,7 +783,6 @@ class TreeTime:
         if platform.system() == "Windows":
             app.setStyle("Fusion")
         mainWindow = TreeTimeWindow()
-
         mainWindow.show()
         sys.exit(app.exec_())
 

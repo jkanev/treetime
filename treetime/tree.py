@@ -726,13 +726,6 @@ class Tree(Node):
         # per tree: loop over all nodes, creating if necessary
         return super().findNode(path, 0)
 
-    def renumberChildren(self):
-        """
-        Correct the paths after children have been removed or added.
-        """
-        for i, c in enumerate(self.children):
-            c.renumberChildren()
-
     def writeToString(self):
         string = "tree " + json.dumps(self.name) + "\n"
         for n,f in self.fields.items():

@@ -217,7 +217,7 @@ class ItemPool:
         Writes the whole pool to a re-loadable string
         """
         string = ""
-        for it in self.items:     # sorted(self.items, key=lambda e: e.trees):
+        for it in sorted(self.items, key=lambda e: e.trees):
             string += "item " + it.writeToString() + "\n"
         return string
         
