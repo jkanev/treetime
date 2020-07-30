@@ -435,25 +435,38 @@ class Node:
         text += pre_node_prefix + "\n"
         text += first_line_prefix + self.name + "\n"
         for name, field in self.fields.items():
-            lines = wrap(field.getString(), 70)
+
+            # wrap text at 70 characters, preserving newlines, but trimming space (no double new lines)
+            raw_lines = field.getString()
+            raw_lines = [s.strip() for s in raw_lines.split('\n') if s.strip()]
+            lines = []
+            for line in raw_lines:
+                lines += wrap(line, 70)
             first = True
-            for l in lines:
+
+            # larger bits of text start with a newline
+            if len(lines) > 1:
+                lines = [''] + lines
+
+            # assemble final text with tree decorations
+            for line in lines:
                 if first:
-                    text += line_prefix + name + ": " + l + "\n"
+                    text += line_prefix + name + ": " + line + "\n"
                     first = False
                 else:
-                    text += line_prefix + "    " + l + "\n"
+                    text += line_prefix + "    " + line + "\n"
 
         # recurse
-        if len(self.children) > 1:
+        sorted_children = sorted(self.children, key=lambda c: c.name)
+        if len(sorted_children) > 1:
             childprefix = lastitem.copy()
             childprefix.append(False)
-            for i in range(len(self.children)-1):
-                text += self.children[i].to_txt(childprefix)
-        if len(self.children):
+            for i in range(len(sorted_children)-1):
+                text += sorted_children[i].to_txt(childprefix)
+        if len(sorted_children):
             childprefix = lastitem.copy()
             childprefix.append(True)
-            text += self.children[-1].to_txt(childprefix)
+            text += sorted_children[-1].to_txt(childprefix)
 
         # return
         return text
