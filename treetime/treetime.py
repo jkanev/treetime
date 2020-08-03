@@ -322,7 +322,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     items = firstTree.topLevelItemCount()
                     if items:
                         firstTree.topLevelItem(0).setSelected(True)
-            except:
+            except KeyError as e:
+                msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", str(e))
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                result = msgBox.exec_()
                 self.pushButtonLoadFileClicked()
         else:
             self.pushButtonLoadFileClicked()

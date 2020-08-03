@@ -578,11 +578,11 @@ class Node:
         self.fields = copy.deepcopy(fields)
         
         # first set all fields to myself
-        for name,field in self.fields.items():
+        for name, field in self.fields.items():
             field.sourceNode = self
         
         # and only then send notification
-        for name,field in self.fields.items():
+        for name, field in self.fields.items():
             self.notifyFieldChange(name, True)
 
     def findNodeByName(self, name):

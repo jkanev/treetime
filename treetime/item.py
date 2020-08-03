@@ -68,6 +68,12 @@ class Item:
         memo[id(newItem)] = newItem
         return newItem
 
+    def __repr__(self):
+        string = "name: {} | fields: {} | trees: {}".format(self.name,
+                                                            json.dumps(self.fields),
+                                                            json.dumps(self.trees))
+        return string
+
     def clearCallbacks(self):
         self.viewNodes = []
         self.nameChangeCallbacks = []
@@ -211,6 +217,7 @@ class ItemPool:
         Construct
         """
         self.items = []
+        self.existing_paths = []     # all existing paths for each tree, used during loading to check for duplicates
 
     def writeToString(self):
         """
@@ -225,11 +232,44 @@ class ItemPool:
         """
         Reads the pool from a string
         """
-        string = string.split("\n\nitem ") # items are separated by empty lines and the keyword "item"
+
+        # split string and iterate over all parts
+        string = string.split("\n\nitem ")     # items are separated by empty lines and the keyword "item"
         for s in string:
             if s != "":
+
+                # read single item
                 it = Item("")
-                it.readFromString(s)
+                try:
+                    it.readFromString(s)
+                except json.decoder.JSONDecodeError as e:
+                    raise KeyError("Corrupt data file. "
+                                   "The item defined by {} in the file could not be read. "
+                                   "Problem: {} when reading {}. "
+                                   "Please correct manually in a text editor and then reload the file. "
+                                   "".format(s, e.msg, e.doc))
+
+                # sanity check: look for duplicated paths
+                for i, t in enumerate(it.trees):
+                    if len(self.existing_paths) <= i:
+                        self.existing_paths.append([])
+                    if t:
+
+                        # if we found a duplicated path, raise an exception
+                        if t in self.existing_paths[i]:
+                            found_item = None
+                            for f in self.items:
+                                if f.trees[i] == t:
+                                    found_item = f
+                                    break
+                            raise KeyError("Corrupt data file. "
+                                           "The path {} in the tree {}, used by \"{}\" is already in use by \"{}\". "
+                                           "Please correct manually in a text editor and then reload the file. "
+                                           "".format(t, i, it.name, found_item.name))
+
+                        # if all is fine, add item and proceed
+                        else:
+                            self.existing_paths[i].append(t)
                 self.items += [it]
 
     def printpool(self):
