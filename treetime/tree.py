@@ -490,7 +490,7 @@ class Node:
             self.initFields(viewtemplate)
             self.registerCallbacks()
 
-    def registerCallbacks(self, register=True):
+    def registerCallbacks(self):
         """
         Register callbacks from the parent (QNode), so changes from the tree layer
         can be shown in the QT GUI layer
@@ -545,7 +545,6 @@ class Node:
 
     def removeChild(self, child):
         if child in self.children:
-            self.registerCallbacks(False)
             self.children.remove(child)
             self.renumberChildren()
             for f in self.fields:
@@ -705,6 +704,16 @@ class Node:
         if self.selectionCallback is not None:
             self.selectionCallback(select)
 
+    def removeEmptyNodes(self):
+        """
+        Recurse to find nodes that have no items. If found, those nodes are removed and their siblings renumbered.
+        Called after initial loading of the file.
+        """
+        for c in self.children:
+            c.removeEmptyNodes()
+        if not self.item:
+            self.notifyDeletion()
+
 
 class Tree(Node):
     """
@@ -757,6 +766,14 @@ class Tree(Node):
                 self.fields[name] = f
                 self.fieldOrder += [name]
 
+    def removeEmptyNodes(self):
+        """
+        Recurse to find nodes that have no items. If found, those nodes are removed and their siblings renumbered.
+        Overrides same function in node, does not remove self (trees have no item anyway).
+        """
+        for c in self.children:
+            c.removeEmptyNodes()
+
 
 class Forest(Node):
     """
@@ -771,7 +788,6 @@ class Forest(Node):
         self.itemTypes = None
         self.readFromFile(filename)
 
-
     def createPaths(self):
         """
         Sort all items from the itempool into the forest,
@@ -779,7 +795,6 @@ class Forest(Node):
         """
         for item in self.itemPool.items:
             self.createPathTo(item)
-
 
     def createPathTo(self, item):
         
@@ -790,7 +805,6 @@ class Forest(Node):
             if item.trees[b]:
                 self.children[b].createPathTo(item,b)
 
-
     def addTree(self):
         self.children += [Tree(self, len(self.children))]
 
@@ -800,6 +814,14 @@ class Forest(Node):
         """
         for i, c in enumerate(self.children):
             c.renumberChildren()
+
+    def removeEmptyNodes(self):
+        """
+        Recurse to find nodes that have no items. If found, those nodes are removed and their siblings renumbered.
+        Overrides same function in node, does not remove self (forests have no item anyway).
+        """
+        for c in self.children:
+            c.removeEmptyNodes()
 
     def writeToString(self):
         s = ""
@@ -827,7 +849,6 @@ class Forest(Node):
             f.write("--item-pool--\n\n")
             f.write(itemString)
 
-
     def readFromFile(self, filename):
         with open(filename, "r") as f:
 
@@ -853,6 +874,5 @@ class Forest(Node):
         self.readFromString(treeString)
         self.createPaths()     # atm we still need this twice. Fix it.
 
-        # # better safe than sorry
-        # self.renumberChildren()
-        # self.writeToFile(filename)
+        # remove empty nodes
+        self.removeEmptyNodes()

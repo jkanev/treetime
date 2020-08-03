@@ -322,6 +322,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     items = firstTree.topLevelItemCount()
                     if items:
                         firstTree.topLevelItem(0).setSelected(True)
+
+            # in case of failure, show user message and reload
             except KeyError as e:
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", str(e))
                 msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -466,8 +468,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     name.setFlags(nonEditFlags)
                     name.setTextAlignment(0x82)
                     self.tableWidget.setItem(n, 1, name)
-                    self.tableWidget.removeCellWidget(n, 3)     # should not be necessary, but prevents an occasional
-                                                                # segfault in the qt library on parent change
                     buttonbox = QtWidgets.QDialogButtonBox()
                     if not len(path):
                         button = QtWidgets.QToolButton()
