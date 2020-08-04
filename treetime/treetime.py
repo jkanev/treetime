@@ -519,12 +519,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         text = text and str(text) or ""     # display "None" values as empty string
                         widget = QtWidgets.QPlainTextEdit(text)
                         widget.textChanged.connect(lambda row=n: self.tableWidgetCellChanged(row, 3))
-                        self.tableWidget.setCellWidget(n, 3, widget)
                     elif self.currentItem.fields[key]['type'] == 'url':
                         value = self.currentItem.fields[key]["content"]
                         value = value and str(value) or ""  # display "None" values as empty string
                         widget = UrlWidget(value, lambda row=n: self.tableWidgetCellChanged(row, 3))
-                        self.tableWidget.setCellWidget(n, 3, widget)
                     else:
                         value = self.currentItem.fields[key]["content"]
                         value = value and str(value) or ""     # display "None" values as empty string
@@ -723,6 +721,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         treeWidget = self.treeWidgets[self.currentTree]
         if len(treeWidget.selectedItems()):
 
+            self.locked = True
+
             # save current item
             item = self.currentItem
 
@@ -774,7 +774,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # select new item after moving, if it is still part of the current tree
             if not disappeared:
                 treeWidget.setCurrentItem(item.viewNodes[self.currentTree].viewNode)
-                self.treeSelectionChanged(self.currentTree)
+
+            # clear table widget to prevent segfault crash in qt lib
+            self.locked = False
+            self.gridInitialised = False
+            self.tableWidget.clear()
+
+            # update table and write to file
+            self.treeSelectionChanged(self.currentTree)
             self.writeToFile()
 
 
