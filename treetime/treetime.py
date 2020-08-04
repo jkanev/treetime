@@ -519,10 +519,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         text = text and str(text) or ""     # display "None" values as empty string
                         widget = QtWidgets.QPlainTextEdit(text)
                         widget.textChanged.connect(lambda row=n: self.tableWidgetCellChanged(row, 3))
+                        self.tableWidget.setCellWidget(n, 3, widget)
                     elif self.currentItem.fields[key]['type'] == 'url':
                         value = self.currentItem.fields[key]["content"]
                         value = value and str(value) or ""  # display "None" values as empty string
                         widget = UrlWidget(value, lambda row=n: self.tableWidgetCellChanged(row, 3))
+                        self.tableWidget.setCellWidget(n, 3, widget)
                     else:
                         value = self.currentItem.fields[key]["content"]
                         value = value and str(value) or ""     # display "None" values as empty string
