@@ -19,7 +19,7 @@
 
 from .item import *
 from textwrap import wrap
-
+import datetime
 
 class Field:
     """
@@ -71,6 +71,29 @@ class Field:
         memo[id(self)] = newField
         return newField
 
+    @staticmethod
+    def getFieldValue(field):
+        """
+        :param field: the field to get the value from
+        :return: Depending on the field type, the current value. Mostly this is just the content of the "content" key,
+        but with timers this is different.
+        """
+        if field["type"] == "timer":
+            running_since = field.get("running_since")
+            partial = field["content"]
+            running_since = running_since and datetime.datetime.strptime(running_since,
+                                                                      "%Y-%m-%d %H:%M:%S")
+            if running_since:
+                elapsed = datetime.datetime.now() - running_since
+                return partial \
+                             + elapsed.days * 24.0 \
+                             + elapsed.seconds / 60.0 / 60.0 \
+                             + elapsed.microseconds / 60.0 / 60.0 / 1000000.0
+            else:
+                return partial
+        else:
+            return field["content"]
+
     def getFieldValues(self):
         """ Gets all values of all related fields in a list.
         Order is: own fields first, then child fields, then sibling fields, then parent fields.
@@ -86,7 +109,7 @@ class Field:
                 if f in node.fields:
                     values += [node.fields[f].getValue()]
                 elif f in node.item.fields:
-                    values += [node.item.fields[f]["content"]]
+                    values += [Field.getFieldValue(node.item.fields[f])]
         
         # look in child fields
         node = self.sourceNode
@@ -95,7 +118,7 @@ class Field:
                 if f in c.fields:
                     values += [c.fields[f].getValue()]
                 elif c.item and c.item.fields and f in c.item.fields:
-                    values += [c.item.fields[f]["content"]]
+                    values += [Field.getFieldValue(c.item.fields[f])]
 
         # look in sibling fields
         node = self.sourceNode.parent
@@ -105,7 +128,7 @@ class Field:
                     if f in c.fields:
                         values += [c.fields[f].getValue()]
                     elif f in c.item.fields:
-                        values += [c.item.fields[f]["content"]]
+                        values += [Field.getFieldValue(c.item.fields[f])]
 
         # look in parent fields
         node = self.sourceNode.parent
@@ -113,7 +136,7 @@ class Field:
             if f in node.item.fields:
                 values += [node.fields[f].getValue()]
             elif f in node.fields:
-                values += [node.item.fields[f]["content"]]
+                values += [Field.getFieldValue(node.item.fields[f])]
         
         # return
         return values
@@ -173,7 +196,7 @@ class Field:
         if self.sourceNode and self.getValue:
             value = self.getValue()
             if value:
-                return str(round(value, 2))
+                return str(round(value, 3))
             else:
                 return ""
         else:

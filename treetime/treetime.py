@@ -27,6 +27,7 @@ import datetime
 import os.path
 import platform
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from threading import Timer
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
 # sys.setrecursionlimit(50)
@@ -113,7 +114,6 @@ class UrlWidget(QtWidgets.QWidget):
     Special custom widget class for URL fields
     """
 
-
     def __init__(self, url, callback, parent=None):
         """
         Initialise
@@ -155,6 +155,127 @@ class UrlWidget(QtWidgets.QWidget):
         """
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(self.url))
 
+
+class TimerWidget(QtWidgets.QWidget):
+    """
+    A widget displaying an hour timer - a time display (hours:minutes:seconds)
+    and a button "start"/"stop"
+    """
+
+    timer = None
+
+    def __init__(self, partial, running_since, callback, parent=None):
+        """
+        initialise the timer object
+        """
+
+        # init
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.start = running_since and datetime.datetime.strptime(running_since, "%Y-%m-%d %H:%M:%S")  # time when the timer was started last, or None if not running
+        self.partial = partial or 0.0     # stored time span + time since timer was started
+        self.total = self.partial
+        if self.start:
+            buttontext = "Stop"
+            linetext = "(running)"
+        else:
+            buttontext = "Start"
+            linetext = str(self.partial)
+        self.callback = callback
+
+        # create line edit control and open button
+        self.linewidget = QtWidgets.QLineEdit(linetext)
+        self.linewidget.textEdited.connect(self.textEdited)
+        self.startstopbutton = QtWidgets.QPushButton(buttontext)
+        self.startstopbutton.clicked.connect(self.buttonClicked)
+
+        # put them next to each other
+        layout = QtWidgets.QHBoxLayout(self)
+        layout.addWidget(self.startstopbutton)
+        layout.addWidget(self.linewidget)
+
+        # start timer if it is loaded as running from file
+        if self.start:
+            self.updateValue()
+
+    def textEdited(self, text):
+        """
+        Callback, to save the new text and notify the parent that the text has changed
+        """
+        if self.start:
+            self.linewidget.setText("stop watch running")
+        else:
+            self.total = text and json.loads(text) or 0.0
+            self.partial = self.total
+            self.callback()
+
+    def toPlainText(self):
+        """
+        Callback, called by the GUI to retrieve (possibly changed) total value
+        """
+        return str(self.total)
+
+    def runningSince(self):
+        """
+        Callback, returns the time the timer was started as YYYY-MM-DD hh.mm.ss string
+        """
+        return self.start and self.start.strftime("%Y-%m-%d %H:%M:%S") or False
+
+    def buttonClicked(self):
+        """
+        Callback, called when the button has been clicked. Opens the URL with the system
+        default software.
+        """
+        if self.start:
+            self.stopTimer()
+        else:
+            self.startTimer()
+
+    def startTimer(self):
+        """
+        Starts the timer
+        """
+
+        # save the time the timer was started
+        self.start = datetime.datetime.now()
+        self.startstopbutton.setText("Stop")
+        self.linewidget.setText("stop watch running")
+
+        # trigger the first update
+        self.updateValue()
+
+    def stopTimer(self):
+        """
+        Stops the timer
+        """
+
+        if self.start:
+
+            # stop the timer, remove possible running timer objects
+            self.startstopbutton.setText("Start")
+
+            # store total value
+            self.partial = round(self.total*10000.0) / 10000.0
+            self.total = self.partial
+            self.start = None
+            self.linewidget.setText(str(self.total))
+
+            # notify back-end
+            self.callback()
+
+    def updateValue(self):
+        """
+        Updates the value in the GUI once and triggers the next update
+        Used for sequencial updates while the timer is running. Updates are triggered using a threading.Timer object
+        and occur every five seconds
+        """
+
+        # first, update the total time
+        elapsed = datetime.datetime.now() - self.start
+        self.total = self.partial \
+                     + elapsed.days * 24.0 \
+                     + elapsed.seconds / 60.0 / 60.0 \
+                     + elapsed.microseconds / 60.0 / 1000000.0
+        self.callback()
 
 class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
@@ -525,6 +646,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         value = value and str(value) or ""  # display "None" values as empty string
                         widget = UrlWidget(value, lambda row=n: self.tableWidgetCellChanged(row, 3))
                         self.tableWidget.setCellWidget(n, 3, widget)
+                    elif self.currentItem.fields[key]['type'] == 'timer':
+                        value = self.currentItem.fields[key]["content"]
+                        running_since = self.currentItem.fields[key]["running_since"]
+                        widget = TimerWidget(value, running_since, lambda row=n: self.tableWidgetCellChanged(row, 3))
+                        self.tableWidget.setCellWidget(n, 3, widget)
                     else:
                         value = self.currentItem.fields[key]["content"]
                         value = value and str(value) or ""     # display "None" values as empty string
@@ -598,7 +724,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 # the node name has been changed
                 if row == 1:
-                    newName = self.tableWidget.item(row,column).text()
+                    newName = self.tableWidget.item(row, column).text()
                     self.currentItem.changeName(newName)
                 
                 # one of the fields has been changed
@@ -607,6 +733,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     fieldType = self.currentItem.fields[fieldName]['type']
                     if fieldType in ('text', 'url'):
                         newValue = self.tableWidget.cellWidget(row, 3).toPlainText()
+                    elif fieldType == 'timer':
+                        newValue = (self.tableWidget.cellWidget(row, 3).toPlainText(),
+                                    self.tableWidget.cellWidget(row, 3).runningSince())
                     else:
                         newValue = self.tableWidget.item(row, 3).text()
                     result = self.currentItem.changeFieldContent(fieldName, newValue)

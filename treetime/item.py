@@ -19,7 +19,7 @@
 
 import copy
 import json
-
+from threading import Timer
 
 class Item:
     """
@@ -148,7 +148,7 @@ class Item:
     def changeFieldContent(self, fieldName, fieldContent):
         """
         Edit the content of a field. The content is expected to be a string and
-        will be converted accourding to the field type.
+        will be converted according to the field type.
         """
 
         if fieldName not in self.fields:
@@ -158,13 +158,35 @@ class Item:
             field = self.fields[fieldName]
             type = field["type"]
             if fieldContent:
+
+                # changing the content of a string field - read the string plainly
                 if type in ("string", "text", "url"):
                     field["content"] = fieldContent
+
+                # changing the content of a number - read the string into a value
                 elif type == "integer":
                     try:
                         field["content"] = json.loads(fieldContent)
                     except json.JSONDecodeError:
                         field["content"] = None
+
+                # changing the content of a timer - real change comes in a tuple, mere value update just
+                # with a "True" flag
+                elif type == "timer":
+                    try:
+                        # standard content change, indicated by a tuple
+                        if len(fieldContent) == 2:
+                            field["content"] = json.loads(fieldContent[0])
+                            field["running_since"] = fieldContent[1]
+
+                        # trigger update by recursive call, *not* using a tuple
+                        if field["running_since"]:
+                            timer = Timer(1.0, self.changeFieldContent, [fieldName, (True,)])
+                            timer.start()
+
+                    except json.JSONDecodeError:
+                        field["content"] = None
+                        field["running_since"] = None
                 else:
                     return "A field of type " + type + " cannot be edited."
             else:
