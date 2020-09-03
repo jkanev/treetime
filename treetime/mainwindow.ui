@@ -44,7 +44,7 @@
          <x>0</x>
          <y>0</y>
          <width>200</width>
-         <height>895</height>
+         <height>935</height>
         </rect>
        </property>
        <attribute name="label">
@@ -190,9 +190,16 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButtonExportTxt">
+         <widget class="QPushButton" name="pushButtonExportBranchTxt">
           <property name="text">
            <string>Export Branch to Textfile</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonExportTreeTxt">
+          <property name="text">
+           <string>Export Tree to Textfile</string>
           </property>
          </widget>
         </item>
@@ -303,8 +310,8 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>200</width>
-         <height>716</height>
+         <width>210</width>
+         <height>735</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -620,8 +627,8 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>96</width>
-         <height>26</height>
+         <width>210</width>
+         <height>735</height>
         </rect>
        </property>
        <attribute name="label">

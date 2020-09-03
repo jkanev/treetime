@@ -277,6 +277,7 @@ class TimerWidget(QtWidgets.QWidget):
                      + elapsed.microseconds / 60.0 / 1000000.0
         self.callback()
 
+
 class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
     Implements the main part of the GUI.
@@ -302,7 +303,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonNewFromTemplate.clicked.connect(self.pushButtonNewFromTemplateClicked)
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
-        self.pushButtonExportTxt.clicked.connect(self.pushButtonExportTxtClicked)
+        self.pushButtonExportBranchTxt.clicked.connect(self.pushButtonExportBranchTxtClicked)
+        self.pushButtonExportTreeTxt.clicked.connect(self.pushButtonExportTreeTxtClicked)
         self.pushButtonRemove.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
         self.pushButtonDelete.clicked.connect(self.pushButtonDeleteClicked)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
@@ -383,7 +385,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.settings.setValue('lastFile', file)
             self.labelCurrentFile.setText(file)
 
-    def pushButtonExportTxtClicked(self):
+    def pushButtonExportBranchTxtClicked(self):
         """
         Callback for the txt export. Asks for a file name, then writes branch text export into it.
         """
@@ -395,6 +397,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     currentNode = self.currentItem.viewNodes[self.currentTree]
                     txt = currentNode.to_txt()
                     f.write(txt)
+
+    def pushButtonExportTreeTxtClicked(self):
+        """
+        Callback for the txt export. Asks for a file name, then writes branch text export into it.
+        """
+        if self.currentItem:
+            fileDir = self.settings.value('fileDir') or ''
+            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to Plain Text", fileDir, '*.txt')[0]
+            if file != '':
+                with open(file, "w") as f:
+                    rootNode = self.forest.children[self.currentTree]
+                    children = sorted(rootNode.children, key=lambda a: a.name)
+                    for c in children:
+                        f.write('\n')
+                        f.write(c.to_txt())
+                        f.write('\n')
 
     def pushButtonNewFromTemplateClicked(self):
         """
