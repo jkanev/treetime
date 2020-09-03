@@ -701,7 +701,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # root node
         if not parent.parent:
             action = QtWidgets.QAction("Add to Top Level", menu)
-            action.triggered.connect(lambda checked, t=treeIndex, p=self.forest.children[treeIndex]: self.moveCurrentItemToNewParent(t, p))
+            action.triggered.connect(lambda checked, t=treeIndex,
+                                            p=self.forest.children[treeIndex]: self.moveCurrentItemToNewParent(t, p))
             menu.addAction(action)
             parent = self.forest.children[treeIndex]
             menu.addSeparator()
@@ -712,6 +713,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 action = QtWidgets.QAction("Remove from Tree", menu)
                 action.triggered.connect(lambda checked, t=treeIndex, p=False: self.moveCurrentItemToNewParent(t, p))
                 menu.addAction(action)
+                action = QtWidgets.QAction("Add to Top Level", menu)
+                action.triggered.connect(lambda checked, t=treeIndex, p=self.forest.children[treeIndex]:
+                                         self.moveCurrentItemToNewParent(t, p))
+                menu.addAction(action)
+                parent = self.forest.children[treeIndex]
                 menu.addSeparator()
 
         # all other nodes
@@ -907,8 +913,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     return
 
             # or move node within the tree
-            elif oldParent and newParent:
+            elif oldParent and newParent and newParent.item:
                 item.moveInTree(treeIndex, newParent.item.trees[treeIndex])
+            elif oldParent and newParent and not newParent.item:
+                item.moveInTree(treeIndex, [])
 
             # or add node to tree
             elif not oldParent and newParent:
