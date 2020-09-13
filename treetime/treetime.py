@@ -204,7 +204,14 @@ class TimerWidget(QtWidgets.QWidget):
         if self.start:
             self.linewidget.setText("stop watch running")
         else:
-            self.total = text and json.loads(text) or 0.0
+            if text:
+                try:
+                    d = json.loads(text)
+                except json.JSONDecodeError:
+                    d = 0.0
+            else:
+                d = 0.0
+            self.total = d
             self.partial = self.total
             self.callback()
 
@@ -247,13 +254,13 @@ class TimerWidget(QtWidgets.QWidget):
         """
         Stops the timer
         """
-
         if self.start:
 
             # stop the timer, remove possible running timer objects
             self.startstopbutton.setText("Start")
 
             # store total value
+            self.updateValue(update=False)
             self.partial = round(self.total*10000.0) / 10000.0
             self.total = self.partial
             self.start = None
@@ -262,7 +269,7 @@ class TimerWidget(QtWidgets.QWidget):
             # notify back-end
             self.callback()
 
-    def updateValue(self):
+    def updateValue(self, update=True):
         """
         Updates the value in the GUI once and triggers the next update
         Used for sequencial updates while the timer is running. Updates are triggered using a threading.Timer object
@@ -275,7 +282,8 @@ class TimerWidget(QtWidgets.QWidget):
                      + elapsed.days * 24.0 \
                      + elapsed.seconds / 60.0 / 60.0 \
                      + elapsed.microseconds / 60.0 / 1000000.0
-        self.callback()
+        if update:
+            self.callback()
 
 
 class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):

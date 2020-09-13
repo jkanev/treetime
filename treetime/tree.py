@@ -86,9 +86,9 @@ class Field:
             if running_since:
                 elapsed = datetime.datetime.now() - running_since
                 return partial \
-                             + elapsed.days * 24.0 \
-                             + elapsed.seconds / 60.0 / 60.0 \
-                             + elapsed.microseconds / 60.0 / 60.0 / 1000000.0
+                       + elapsed.days * 24.0 \
+                       + elapsed.seconds / 60.0 / 60.0 \
+                       + elapsed.microseconds / 60.0 / 60.0 / 1000000.0
             else:
                 return partial
         else:
