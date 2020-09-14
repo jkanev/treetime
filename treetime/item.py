@@ -155,6 +155,7 @@ class Item:
             return "A field with name " + fieldName + " does not exist in node " + self.name + "."
         else:
             # update field content
+            timer = False
             field = self.fields[fieldName]
             type = field["type"]
             if fieldContent:
@@ -182,7 +183,6 @@ class Item:
                         # trigger update by recursive call, *not* using a tuple
                         if field["running_since"]:
                             timer = Timer(1.0, self.changeFieldContent, [fieldName, (True,)])
-                            timer.start()
 
                     except json.JSONDecodeError:
                         field["content"] = None
@@ -193,7 +193,9 @@ class Item:
                 field["content"] = None
 
             self.notifyFieldChange(fieldName)
-        
+            if timer:
+                timer.start()
+
         return True
 
     def notifyFieldChange(self, fieldName):
