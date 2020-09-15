@@ -324,6 +324,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tableWidget.horizontalHeader().setSectionResizeMode(3, 1)     # column 3: stretch
         self.tableWidget.horizontalHeader().setSectionResizeMode(4, 2)     # column 4: fixed
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
+        self.write_delay = 0
+        self.write_timer = False
         self.locked = True
 
         # init application settings
@@ -447,7 +449,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         result = msgBox.exec_()
         if result == QtWidgets.QMessageBox.Ok:
             self.forest.itemPool.deleteItem(self.currentItem)
-            self.writeToFile()
+            self.delayedWriteToFile()
         
     def loadFile(self, filename):
         self.removeBranchTabs()
@@ -478,8 +480,37 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.pushButtonLoadFileClicked()
         else:
             self.pushButtonLoadFileClicked()
-    
-    def writeToFile(self):
+
+    def delayedWriteToFile(self, countdown=False):
+        """
+        Schedules a write after 5 seconds. A timer is called that stops after 1 second and decreases a counter.
+        If the counter is at zero, a write-to-file is performed. If the counter is > 0, it is counted down and a
+        new timer is started.
+        When changing cell contents, each cell change calls a delayed write. The file is only written if there has
+        been no change for 5 seconds (otherwise the continuous file writing slows the user input down).
+        :param countdown: Whether to count down and trigger a write at zero (=True),
+                          or whether to init a new run (=False)
+        :return:
+        """
+
+        # We've been called by a timer process, count down and possibly write
+        if countdown:
+            if self.write_delay > 0:
+                self.write_delay -= 1
+                if self.write_delay == 0:
+                    self.writeToFile()
+                self.write_timer = False
+
+        # We've been called after a cell change, init the counter
+        else:
+            self.write_delay = 5
+
+        # The counter is up, start another 2-second timer
+        if self.write_delay > 0 and not self.write_timer:
+            self.write_timer = Timer(1, self.delayedWriteToFile, kwargs={'countdown': True})
+            self.write_timer.start()
+
+    def writeToFile(self, delayed=False, countdown=False):
         self.forest.writeToFile(self.labelCurrentFile.text())
 
     def removeBranchTabs(self):
@@ -777,7 +808,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         msgBox.exec_()
                 
             self.locked = False
-            self.writeToFile()
+            self.delayedWriteToFile()
 
     def createNode(self, insertas, copy, recurse = False, srcItem = None, destItem = None):
         
@@ -878,7 +909,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if srcItem is None:
             treeWidget.setCurrentItem(qnode)
-            self.writeToFile()
+            self.delayedWriteToFile()
     
     def moveCurrentItemToNewParent(self, treeIndex, newParent):
         treeWidget = self.treeWidgets[self.currentTree]
@@ -947,7 +978,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # update table and write to file
             self.treeSelectionChanged(self.currentTree)
-            self.writeToFile()
+            self.delayedWriteToFile()
 
 
 class TreeTime:
