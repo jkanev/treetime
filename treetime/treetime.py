@@ -350,6 +350,23 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # show window
         self.showMaximized()
 
+    def closeEvent(self, event):
+        """
+        Do some cleanup before you close the window
+        """
+
+        # Write state to file
+        if self.write_timer:
+            self.write_timer.cancel()
+        self.write_delay = 0
+        self.writeToFile()
+
+        # cancel all running stop watches
+        # \todo
+
+        # continue closing the window
+        event.accept()  # let the window close
+
     def fillThemeBox(self):
         """
         Fills the theme selection box with all themes the system is capable of
