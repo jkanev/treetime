@@ -427,32 +427,70 @@ class Node:
             self.children[i].printForest(indent + 1)
 
     def to_txt(self, lastitem=[]):
+        """
+
+        :param lastitem: A list of booleans showing wether the great-grandparent, grandparent, parent, is the
+                         last item of the list of siblings
+        :return:
+
+        █ abc
+          def
+
+        █ abc
+        │ def
+        │
+        ┝━━█ abc
+        │  │ def
+        │  │
+        │  ┝━━█ abc
+        │  │    def
+        │  │
+        │  ┕━━█ abc
+        │       def
+        │
+        ┕━━█ abc
+           │ def
+           │
+           ┝━━█ abc
+           │    def
+           │
+           ┕━━█ abc
+                def
+        """
 
         text = ""
 
         # create leading tree graphics
-        pre_node_prefix = ""
-        first_line_prefix = ""
-        line_prefix = ""
-        if len(lastitem) > 1:
-            for i in range(len(lastitem)-1):
-                if lastitem[i]:
-                    pre_node_prefix += "    "
-                    first_line_prefix += "    "
-                    line_prefix += "    "
+        # │   ┕━━█  ┝━━█
+        if self.children:
+            pre_node_prefix = ""
+            first_line_prefix = "█  "
+            line_prefix = "│  "
+        else:
+            pre_node_prefix = ""
+            first_line_prefix = "█  "
+            line_prefix = "   "
+        n = 0
+        for last in lastitem[::-1]:
+            if not last:
+                if n:
+                    pre_node_prefix = "│  " + pre_node_prefix
+                    first_line_prefix = "│  " + first_line_prefix
+                    line_prefix = "│  " + line_prefix
                 else:
-                    pre_node_prefix += " │  "
-                    first_line_prefix += " │  "
-                    line_prefix += " │  "
-        if len(lastitem):
-            if lastitem[-1]:
-                pre_node_prefix += " │  "
-                first_line_prefix += " ┕━ "
-                line_prefix += "    "
+                    pre_node_prefix = "│  " + pre_node_prefix
+                    first_line_prefix = "┝━━" + first_line_prefix
+                    line_prefix = "│  " + line_prefix
             else:
-                pre_node_prefix += " │  "
-                first_line_prefix += " ┝━ "
-                line_prefix += " │  "
+                if n:
+                    pre_node_prefix = "   " + pre_node_prefix
+                    first_line_prefix = "   " + first_line_prefix
+                    line_prefix = "   " + line_prefix
+                else:
+                    pre_node_prefix = "│  " + pre_node_prefix
+                    first_line_prefix = "┕━━" + first_line_prefix
+                    line_prefix = "   " + line_prefix
+            n += 1
 
         # append item content and print
         text += pre_node_prefix + "\n"
