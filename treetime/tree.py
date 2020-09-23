@@ -385,6 +385,18 @@ class Node:
         self.deletionCallback = None
         self.moveCallback = None
 
+    @staticmethod
+    def _wrap_lines(raw_lines):
+        """
+        Helper function to wrap long text
+        :param string: Input string, in one single line
+        :return: Array with text wrapped at 70 chars, preserving newlines, but trimming space (no double new lines)
+        """
+        lines = []
+        for line in [s.strip() for s in raw_lines.split('\n') if s.strip()]:
+            lines += wrap(line, 70)
+        return lines
+
     def map(self, function, parameter, depthFirst):
         ''' Applies the function to each node in the tree. The function must receive one parameter and return one parameter. The return value is used as parameter for the next function call. The value Parameter is used in the first call.'''
         
@@ -428,34 +440,34 @@ class Node:
 
     def to_txt(self, lastitem=[]):
         """
-
-        :param lastitem: A list of booleans showing wether the great-grandparent, grandparent, parent, is the
+        Create a text representation of the current branch.
+        :param lastitem: A list of booleans showing whether the great-grandparent, grandparent, parent, is the
                          last item of the list of siblings
-        :return:
+        :return: a string like this:
 
-        █ abc
-          def
+                    █ abc
+                      def
 
-        █ abc
-        │ def
-        │
-        ┝━━█ abc
-        │  │ def
-        │  │
-        │  ┝━━█ abc
-        │  │    def
-        │  │
-        │  ┕━━█ abc
-        │       def
-        │
-        ┕━━█ abc
-           │ def
-           │
-           ┝━━█ abc
-           │    def
-           │
-           ┕━━█ abc
-                def
+                    █ abc
+                    │ def
+                    │
+                    ┝━━█ abc
+                    │  │ def
+                    │  │
+                    │  ┝━━█ abc
+                    │  │    def
+                    │  │
+                    │  ┕━━█ abc
+                    │       def
+                    │
+                    ┕━━█ abc
+                       │ def
+                       │
+                       ┝━━█ abc
+                       │    def
+                       │
+                       ┕━━█ abc
+                            def
         """
 
         text = ""
@@ -494,22 +506,25 @@ class Node:
 
         # append item content and print
         text += pre_node_prefix + "\n"
-        text += first_line_prefix + self.name + "\n"
+
+        # add node name (possibly multi-line)
+        first = True
+        for line in Node._wrap_lines(self.name):
+            if first:
+                text += first_line_prefix + line + "\n"
+                first = False
+            else:
+                text += line_prefix + "    " + line + "\n"
+
         for name, field in self.fields.items():
 
-            # wrap text at 70 characters, preserving newlines, but trimming space (no double new lines)
-            raw_lines = field.getString()
-            raw_lines = [s.strip() for s in raw_lines.split('\n') if s.strip()]
-            lines = []
-            for line in raw_lines:
-                lines += wrap(line, 70)
-            first = True
-
-            # larger bits of text start with a newline
+            # wrap field content, larger bits of text start with a newline
+            lines = Node._wrap_lines(field.getString())
             if len(lines) > 1:
                 lines = [''] + lines
 
             # assemble final text with tree decorations
+            first = True
             for line in lines:
                 if first:
                     text += line_prefix + name + ": " + line + "\n"
