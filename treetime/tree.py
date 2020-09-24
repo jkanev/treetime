@@ -473,35 +473,35 @@ class Node:
         text = ""
 
         # create leading tree graphics
-        # │   ┕━━█  ┝━━█
+        # please pay attention: The spaces in the graphic strings are special unicode figure spaces
         if self.children:
             pre_node_prefix = ""
-            first_line_prefix = "█  "
-            line_prefix = "│  "
+            first_line_prefix = "█  "
+            line_prefix = "│  "
         else:
             pre_node_prefix = ""
-            first_line_prefix = "█  "
-            line_prefix = "   "
+            first_line_prefix = "█  "
+            line_prefix = "   "
         n = 0
         for last in lastitem[::-1]:
             if not last:
                 if n:
-                    pre_node_prefix = "│  " + pre_node_prefix
-                    first_line_prefix = "│  " + first_line_prefix
-                    line_prefix = "│  " + line_prefix
+                    pre_node_prefix = "│  " + pre_node_prefix
+                    first_line_prefix = "│  " + first_line_prefix
+                    line_prefix = "│  " + line_prefix
                 else:
-                    pre_node_prefix = "│  " + pre_node_prefix
-                    first_line_prefix = "┝━━" + first_line_prefix
-                    line_prefix = "│  " + line_prefix
+                    pre_node_prefix = "│  " + pre_node_prefix
+                    first_line_prefix = "├──" + first_line_prefix
+                    line_prefix = "│  " + line_prefix
             else:
                 if n:
-                    pre_node_prefix = "   " + pre_node_prefix
-                    first_line_prefix = "   " + first_line_prefix
-                    line_prefix = "   " + line_prefix
+                    pre_node_prefix = "   " + pre_node_prefix
+                    first_line_prefix = "   " + first_line_prefix
+                    line_prefix = "   " + line_prefix
                 else:
-                    pre_node_prefix = "│  " + pre_node_prefix
-                    first_line_prefix = "┕━━" + first_line_prefix
-                    line_prefix = "   " + line_prefix
+                    pre_node_prefix = "│  " + pre_node_prefix
+                    first_line_prefix = "└──" + first_line_prefix
+                    line_prefix = "   " + line_prefix
             n += 1
 
         # append item content and print
