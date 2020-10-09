@@ -409,6 +409,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         application = QtWidgets.QApplication.instance()
         colour = self.cboxColours.currentText()
+        self.settings.setValue('colours', colour)
         palette = QPalette()
 
         # Apply dark colours
