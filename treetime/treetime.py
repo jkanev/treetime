@@ -28,6 +28,8 @@ import os.path
 import platform
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from threading import Timer
+from PyQt5.QtGui import QPalette, QColor
+
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
 # sys.setrecursionlimit(50)
@@ -332,9 +334,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
 
         # init themes and set last theme
+        self.system_palette = self.palette()
         self.fillThemeBox()
+        self.fillColourBox()
         self.cboxThemeTextChanged()
+        self.cboxColoursTextChanged()
         self.cboxTheme.currentTextChanged.connect(self.cboxThemeTextChanged)
+        self.cboxColours.currentTextChanged.connect(self.cboxColoursTextChanged)
 
         # load last file
         lastFile = self.settings.value('lastFile')
@@ -377,6 +383,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if current:
             self.cboxTheme.setCurrentText(current)
 
+    def fillColourBox(self):
+        """
+        Fills the theme selection box with all themes the system is capable of
+        """
+        self.cboxColours.addItem("Dark")
+        self.cboxColours.addItem("Light")
+        self.cboxColours.addItem("System")
+        current = self.settings.value('colours')
+        if current:
+            self.cboxColours.setCurrentText(current)
+
     def cboxThemeTextChanged(self):
         """
         Callback from the theme selector combo box. Sets a new theme and stores it in the settings.
@@ -385,6 +402,55 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         style = self.cboxTheme.currentText()
         self.settings.setValue('theme', style)
         application.setStyle(QtWidgets.QStyleFactory.create(style))
+
+    def cboxColoursTextChanged(self):
+        """
+        Callback from the theme selector combo box. Sets a new theme and stores it in the settings.
+        """
+        application = QtWidgets.QApplication.instance()
+        colour = self.cboxColours.currentText()
+        palette = QPalette()
+
+        # Apply dark colours
+        if colour == "Dark":
+            palette.setColor(QPalette.Window, QColor(50, 52, 54))
+            palette.setColor(QPalette.WindowText, QtCore.Qt.white)
+            palette.setColor(QPalette.Base, QColor(40, 42, 44))
+            palette.setColor(QPalette.AlternateBase, QColor(50, 52, 54))
+            palette.setColor(QPalette.ToolTipBase, QtCore.Qt.black)
+            palette.setColor(QPalette.ToolTipText, QtCore.Qt.white)
+            palette.setColor(QPalette.Text, QtCore.Qt.white)
+            palette.setColor(QPalette.Disabled, QPalette.Text, QColor(150, 150, 150))
+            palette.setColor(QPalette.Button, QColor(60, 62, 64))
+            palette.setColor(QPalette.ButtonText, QtCore.Qt.white)
+            palette.setColor(QPalette.BrightText, QtCore.Qt.red)
+            palette.setColor(QPalette.Link, QColor(60, 200, 255))
+            palette.setColor(QPalette.Highlight, QColor(60, 200, 255))
+            palette.setColor(QPalette.HighlightedText, QtCore.Qt.black)
+
+        # apply light colours
+        elif colour == "Light":
+            palette = QPalette()
+            palette.setColor(QPalette.Window, QColor(255-53, 255-53, 255-53))
+            palette.setColor(QPalette.WindowText, QtCore.Qt.black)
+            palette.setColor(QPalette.Base, QColor(255-25, 255-25, 255-25))
+            palette.setColor(QPalette.AlternateBase, QColor(255-53, 255-53, 255-53))
+            palette.setColor(QPalette.ToolTipBase, QtCore.Qt.white)
+            palette.setColor(QPalette.ToolTipText, QtCore.Qt.black)
+            palette.setColor(QPalette.Text, QtCore.Qt.black)
+            palette.setColor(QPalette.Disabled, QPalette.Text, QColor(70, 70, 70))
+            palette.setColor(QPalette.Button, QColor(255-53, 255-53, 255-53))
+            palette.setColor(QPalette.ButtonText, QtCore.Qt.black)
+            palette.setColor(QPalette.BrightText, QtCore.Qt.blue)
+            palette.setColor(QPalette.Link, QColor(255-42, 255-130, 255-218))
+            palette.setColor(QPalette.Highlight, QColor(255-42, 255-130, 255-218))
+            palette.setColor(QPalette.HighlightedText, QtCore.Qt.white)
+
+        # apply system colours
+        elif colour == "System":
+            palette = self.system_palette
+
+        application.setPalette(palette)
 
     def pushButtonSaveToFileClicked(self):
         """

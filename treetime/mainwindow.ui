@@ -42,9 +42,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-125</y>
          <width>200</width>
-         <height>935</height>
+         <height>840</height>
         </rect>
        </property>
        <attribute name="label">
@@ -236,6 +236,9 @@
          <widget class="QComboBox" name="cboxTheme"/>
         </item>
         <item>
+         <widget class="QComboBox" name="cboxColours"/>
+        </item>
+        <item>
          <spacer name="verticalSpacer_12">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -290,19 +293,6 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item>
-         <spacer name="verticalSpacer_9">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>127</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="pageTree">
@@ -310,8 +300,8 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>210</width>
-         <height>735</height>
+         <width>200</width>
+         <height>716</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -627,8 +617,8 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>210</width>
-         <height>735</height>
+         <width>96</width>
+         <height>26</height>
         </rect>
        </property>
        <attribute name="label">
