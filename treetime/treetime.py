@@ -158,6 +158,34 @@ class UrlWidget(QtWidgets.QWidget):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(self.url))
 
 
+class TextEdit(QtWidgets.QPlainTextEdit):
+    """
+    Special custom widget class for URL fields
+    """
+
+
+    def __init__(self, text, callback, parent=None):
+        """
+        Initialise
+        """
+
+        # init
+        QtWidgets.QPlainTextEdit.__init__(self, text, parent=parent)
+        self.callback = callback
+        self.has_changed = False
+        self.textChanged.connect(self.notifyChange)
+
+    def notifyChange(self):
+        self.has_changed = True
+
+    def focusOutEvent(self, e: QtGui.QFocusEvent):
+        """
+        Callback, to save the new text and notify the parent that the text has changed
+        """
+        if self.has_changed:
+            self.callback()
+        super().focusOutEvent(e)
+
 class TimerWidget(QtWidgets.QWidget):
     """
     A widget displaying an hour timer - a time display (hours:minutes:seconds)
@@ -779,8 +807,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     if self.currentItem.fields[key]['type'] == 'text':
                         text = self.currentItem.fields[key]["content"]
                         text = text and str(text) or ""     # display "None" values as empty string
-                        widget = QtWidgets.QPlainTextEdit(text)
-                        widget.textChanged.connect(lambda row=n: self.tableWidgetCellChanged(row, 3))
+                        widget = TextEdit(text, lambda row=n: self.tableWidgetCellChanged(row, 3))
                         self.tableWidget.setCellWidget(n, 3, widget)
                     elif self.currentItem.fields[key]['type'] == 'url':
                         value = self.currentItem.fields[key]["content"]
