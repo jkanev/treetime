@@ -183,8 +183,19 @@ class TextEdit(QtWidgets.QPlainTextEdit):
         Callback, to save the new text and notify the parent that the text has changed
         """
         if self.has_changed:
+            self.has_changed = False
             self.callback()
         super().focusOutEvent(e)
+
+    def leaveEvent(self, e: QtCore.QEvent):
+        """
+        Callback, to save the new text and notify the parent that the text has changed
+        """
+        if self.has_changed:
+            self.has_changed = False
+            self.callback()
+        super().leaveEvent(e)
+
 
 class TimerWidget(QtWidgets.QWidget):
     """
