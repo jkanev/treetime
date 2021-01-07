@@ -128,8 +128,8 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 I deliberately didn't give any time estimates for this. I'm using the software myself to organise my own data, so I'm interested in keeping this going. Nevertheless I cannot promise any specific release dates. If you have any suggestions or would like me to implement some feature sooner than I suggested here, please just drop me an email.
 
 Past
-- Done February 2016: Implement selection (the same item gets selected in all trees, changing a tab shows the same item)
-- Done March 2016: Implement remaining local functionality (Copy Branch as Sibling, Copy Children to Siblings, Remove from this Tree, Delete Item)
+- Done February 2016: Implemented selection (the same item gets selected in all trees, changing a tab shows the same item)
+- Done March 2016: Implemented remaining local functionality (Copy Branch as Sibling, Copy Children to Siblings, Remove from this Tree, Delete Item)
 - Done August 2016: Created installable python package
 - Done May 2017: Implemented new field type _text_
 - Done June 2017: Create deployable packages for Linux and Windows
@@ -141,26 +141,31 @@ Past
 - Done November 2018: Released version 2018-10
 - Done January 2019: Implemented new field type "URL"
 - Done June 2020: Fixed problem with protected cells (typing into a cell without data could cause a crash), and fixed file selection dialog (now only offers *.trt files).
-  
+- Done July 2020: Implemented text export - single branches or complete trees can now be exported to txt files.
+- Done August 2020: Implemented time counters - nodes can record the time using a special field of type "timer" (experimental). GUI buttons can start and stop the stopwatch function.
+- Done September 2020: Added move-to-top-level option for first level nodes
+- Done October 2020: Added a dark and a light palette for GUI colours, selectable in addition to the theme selection.
+- Done November 2020: Fixed too slow editing in text fields when tree files are big (>1.5 MB).
+- Done January 2021: Released version 2021.01.
+
 Present
 - Running: Bugfixing
 - Running: Write documentation on readthedocs.io and create example more example and template data files
   
 Future
 - Near Future: Implement search function
-- Near Future: Implement more data item field types (timers, date/time/time-span)
 - Near Future: Release next version
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Mid Future: Bugfixing
 - Mid Future: Release next version
-- Mid Future: Implement more tree field types (standard deviation, min, max, string concatenation, 
+- Mid Future: Implement more tree field types (standard deviation, min, max, string concatenation),
 - Mid Future: Bugfixing
 - Mid Future: Release next version
 - Far Future: Implement tree field editing with graphical dialog (add, remove, change tree fields)
 - Far Future: Implement data item field editing with graphical dialog (add, remove, change data item fields)
 - Far Future: Bugfixing
 - Far Future: Release next version
-- Far Future: Implement tree export to PDF, txt, and/or CSV
+- Far Future: Implement tree export to PDF, and/or CSV
 - Far Future: Implement safe usage by multiple simultaneous users
 - Far Future: Implement a database backend instead of text file storage
 - Far Future: Implement a web server

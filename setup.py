@@ -11,7 +11,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='TreeTime',
-    version='2020.7',
+    version='2021.01',
     description='TreeTime is a to-do list manager, test report tool, project manager, family ancestry editor,'
                 'mind-mapping tool, etc. Using TreeTime you can categorise and organise any data in tree structures.'
                 'You can define several trees, each with a different structure, on the same data. You can use functions'
@@ -23,7 +23,7 @@ setup(
     url='https://github.com/jkanev/treetime',
     packages=['treetime'],
     entry_points={'gui_scripts': ['treetime = treetime.__main__:main']},
-    package_data={'treetime': ['data/Simple-Task-List.trt', 'doc/*.png']},
+    package_data={'treetime': ['data/Simple-Task-List.trt', 'data/treetime-logo.png', 'docs/*.png']},
     # according to some people on the web install_requiring PyQt5 should work, but as my system gives me an error for
     # this, I'll comment it out. Please install it separately (pip3 PyQt5 apparently works)
     # install_requires=['PyQt5'],
