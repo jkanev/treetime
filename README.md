@@ -35,11 +35,11 @@ The concept of hierarchical categorisation can be applied to all sorts of data a
 ### What are linked Trees? ### 
 
 The core concept of _TreeTime_ are linked trees. Linked trees are separate trees that share the same data. One piece of data (a _node_) can be in several trees at the same time, but in different place of the tree. A tree is much like a way of sorting, and linked trees sort the same data in different ways.  
-![Screenshot 1](doc/linked-trees.png)  
+![Screenshot 1](docs/linked-trees.png)  
 Node _E_ is right at the bottom of _Tree 1_, as a child of _A_ and _B_, and in _Tree 2_ it is a child of _D_. In _TreeTime_ any kind of number or text can be stored in a node. In this example, let us have a field we call "value" in the node items and use A=1, B=2, etc; and a field we call "Sum" that sums up the current value, and the values of all children. In _TreeTime_, looking at item _E_ and _Tree 1_ this looks like this:  
-![Screenshot 1](doc/abcde01.png)  
+![Screenshot 1](docs/abcde01.png)  
 Clicking on the other tab shows the second tree while the same items stays selected:  
-![Screenshot 1](doc/abcde02.png)  
+![Screenshot 1](docs/abcde02.png)  
 Note how the values are summed up the branches. Apart from sums, _TreeTime_ also offers means, ratios, or differences, using different combinations of parent, child, or sibling fields.  
   
 Linked trees are a natural and powerful way to structure data. If you, for instance, organise information about animals, you might want to see the animal's taxonomy (kingdom/class/family/species), but also their habitat (continent/country/area), and switch between both views. If you organise tasks, you could switch between a year/quarter/week/day breakdown, a company/department/team/person tree, and a product/project/package/task overview.  
@@ -58,20 +58,20 @@ The GUI consists of three parts:
 - An editing grid in the middle, showing the contents of the selected data item. Edit single data items here.
 - A tab view with tress spanning the center-right. View and analyse your data here.
   
-![Screenshot 1](doc/screenshot01.png)  
+![Screenshot 1](docs/screenshot01.png)  
 Access each single tree by clicking a tab on the main tree-view widget (the picture above shows the tree _Time Plan_, the picture below the tree _Projects_).  
-![Screenshot 2](doc/screenshot02.png)  
+![Screenshot 2](docs/screenshot02.png)  
 Branches and children can be sorted, branches can be folded and unfolded. Data content is shown via analytic fields that are defined per tree. In the example project you will see a sum, a percentage, and text display.  
   
 Add, move and remove single nodes and complete branches by using the buttons on the left. Change the name of a node by selecting the node and editing the name in the top of the edit grid in the middle. Change all other values (numbers or text) by clicking into the field and start typing.  
   
 The parents of an item are listed underneath the item name. Each tree has a separate line. Change the position of a node within a tree by clicking on any of the parent buttons.  
-![Screenshot 2](doc/screenshot03.png)  
+![Screenshot 2](docs/screenshot03.png)  
 In this example a new node in the tree _Time Plan_ has just been created, and is now added to the tree _Projects_.  
   
 _TreeTime_ lets you select different themes and will try to use the default colours that are defined with your operating system.  
   
-![Screenshot 2](doc/screenshot04.png)  
+![Screenshot 2](docs/screenshot04.png)  
 
 <dif id='id-file-syntax'/>
 
