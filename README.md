@@ -49,7 +49,7 @@ The core concept of _TreeTime_ are linked trees.
 Linked trees are separate trees that share the same data.
 One piece of information (a _node_) can be in several trees at the same time, but in different place of the tree.
 As a single tree is a way of sorting information, different linked trees sort the same data in different ways.  
-![Tree 1](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/linked-trees.png)  
+![Tree 1](https://raw.githubusercontent.com/jkanev/treetime/master/docs/linked-trees.png)  
 In _Tree 1_, Node _E_ is right at the bottom, as a child of _B_ and a grandchild of _A_. In _Tree 2_ it is a child of _D_.
 
 In _TreeTime_, a _node_ or _item_ can hold different information like text, numbers, dates, internet links.
@@ -60,9 +60,9 @@ The node A has the value=1, B=2, etc.
 In addition we have a field we call "Sum".
 Its content is calculated automatically, summing up the item's own value plus the values of all children.
 In _TreeTime_, looking at item _E_ and _Tree 1_ this looks like this:  
-![Tree 2](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/abcde01.png)  
+![Tree 2](https://raw.githubusercontent.com/jkanev/treetime/master/docs/abcde01.png)  
 Clicking on the other tab shows the second tree while the same items stays selected:  
-![Tree 3](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/abcde02.png)  
+![Tree 3](https://raw.githubusercontent.com/jkanev/treetime/master/docs/abcde02.png)  
 Note how the values are summed up the branches.
 Apart from sums, _TreeTime_ also offers means, ratios, or differences, using different combinations of parent, child, or sibling fields.  
   
@@ -84,20 +84,20 @@ The GUI consists of three parts:
 - An editing grid in the middle, showing the contents of the selected data item. Edit single data items here.
 - A tab view with tress spanning the center-right. View and analyse your data here.
   
-![Screenshot 1](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/screenshot01.png)  
+![Screenshot 1](https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png)  
 Access each single tree by clicking a tab on the main tree-view widget (the picture above shows the tree _Time Plan_, the picture below the tree _Projects_).  
-![Screenshot 2](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/screenshot02.png)  
+![Screenshot 2](https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png)  
 Branches and children can be sorted, branches can be folded and unfolded. Data content is shown via analytic fields that are defined per tree. In the example project you will see a sum, a percentage, and text display.  
   
 Add, move and remove single nodes and complete branches by using the buttons on the left. Change the name of a node by selecting the node and editing the name in the top of the edit grid in the middle. Change all other values (numbers or text) by clicking into the field and start typing.  
   
 The parents of an item are listed underneath the item name. Each tree has a separate line. Change the position of a node within a tree by clicking on any of the parent buttons.  
-![Screenshot 3](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/screenshot03.png)  
+![Screenshot 3](https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png)  
 In this example a new node in the tree _Time Plan_ has just been created, and is now added to the tree _Projects_.  
   
 _TreeTime_ lets you select different themes and will try to use the default colours that are defined with your operating system.  
   
-![Screenshot 4](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/screenshot04.png)  
+![Screenshot 4](https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png)  
 
 <dif id='id-file-syntax'/>
 
