@@ -20,9 +20,9 @@
 #!/usr/bin/python3
 
 import sys
-from .item import *
-from .tree import *
-from .mainwindow import *
+from item import *
+from tree import *
+from mainwindow import *
 import datetime
 import os.path
 import platform
