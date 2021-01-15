@@ -3,7 +3,12 @@
 
 Note: If your looking for the phylogenetics software of the same name, you can find it here: [github.com/neherlab/treetime](https://github.com/neherlab/treetime).
 
-_TreeTime_ is a general data organisation, management and analysis tool using linked trees instead of flat lists of tables. A tree is a hierarchical structure that arranges your data into units and sub-units. Mathematical functions (sum, difference, mean, ratio) can be calculated recursively. Linked trees are distinct trees that share data between them. In _TreeTime_, a data object is part of several trees at the same time. _TreeTime_ is a time planner, a to-do list manager, a test report tool, a project planner, a family ancestry editor, a mind-mapping tool, and similar.
+_TreeTime_ is a general data organisation, management and analysis tool using linked trees instead of flat lists of tables.
+A tree is a hierarchical structure that arranges your data into units and sub-units.
+Mathematical functions (sum, difference, mean, ratio) can be calculated recursively.
+Linked trees are distinct trees that share data between them.
+In _TreeTime_, a data object is part of several trees at the same time.
+_TreeTime_ is a time planner, a to-do list manager, a test report tool, a project planner, a family ancestry editor, a mind-mapping tool, and similar.
 
 <div id='id-contents'/>
 
@@ -24,25 +29,46 @@ _TreeTime_ is a general data organisation, management and analysis tool using li
 
 ### What is a Tree? ###
 
-A "tree" is a data structure, much like a table or a list. Using a tree you can naturally package your information into boxes and sub-boxes and sub-sub-boxes. Some examples:  
+A "tree" is a data structure, much like a table or a list.
+A tree sorts information hierarchically into boxes and sub-boxes and sub-sub-boxes.
 
-If you want to organise your work tasks you could sort them into work packages, that are part of projects, that are part of products. Alternatively, if you plan a larger project, you can sort all tasks by responsible persons, who are part of teams, that are part of departments, that are part of branches. You can also make a time plan, where a year consists of quarters, that consist of weeks, that contain a number of tasks. You can have an address book where you have a hierarchy of friends / colleagues / aquaintances, or you can sort knowledge about animals into kingdom / class / family / species.  
+If you want to organise your work tasks you could sort them into work packages, that are part of projects, that are part of products.
+If you plan a larger project, you can sort all tasks by responsible persons, who are part of teams, that are part of departments, that are part of branches.
+You can also make a time plan, where a year consists of quarters, that consist of weeks, that contain a number of tasks.
+You can have an address book where you have a hierarchy of friends / colleagues / aquaintances, or you can sort knowledge about animals into kingdom / class / family / species.  
   
-The nice thing about trees is that you can define mathematical functions on them. Planned hours can be summed up per work package and project, or per person and team, or per week and month. A mean priority can be shown per work package and project.  
+The nice thing about trees is that you can define mathematical functions on them.
+Planned hours can be summed up per work package and project, or per person and team, or per week and month.
+A mean priority can be shown per work package and project.  
   
 The concept of hierarchical categorisation can be applied to all sorts of data and will feel a lot more natural and easier to use than organising the same data in spread sheets.  
 
 ### What are linked Trees? ### 
 
-The core concept of _TreeTime_ are linked trees. Linked trees are separate trees that share the same data. One piece of data (a _node_) can be in several trees at the same time, but in different place of the tree. A tree is much like a way of sorting, and linked trees sort the same data in different ways.  
-![Screenshot 1](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/linked-trees.png)  
-Node _E_ is right at the bottom of _Tree 1_, as a child of _A_ and _B_, and in _Tree 2_ it is a child of _D_. In _TreeTime_ any kind of number or text can be stored in a node. In this example, let us have a field we call "value" in the node items and use A=1, B=2, etc; and a field we call "Sum" that sums up the current value, and the values of all children. In _TreeTime_, looking at item _E_ and _Tree 1_ this looks like this:  
-![Screenshot 1](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/abcde01.png)  
+The core concept of _TreeTime_ are linked trees.
+Linked trees are separate trees that share the same data.
+One piece of information (a _node_) can be in several trees at the same time, but in different place of the tree.
+As a single tree is a way of sorting information, different linked trees sort the same data in different ways.  
+![Tree 1](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/linked-trees.png)  
+In _Tree 1_, Node _E_ is right at the bottom, as a child of _B_ and a grandchild of _A_. In _Tree 2_ it is a child of _D_.
+
+In _TreeTime_, a _node_ or _item_ can hold different information like text, numbers, dates, internet links.
+These are saved in the _item's_ _fields_.
+
+Here we have a field we call "value". Each node in all trees has a value field that can hold a number (like a cell in a spread sheet).
+The node A has the value=1, B=2, etc.
+In addition we have a field we call "Sum".
+Its content is calculated automatically, summing up the item's own value plus the values of all children.
+In _TreeTime_, looking at item _E_ and _Tree 1_ this looks like this:  
+![Tree 2](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/abcde01.png)  
 Clicking on the other tab shows the second tree while the same items stays selected:  
-![Screenshot 1](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/abcde02.png)  
-Note how the values are summed up the branches. Apart from sums, _TreeTime_ also offers means, ratios, or differences, using different combinations of parent, child, or sibling fields.  
+![Tree 3](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/abcde02.png)  
+Note how the values are summed up the branches.
+Apart from sums, _TreeTime_ also offers means, ratios, or differences, using different combinations of parent, child, or sibling fields.  
   
-Linked trees are a natural and powerful way to structure data. If you, for instance, organise information about animals, you might want to see the animal's taxonomy (kingdom/class/family/species), but also their habitat (continent/country/area), and switch between both views. If you organise tasks, you could switch between a year/quarter/week/day breakdown, a company/department/team/person tree, and a product/project/package/task overview.  
+Linked trees are a natural and powerful way to structure data.
+If you, for instance, organise information about animals, you might want to see the animal's taxonomy (kingdom/class/family/species), but also their habitat (continent/country/area), and switch between both views.
+If you organise tasks, you could switch between a year/quarter/week/day breakdown, a company/department/team/person tree, and a product/project/package/task overview.  
   
 In _TreeTime_, the structure of your data (whether you store priority, hours, and a description for a task, or expected life span, habitat and number of legs for an animal), the trees themselves, and the calculated values within the trees are completely user defined. Data is stored in text files, changes are saved on the fly, and when opening _TreeTime_, the software is automatically connected to the last used file.  
   
@@ -66,12 +92,12 @@ Branches and children can be sorted, branches can be folded and unfolded. Data c
 Add, move and remove single nodes and complete branches by using the buttons on the left. Change the name of a node by selecting the node and editing the name in the top of the edit grid in the middle. Change all other values (numbers or text) by clicking into the field and start typing.  
   
 The parents of an item are listed underneath the item name. Each tree has a separate line. Change the position of a node within a tree by clicking on any of the parent buttons.  
-![Screenshot 2](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/screenshot03.png)  
+![Screenshot 3](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/screenshot03.png)  
 In this example a new node in the tree _Time Plan_ has just been created, and is now added to the tree _Projects_.  
   
 _TreeTime_ lets you select different themes and will try to use the default colours that are defined with your operating system.  
   
-![Screenshot 2](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/screenshot04.png)  
+![Screenshot 4](https://raw.githubusercontent.com/jkanev/treetime/master/data/docs/screenshot04.png)  
 
 <dif id='id-file-syntax'/>
 
