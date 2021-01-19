@@ -20,15 +20,15 @@
 #!/usr/bin/python3
 
 import sys
-from item import *
-from tree import *
-from mainwindow import *
+from .item import *
+from .tree import *
+from .mainwindow import *
 import datetime
 import os.path
 import platform
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from threading import Timer
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtGui import QPalette, QColor, QIcon
 
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
@@ -391,6 +391,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.labelCurrentFile.setText(lastFile)
         else:
             self.pushButtonLoadFileClicked()
+
+        # add application icon
+        self.setWindowIcon(QIcon('../data/treetime.png'))
 
         # show window
         self.showMaximized()
@@ -776,6 +779,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         button.setToolButtonStyle(1)  # 1 - text only
                         button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
                         button.setMenu(self.createParentMenu(treeNumber, self.forest))
+                        button.setStyleSheet("::menu-indicator{image:none;}")
                         buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
                     elif len(path) == 1:
                         parent = tree.findNode(path).parent
@@ -793,12 +797,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             button.setText(parent.name)
                             button.setToolButtonStyle(1)     # 2 - text beside icon
                             button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                            button.setStyleSheet("::menu-indicator{image:none;}")
                             button.setMenu(self.createParentMenu(treeNumber, parent.parent))
                             buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
                         button = QtWidgets.QToolButton()
                         button.setArrowType(4)     # 4 - rightarrow
                         button.setToolButtonStyle(0)     # 0 - icon only
                         button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                        button.setStyleSheet("::menu-indicator{image:none}")
                         button.setMenu(self.createParentMenu(treeNumber, parent))
                         buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
 

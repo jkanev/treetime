@@ -1,5 +1,5 @@
 
-from treetime import *
+from .treetime import *
 import sys
 
 def main(args=None):
