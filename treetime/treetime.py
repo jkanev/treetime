@@ -372,15 +372,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # init application settings
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
 
-        # init themes and set last theme
-        self.system_palette = self.palette()
-        self.fillThemeBox()
-        self.fillColourBox()
-        self.cboxThemeTextChanged()
-        self.cboxColoursTextChanged()
-        self.cboxTheme.currentTextChanged.connect(self.cboxThemeTextChanged)
-        self.cboxColours.currentTextChanged.connect(self.cboxColoursTextChanged)
-
         # load last file
         lastFile = self.settings.value('lastFile')
         if lastFile:
@@ -392,8 +383,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.pushButtonLoadFileClicked()
 
-        # add application icon
-        self.setWindowIcon(QIcon('../data/treetime.png'))
+        # init themes and set last theme
+        self.system_palette = self.palette()
+        self.fillThemeBox()
+        self.fillColourBox()
+        self.cboxThemeTextChanged()
+        self.cboxColoursTextChanged()
+        self.cboxTheme.currentTextChanged.connect(self.cboxThemeTextChanged)
+        self.cboxColours.currentTextChanged.connect(self.cboxColoursTextChanged)
 
         # show window
         self.showMaximized()
@@ -444,6 +441,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         style = self.cboxTheme.currentText()
         self.settings.setValue('theme', style)
         application.setStyle(QtWidgets.QStyleFactory.create(style))
+        self.treeSelectionChanged(self.currentTree)
 
     def cboxColoursTextChanged(self):
         """
@@ -494,6 +492,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             palette = self.system_palette
 
         application.setPalette(palette)
+        self.treeSelectionChanged(self.currentTree)
 
     def pushButtonSaveToFileClicked(self):
         """
@@ -775,16 +774,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     buttonbox = QtWidgets.QDialogButtonBox()
                     if not len(path):
                         button = QtWidgets.QToolButton()
-                        button.setText("+")
+                        button.setText("")
                         button.setToolButtonStyle(1)  # 1 - text only
+                        button.setFixedWidth(button.sizeHint().height())
+                        button.setFixedHeight(button.sizeHint().height())
                         button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                        button.setStyleSheet("::menu-indicator{ image: none; }")
                         button.setMenu(self.createParentMenu(treeNumber, self.forest))
-                        button.setStyleSheet("::menu-indicator{image:none;}")
                         buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
                     elif len(path) == 1:
                         parent = tree.findNode(path).parent
                         button = QtWidgets.QToolButton()
                         button.setArrowType(4)     # 4 - rightarrow
+                        button.setToolButtonStyle(1)     # get square buttons of same size as text buttons for > buttons
+                        button.setStyleSheet("::menu-indicator{ image: none; }")
+                        button.setFixedWidth(button.sizeHint().height())
+                        button.setFixedHeight(button.sizeHint().height())
                         button.setToolButtonStyle(0)     # 0 - icon only
                         button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
                         button.setMenu(self.createParentMenu(treeNumber, parent))
@@ -802,9 +807,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
                         button = QtWidgets.QToolButton()
                         button.setArrowType(4)     # 4 - rightarrow
+                        button.setToolButtonStyle(1)     # get square buttons of same size as text buttons for > buttons
+                        button.setStyleSheet("::menu-indicator{ image: none; }")
+                        button.setFixedWidth(button.sizeHint().height())
+                        button.setFixedHeight(button.sizeHint().height())
                         button.setToolButtonStyle(0)     # 0 - icon only
                         button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
-                        button.setStyleSheet("::menu-indicator{image:none}")
                         button.setMenu(self.createParentMenu(treeNumber, parent))
                         buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
 
@@ -1116,7 +1124,12 @@ class TreeTime:
         app = QtWidgets.QApplication(sys.argv)
         if platform.system() == "Windows":
             app.setStyle("Fusion")
-        mainWindow = TreeTimeWindow()
-        mainWindow.show()
+
+        # add application icon
+        main_window = TreeTimeWindow()
+        main_window.setWindowIcon(QIcon('treetime-logo.png'))
+        tray_icon = QtWidgets.QSystemTrayIcon(QIcon('treetime-logo.png'), parent=app)
+        main_window.show()
+        tray_icon.show()
         sys.exit(app.exec_())
 
