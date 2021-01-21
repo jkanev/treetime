@@ -29,7 +29,7 @@ import platform
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from threading import Timer
 from PyQt5.QtGui import QPalette, QColor, QIcon
-
+from pkg_resources import resource_filename
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
 # sys.setrecursionlimit(50)
@@ -1126,10 +1126,14 @@ class TreeTime:
             app.setStyle("Fusion")
 
         # add application icon
+        icon_file = os.path.dirname(os.path.realpath(__file__))
+        icon_file += os.path.sep + '..' + os.path.sep + 'data' + os.path.sep + 'treetime-logo.png'
+        icon_file = resource_filename('treetime', 'data/treetime-logo.png')
+        print(icon_file)
         main_window = TreeTimeWindow()
-        main_window.setWindowIcon(QIcon('treetime-logo.png'))
-        tray_icon = QtWidgets.QSystemTrayIcon(QIcon('treetime-logo.png'), parent=app)
+        main_window.setWindowIcon(QIcon(icon_file))
+        # tray_icon = QtWidgets.QSystemTrayIcon(QIcon(file), parent=app)
         main_window.show()
-        tray_icon.show()
+        # tray_icon.show()
         sys.exit(app.exec_())
 

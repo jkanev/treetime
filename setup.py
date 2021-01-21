@@ -22,6 +22,8 @@ setup(
     author_email='jkanev@zoho.com',
     url='https://github.com/jkanev/treetime',
     packages=['treetime'],
+    package_dir={'treetime': '.'},
+    include_package_data=True,
     entry_points={'gui_scripts': ['treetime = treetime.__main__:main']},
     package_data={'treetime': ['data/Simple-Task-List.trt', 'data/treetime-logo.png', 'docs/*.png']},
     # according to some people on the web install_requiring PyQt5 should work, but as my system gives me an error for

@@ -1,0 +1,3 @@
+recursive-include ./data *.png *.trt
+recursive-include ./docs *
+
