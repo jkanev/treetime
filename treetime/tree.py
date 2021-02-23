@@ -20,6 +20,7 @@
 from .item import *
 from textwrap import wrap
 import datetime
+from math import floor, ceil
 
 class Field:
     """
@@ -149,9 +150,15 @@ class Field:
         elif self.fieldType == "sum":
             self.getValue = self.getValueSum
             self.getString = self.getStringRounded
+        elif self.fieldType == "sum-time":
+            self.getValue = self.getValueSum
+            self.getString = self.getStringTime
         elif self.fieldType == "difference":
             self.getValue = self.getValueDifference
             self.getString = self.getStringRounded
+        elif self.fieldType == "difference-time":
+            self.getValue = self.getValueDifference
+            self.getString = self.getStringTime
         elif self.fieldType == "mean":
             self.getValue = self.getValueMean
             self.getString = self.getStringRounded
@@ -173,7 +180,7 @@ class Field:
 
     def getStringPercent(self):
         if self.sourceNode and self.getValue:
-            v = self.getValue();
+            v = self.getValue()
             if v:
                 whitespace = ""
                 if v < 0.1:
@@ -181,6 +188,24 @@ class Field:
                 elif v < 1.0:
                     whitespace = " "
                 return whitespace + str(round(100*v)) + " %"
+            else:
+                return ""
+        else:
+            return ""
+
+    def getStringTime(self):
+        if self.sourceNode and self.getValue:
+            v = self.getValue()
+            if v:
+                if v < 0:
+                    adjust = 0.49999
+                else:
+                    adjust = -0.49999
+                hours = round(v + adjust)
+                minutes = round(60.0*(v - hours) + adjust)
+                seconds = round(3600.0*((v - hours) - minutes/60.0) + adjust)
+                sign = v < 0.0 and "- " or "  "
+                return "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
             else:
                 return ""
         else:
