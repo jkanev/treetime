@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021-01](https://github.com/jkanev/treetime/releases/tag/2021-01) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.2](https://github.com/jkanev/treetime/releases/tag/2021.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -173,6 +173,8 @@ Past
 - Done October 2020: Added a dark and a light palette for GUI colours, selectable in addition to the theme selection.
 - Done November 2020: Fixed too slow editing in text fields when tree files are big (>1.5 MB).
 - Done January 2021: Released version 2021.01.
+- Done January 2021: Bugfixing (timer crash)
+- Done February 2021: Released version 2021.2.
 
 Present
 - Running: Bugfixing
