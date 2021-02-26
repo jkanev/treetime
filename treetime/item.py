@@ -150,12 +150,11 @@ class Item:
         Edit the content of a field. The content is expected to be a string and
         will be converted according to the field type.
         """
-        print('0')
+
         if fieldName not in self.fields:
             return "A field with name " + fieldName + " does not exist in node " + self.name + "."
         else:
             # update field content
-            timer = False
             field = self.fields[fieldName]
             type = field["type"]
             if fieldContent:
@@ -180,11 +179,9 @@ class Item:
                             field["content"] = json.loads(fieldContent[0])
                             field["running_since"] = fieldContent[1]
 
-                        # trigger update by recursive call, *not* using a tuple
-                        if field["running_since"]:
-                            print('1')
-                            timer = Timer(1.0, self.changeFieldContent, [fieldName, (True,)])
-                            print('2')
+                        # just send an empty update message if a timer is running
+                        else:
+                            pass
 
                     except json.JSONDecodeError:
                         field["content"] = None
@@ -194,11 +191,8 @@ class Item:
             else:
                 field["content"] = None
 
+            # notify changes
             self.notifyFieldChange(fieldName)
-            if timer:
-                print('3')
-                timer.start()
-                print('4')
 
         return True
 

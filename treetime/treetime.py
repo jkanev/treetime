@@ -368,6 +368,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.write_delay = 0
         self.write_timer = False
         self.locked = True
+        self.auto_updates = []
+        self.update_timer = QtCore.QTimer(self)
+        self.update_timer.timeout.connect(self.updateTimers)
+        self.update_timer.start(1000)
 
         # init application settings
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
@@ -573,6 +577,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
         result = msgBox.exec_()
         if result == QtWidgets.QMessageBox.Ok:
+
+            # remove running timers
+            for f in self.currentItem.fields.keys():
+                if self.currentItem.fields[f]['type'] == 'timer':
+                    self.currentItem.fields[f]['running_since'] = False
+                    self.adjustAutoUpdate(self.currentItem, f)
+
+            # delete item and update file
             self.forest.itemPool.deleteItem(self.currentItem)
             self.delayedWriteToFile()
         
@@ -942,9 +954,33 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         message = "Couldn't update field content.\n" + str(result)
                         msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
                         msgBox.exec_()
-                
+
+                    # add/remove timer to list
+                    if fieldType == 'timer':
+                        self.adjustAutoUpdate(self.currentItem, fieldName)
+
             self.locked = False
             self.delayedWriteToFile()
+
+    def adjustAutoUpdate(self, item, fieldName):
+        """ Adds or removes a timer to the list of fields to auto-update.
+        """
+        if item.fields[fieldName]['type'] == 'timer':
+            # if timer is running, add it to the list
+            if item.fields[fieldName]['running_since']:
+                if (item, fieldName) not in self.auto_updates:
+                    self.auto_updates.append((item, fieldName))
+
+            # if timer is stopped, remove it from the list
+            else:
+                if (item, fieldName) in self.auto_updates:
+                    del self.auto_updates[self.auto_updates.index((item, fieldName))]
+
+    def updateTimers(self):
+        # update all timers that are running
+        for item, fieldName in self.auto_updates:
+            result = item.changeFieldContent(fieldName, [True])
+        # remove timers that are problematic
 
     def createNode(self, insertas, copy, recurse = False, srcItem = None, destItem = None):
         
