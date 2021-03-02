@@ -207,7 +207,8 @@ class Item:
     def removeFromTree(self, treeIndex):
         """
         Remove this item from the tree, and have it call all removal callbacks.
-        This triggers a recursion, deleting the whole child branch from the tree
+        There is no recursion, moving children up or removing them is the responsibility
+        of the tree management layer
         """
 
         self.trees[treeIndex] = []

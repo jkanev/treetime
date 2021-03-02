@@ -354,8 +354,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.pushButtonExportBranchTxt.clicked.connect(self.pushButtonExportBranchTxtClicked)
         self.pushButtonExportTreeTxt.clicked.connect(self.pushButtonExportTreeTxtClicked)
-        self.pushButtonRemove.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
-        self.pushButtonDelete.clicked.connect(self.pushButtonDeleteClicked)
+        self.pushButtonRemoveNode.clicked.connect(self.pushButtonRemoveNodeClicked)
+        self.pushButtonDeleteNode.clicked.connect(self.pushButtonDeleteNodeClicked)
+        self.pushButtonRemoveBranch.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
+        self.pushButtonDeleteBranch.clicked.connect(self.pushButtonDeleteBranchClicked)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(3)
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, 2)     # column 0: fixed
@@ -568,15 +570,49 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Then save as new file
             self.pushButtonSaveToFileClicked()
 
-    def pushButtonDeleteClicked(self):
-        message = "Deleting node \"" + self.currentItem.name + "\". \n\n" \
-                  "This will remove all descendents (children, grandchildren, ...) from the tree \"" \
-                  + self.forest.children[self.currentTree].name +"\".\n" \
-                  "Changes are saved to file immediately and cannot be reverted."
+    def pushButtonRemoveNodeClicked(self):
+        """
+        Remove the current node from the tree and move all children in this tree to their parent
+        """
+        message = "Removing node \"" \
+                  + self.currentItem.name \
+                  + "\". \n\n" \
+                  + "This will move all children in this tree to the node's parent.\n" \
+                  + "Changes are saved to file immediately and cannot be reverted."
         msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
         msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
         result = msgBox.exec_()
         if result == QtWidgets.QMessageBox.Ok:
+
+            # move all children to parent node
+            currentNode = self.currentItem.viewNodes[self.currentTree]
+            parent = currentNode.parent
+            while len(currentNode.children):
+                currentNode.children[0].item.moveInTree(self.currentTree, parent.path)
+
+            # delete item and update file
+            self.currentItem.removeFromTree(self.currentTree)
+            parent.renumberChildren()
+            self.delayedWriteToFile()
+
+    def pushButtonDeleteNodeClicked(self):
+        """
+        Delete Node single node and move all children in all branches to the node's parent
+        """
+        message = "Deleting node \"" + self.currentItem.name + "\". \n\n" \
+                  + "This will move all children in all trees to their nodes' parents.\n" \
+                  + "Changes are saved to file immediately and cannot be reverted."
+        msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+        result = msgBox.exec_()
+        if result == QtWidgets.QMessageBox.Ok:
+
+            # move all children in all trees to parent node
+            for t in range(0, len(self.forest.children)):
+                node = self.currentItem.viewNodes[t]
+                if node:
+                    while len(node.children):
+                        node.children[0].item.moveInTree(t, node.parent.path)
 
             # remove running timers
             for f in self.currentItem.fields.keys():
@@ -587,7 +623,55 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # delete item and update file
             self.forest.itemPool.deleteItem(self.currentItem)
             self.delayedWriteToFile()
-        
+
+    def pushButtonDeleteBranchClicked(self):
+        """
+        Delete Node single node and move all children in all branches to the node's parent
+        """
+        message = "Deleting branch \"" + self.currentItem.name + "\". \n\n" \
+                  + "This will delete all branches in all trees.\n" \
+                  + "This remove large parts of your data due to connections between trees.\n" \
+                  + "Changes are saved to file immediately and cannot be reverted."
+        msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+        result = msgBox.exec_()
+
+        if result == QtWidgets.QMessageBox.Ok:
+
+            # recursive function to collect all child nodes in all trees
+            def collect_children(item, item_list):
+                if item not in item_list:
+                    item_list += [item]
+                    for t in range(0, len(item.trees)):
+                        node = item.viewNodes[t]
+                        for child in node.children:
+                            collect_children(child.item, item_list)
+
+            # find unique list of children to delete, in all trees
+            to_delete = []
+            collect_children(self.currentItem, to_delete)
+
+            message = ("The selected action will remove {} of all {} nodes.\n" \
+                       + "This is {:.0f} % of your data.\n" \
+                       + "Are you sure?").format(len(to_delete), len(self.forest.itemPool.items),
+                                                 100.0*len(to_delete)/len(self.forest.itemPool.items))
+            msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
+            msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+            result = msgBox.exec_()
+
+            if result == QtWidgets.QMessageBox.Ok:
+                # remove all running timers
+                for i in to_delete:
+                    for f in i.fields.keys():
+                        if i.fields[f]['type'] == 'timer':
+                            i.fields[f]['running_since'] = False
+                            self.adjustAutoUpdate(i, f)
+
+                # delete items and update file
+                for i in to_delete:
+                    self.forest.itemPool.deleteItem(i)
+                self.delayedWriteToFile()
+
     def loadFile(self, filename):
         self.removeBranchTabs()
         self.tabWidgets = []
@@ -601,6 +685,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.forest = Forest(filename)
                 self.createBranchTabs()
                 self.fillTreeWidgets()
+
+                # init all timers
+                self.initAllAutoUpdates()
 
                 # select first item
                 if len(self.treeWidgets):
@@ -976,6 +1063,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if (item, fieldName) in self.auto_updates:
                     del self.auto_updates[self.auto_updates.index((item, fieldName))]
 
+    def initAllAutoUpdates(self):
+        """
+        Initialise all auto-update fields after loading.
+        """
+        for i in self.forest.itemPool.items:
+            for f in i.fields:
+                    self.adjustAutoUpdate(i, f)
+
     def updateTimers(self):
         # update all timers that are running
         for item, fieldName in self.auto_updates:
@@ -1109,7 +1204,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # question to user: Really remove?
                 message = "Removing node \"" + item.name + "\" from the tree \"" \
                           + self.forest.children[self.currentTree].name +"\".\n\n" \
-                          "This will remove all descendents (children, grandchildren, ...). " \
+                          "This will remove all descendants (children, grandchildren, ...). " \
                           "Changes are saved to file immediately and cannot be reverted."
                 msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
                 msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
