@@ -644,8 +644,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     item_list += [item]
                     for t in range(0, len(item.trees)):
                         node = item.viewNodes[t]
-                        for child in node.children:
-                            collect_children(child.item, item_list)
+                        if node:
+                            for child in node.children:
+                                collect_children(child.item, item_list)
 
             # find unique list of children to delete, in all trees
             to_delete = []

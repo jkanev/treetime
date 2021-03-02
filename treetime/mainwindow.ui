@@ -41,6 +41,9 @@
         <height>16777215</height>
        </size>
       </property>
+      <property name="toolTip">
+       <string/>
+      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -96,6 +99,9 @@
             <italic>true</italic>
            </font>
           </property>
+          <property name="toolTip">
+           <string>The current data file. All changes made are silently written to this file.</string>
+          </property>
           <property name="text">
            <string>[current file name]</string>
           </property>
@@ -112,19 +118,6 @@
            <set>Qt::LinksAccessibleByMouse</set>
           </property>
          </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
         <item>
          <spacer name="verticalSpacer_8">
@@ -160,6 +153,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonNewFromTemplate">
+          <property name="toolTip">
+           <string>&lt;b&gt;Create a new tree sheet from a template file&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• Lets you choose a template in a file dialog, then choose a file location for your new file.&lt;br/&gt;• Changes are silently written to the new file.</string>
+          </property>
           <property name="text">
            <string>New from Template</string>
           </property>
@@ -167,6 +163,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonLoadFile">
+          <property name="toolTip">
+           <string>&lt;b&gt;Load an existing tree sheet&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Subsequent changes will be written silently to the loaded file.</string>
+          </property>
           <property name="text">
            <string>Load File</string>
           </property>
@@ -174,6 +173,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonSaveToFile">
+          <property name="toolTip">
+           <string>&lt;b&gt;Save the current file to a new location&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Subsequent changes will be written silently to the new location.</string>
+          </property>
           <property name="text">
            <string>Save As</string>
           </property>
@@ -210,6 +212,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonExportBranchTxt">
+          <property name="toolTip">
+           <string>&lt;b&gt;Export the current branch to a text file&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The file will contain all tree fields.&lt;br/&gt;• Text graphics show the tree structure.</string>
+          </property>
           <property name="text">
            <string>Export Branch to Textfile</string>
           </property>
@@ -217,10 +222,78 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButtonExportTreeTxt">
+          <property name="toolTip">
+           <string>&lt;b&gt;Export the current tree to a text file.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The file will contain all tree fields.&lt;br/&gt;• Text graphics show the tree structure.</string>
+          </property>
           <property name="text">
            <string>Export Tree to Textfile</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_18">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_19">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_17">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_16">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_15">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item>
          <spacer name="verticalSpacer_13">
@@ -277,6 +350,9 @@
         </item>
         <item row="3" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonNewChild">
+          <property name="toolTip">
+           <string>&lt;b&gt;Create a new item and link it as a child to the selected node&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Only this tree will be affected.</string>
+          </property>
           <property name="text">
            <string>New Child</string>
           </property>
@@ -284,6 +360,9 @@
         </item>
         <item row="4" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonNewSibling">
+          <property name="toolTip">
+           <string>&lt;b&gt;Create a new item and link it as a sibling next to the selected node&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Only this tree will be affected.</string>
+          </property>
           <property name="text">
            <string>New Sibling</string>
           </property>
@@ -291,6 +370,9 @@
         </item>
         <item row="5" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonNewParent">
+          <property name="toolTip">
+           <string>&lt;b&gt;Create a new item and insert it as a parent above the selected node&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Only this tree will be affected.</string>
+          </property>
           <property name="text">
            <string>New Parent</string>
           </property>
@@ -314,6 +396,9 @@
         </item>
         <item row="8" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonCopyNodeChild">
+          <property name="toolTip">
+           <string>&lt;b&gt;Insert a new child underneath&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The child will be a copy of the current node.&lt;br/&gt;• In all other trees the new item will appear as sibling.</string>
+          </property>
           <property name="text">
            <string>Copy Node as Child</string>
           </property>
@@ -321,6 +406,9 @@
         </item>
         <item row="9" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonCopyNodeSibling">
+          <property name="toolTip">
+           <string>&lt;b&gt;Insert a new sibling&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The sibling will be a copy of the current node.&lt;br/&gt;• In all other trees the new item will appear as sibling.</string>
+          </property>
           <property name="text">
            <string>Copy Node as Sibling</string>
           </property>
@@ -328,6 +416,9 @@
         </item>
         <item row="10" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonCopyNodeParent">
+          <property name="toolTip">
+           <string>&lt;b&gt;Insert a new parent above&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The parent will be a copy of the current node.&lt;br/&gt;• In all other trees the new item will appear as sibling.</string>
+          </property>
           <property name="text">
            <string>Copy Node as Parent</string>
           </property>
@@ -367,6 +458,12 @@
         </item>
         <item row="15" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonCopyBranchSibling">
+          <property name="toolTip">
+           <string>&lt;b&gt;Copy the current branch&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The current node and all its children will be copied.&lt;br/&gt;• The copy will be inserted as sibling.&lt;br/&gt;• Other trees are not affected.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>-1</number>
+          </property>
           <property name="text">
            <string>Copy Branch as Sibling</string>
           </property>
@@ -374,6 +471,9 @@
         </item>
         <item row="16" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonCopyChildrenSiblings">
+          <property name="toolTip">
+           <string>&lt;b&gt;Copy all child branches&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• All children are copied underneath the siblings of the current node.&lt;br/&gt;• The copy depth can be selected in the box above.&lt;br/&gt;• Other trees are not affected.</string>
+          </property>
           <property name="text">
            <string>Copy Children to Siblings</string>
           </property>
@@ -397,6 +497,9 @@
         </item>
         <item row="19" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonRemoveNode">
+          <property name="toolTip">
+           <string>&lt;b&gt;Remove the current node&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• Children of the node are moved up, to be children of the node's parent.&lt;br/&gt;• Other trees are not affected.</string>
+          </property>
           <property name="text">
            <string>Remove Node (this Tree)</string>
           </property>
@@ -404,6 +507,9 @@
         </item>
         <item row="20" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonDeleteNode">
+          <property name="toolTip">
+           <string>&lt;b&gt;Delete the current item&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• In each tree, children of the node are moved up, to be children of the node's parent.&lt;br/&gt;• The node is removed from all trees.</string>
+          </property>
           <property name="text">
            <string>Delete Item (all Trees)</string>
           </property>
@@ -468,6 +574,9 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>&lt;b&gt;Select a level down to which the current branch is copied&lt;/b&gt;</string>
           </property>
           <item>
            <property name="text">
@@ -570,6 +679,9 @@
         </item>
         <item row="23" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonRemoveBranch">
+          <property name="toolTip">
+           <string>&lt;b&gt;Remove the current branch&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• All descentants (children, grandchildren, ...), are removed.&lt;br/&gt;• Other trees are not affected.&lt;/li&gt;&lt;/ul&gt;</string>
+          </property>
           <property name="text">
            <string>Remove Branch (this Tree)</string>
           </property>
@@ -577,6 +689,9 @@
         </item>
         <item row="24" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonDeleteBranch">
+          <property name="toolTip">
+           <string>&lt;b&gt;Delete the entire branch from all trees&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• All descendants (children, grandchildren, etc) in all trees are deleted.&lt;br/&gt;• Children of a node are deleted recursively across trees.&lt;br/&gt;• Please make sure there are no unwanted connections before use.</string>
+          </property>
           <property name="text">
            <string>Delete Branch (all Trees)</string>
           </property>
@@ -590,7 +705,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>703</height>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
@@ -613,6 +728,14 @@
        </layout>
       </widget>
       <widget class="QWidget" name="pageSettings">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>250</width>
+         <height>760</height>
+        </rect>
+       </property>
        <attribute name="label">
         <string>Settings</string>
        </attribute>
