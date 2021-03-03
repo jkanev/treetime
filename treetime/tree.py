@@ -121,23 +121,24 @@ class Field:
                 elif c.item and c.item.fields and f in c.item.fields:
                     values += [Field.getFieldValue(c.item.fields[f])]
 
-        # look in sibling fields
         node = self.sourceNode.parent
-        for f in self.siblingFields:
-            for c in node.children:
-                if c != self.sourceNode:
-                    if f in c.fields:
-                        values += [c.fields[f].getValue()]
-                    elif f in c.item.fields:
-                        values += [Field.getFieldValue(c.item.fields[f])]
+        if node:
 
-        # look in parent fields
-        node = self.sourceNode.parent
-        for f in self.parentFields:
-            if f in node.item.fields:
-                values += [node.fields[f].getValue()]
-            elif f in node.fields:
-                values += [Field.getFieldValue(node.item.fields[f])]
+            # look in sibling fields
+            for f in self.siblingFields:
+                for c in node.children:
+                    if c != self.sourceNode:
+                        if f in c.fields:
+                            values += [c.fields[f].getValue()]
+                        elif f in c.item.fields:
+                            values += [Field.getFieldValue(c.item.fields[f])]
+
+            # look in parent fields
+            for f in self.parentFields:
+                if f in node.item.fields:
+                    values += [node.fields[f].getValue()]
+                elif f in node.fields:
+                    values += [Field.getFieldValue(node.item.fields[f])]
         
         # return
         return values
@@ -650,6 +651,7 @@ class Node:
             self.renumberChildren()
             for f in self.fields:
                 self.notifyFieldChange(f, True)
+            child.parent = None
 
     def renumberChildren(self):
         """
@@ -767,10 +769,6 @@ class Node:
         if self.deletionCallback is not None:
             self.deletionCallback()
             
-        # recurse down my children
-        for c in self.children:
-            c.item.removeFromTree(self.tree)
-
         # make parent renumber children
         self.parent.removeChild(self)
 

@@ -592,7 +592,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # delete item and update file
             self.currentItem.removeFromTree(self.currentTree)
-            parent.renumberChildren()
             self.delayedWriteToFile()
 
     def pushButtonDeleteNodeClicked(self):
@@ -1213,7 +1212,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 
                 # remove if user has confirmed
                 if result == QtWidgets.QMessageBox.Ok:
-                    item.removeFromTree(treeIndex)
+
+                    # recursive function to collect all child nodes in the trees
+                    def collect_children(item, item_list, tree):
+                        if item not in item_list:
+                            item_list += [item]
+                            node = item.viewNodes[tree]
+                            if node:
+                                for child in node.children:
+                                    collect_children(child.item, item_list, tree)
+
+                    # find unique list of children to remove, and remove them
+                    to_remove = []
+                    collect_children(self.currentItem, to_remove, treeIndex)
+                    for i in to_remove:
+                        i.removeFromTree(treeIndex)
+
                     if treeIndex == self.currentTree:
                         disappeared = True     # remember that we've removed a node from the current tree
                 else:

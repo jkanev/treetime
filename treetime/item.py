@@ -211,14 +211,21 @@ class Item:
         of the tree management layer
         """
 
+        # set tree data to None
         self.trees[treeIndex] = []
+        self.registerMoveCallback(treeIndex, None)
+        self.registerFieldChangeCallback(treeIndex, None)
+        self.registerNameChangeCallback(treeIndex, None)
+        self.registerViewNode(treeIndex, None)
+        self.registerSelectionCallback(treeIndex, None)
+
+        # Notify own node and view node of deletion
         if self.deletionCallbacks[treeIndex] is not None:
             self.deletionCallbacks[treeIndex]()
             self.registerDeletionCallback(treeIndex, None)
-            self.registerMoveCallback(treeIndex, None)
-            self.registerFieldChangeCallback(treeIndex, None)
-            self.registerNameChangeCallback(treeIndex, None)
-            self.registerViewNode(treeIndex, None)
+
+        # Update nodes in other trees
+        self.notifyFieldChange(False)
 
     def moveInTree(self, treeIndex, parentPath):
         """
