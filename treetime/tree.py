@@ -148,6 +148,9 @@ class Field:
         if self.fieldType == "string":
             self.getValue = self.getValueString
             self.getString = self.getStringUnchanged
+        elif self.fieldType == "text":
+            self.getValue = self.getValueString
+            self.getString = self.getStringUnchanged
         elif self.fieldType == "sum":
             self.getValue = self.getValueSum
             self.getString = self.getStringRounded
@@ -572,6 +575,62 @@ class Node:
 
         # return
         return text
+
+    def to_html(self, header=False, footer=False):
+
+        # page header
+        if header:
+            html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
+                   'body {font-family: sans-serif;} '\
+                   'em {color: #555;}' \
+                   'div.node {position: relative; float: left; clear: left; width: min-content; border: 1px solid; margin: 1em; padding: 1em; background-color: rgba(0, 10, 20, 0.05); border-radius: 1em; border-color: #404040;}' \
+                   'div.name {padding: 0.2em; margin: 0.2em; font-size: 1.4em; position: relative; float: left; color: #007; width: 100%;} ' \
+                   'div.fields {position: relative; float: left; clear: left; width: max-content; border-top: 1px solid; border-color: #808080;} ' \
+                   'div.string {position: relative; float: left; width: 10em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.text {position: relative; float: left; width: 30em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.sum {position: relative; float: left; width: 5em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.sum-time {position: relative; float: left; width: 10em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.difference {position: relative; float: left; width: 5em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.difference-time {position: relative; float: left; width: 10em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.mean {position: relative; float: left; width: 5em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.ratio {position: relative; float: left; width: 5em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.node-name {position: relative; float: left; width: 10em; margin: 0.5em; padding: 0.5em; }' \
+                   'div.node-path {position: relative; float: left; width: 25em; margin: 0.5em; padding: 0.5em; }' \
+                   '</style></head><body>'
+        else:
+            html = ''
+
+        # node header
+        html += '<div class="node">'
+
+        # node name
+        html += '<div class="name">' + self.name + '</div>'
+
+        # node fields
+        html += '<div class="fields">'
+        for name, field in self.fields.items():
+            content = field.getString().strip()
+            if content:
+                content = content.replace('\n', '<br/>')
+                html += '<div class="{}"><em>{}</em><br/>{}</div>'.format(field.fieldType, name, content)
+        html += '</div>'
+
+        # children
+        sorted_children = sorted(self.children, key=lambda c: c.name)
+        for i in range(len(sorted_children)):
+            html += sorted_children[i].to_html()
+
+        # node footer
+        html += "</div>"
+
+        # page footer
+        if footer:
+            html += '</body></html>'
+
+        # finished.
+        return html
 
     def createPathTo(self, item, treeindex, nodeindex, viewtemplate):
         """

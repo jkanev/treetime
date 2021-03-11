@@ -354,6 +354,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.pushButtonExportBranchTxt.clicked.connect(self.pushButtonExportBranchTxtClicked)
         self.pushButtonExportTreeTxt.clicked.connect(self.pushButtonExportTreeTxtClicked)
+        self.pushButtonExportBranchHtml.clicked.connect(self.pushButtonExportBranchHtmlClicked)
+        self.pushButtonExportTreeHtml.clicked.connect(self.pushButtonExportTreeHtmlClicked)
         self.pushButtonRemoveNode.clicked.connect(self.pushButtonRemoveNodeClicked)
         self.pushButtonDeleteNode.clicked.connect(self.pushButtonDeleteNodeClicked)
         self.pushButtonRemoveBranch.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
@@ -505,7 +507,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Callback for the save-file button. Saves the current data to a new file and keeps that file connected.
         """
         fileDir = self.settings.value('fileDir') or ''
-        file = QtWidgets.QFileDialog.getSaveFileName(self, "Save new Data File", fileDir, '*.trt')[0]
+        file = QtWidgets.QFileDialog.getSaveFileName(self, "Save new Data File", fileDir, 'TreeTime Files (*.trt)')[0]
         if file != '':
             self.labelCurrentFile.setText(file)
             self.writeToFile()
@@ -532,7 +534,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         if self.currentItem:
             fileDir = self.settings.value('fileDir') or ''
-            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to Plain Text", fileDir, '*.txt')[0]
+            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to Plain Text", fileDir, 'Text Files (*.txt)')[0]
             if file != '':
                 with open(file, "w") as f:
                     currentNode = self.currentItem.viewNodes[self.currentTree]
@@ -545,7 +547,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         if self.currentItem:
             fileDir = self.settings.value('fileDir') or ''
-            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to Plain Text", fileDir, '*.txt')[0]
+            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to Plain Text", fileDir, 'Text Files (*.txt)')[0]
             if file != '':
                 with open(file, "w") as f:
                     rootNode = self.forest.children[self.currentTree]
@@ -554,6 +556,38 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         f.write('\n')
                         f.write(c.to_txt())
                         f.write('\n')
+
+    def pushButtonExportBranchHtmlClicked(self):
+        """
+        Callback for the html export. Asks for a file name, then writes branch html export into it.
+        """
+        if self.currentItem:
+            fileDir = self.settings.value('fileDir') or ''
+            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to HTML", fileDir, 'HTML Files (*.html)')[0]
+            if file != '':
+                with open(file, "w") as f:
+                    currentNode = self.currentItem.viewNodes[self.currentTree]
+                    txt = currentNode.to_html(header=True, footer=True)
+                    f.write(txt)
+
+    def pushButtonExportTreeHtmlClicked(self):
+        """
+        Callback for the html export. Asks for a file name, then writes tree html export into it.
+        """
+        if self.currentItem:
+            fileDir = self.settings.value('fileDir') or ''
+            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to HTML", fileDir, 'HTML Files (*.html)')[0]
+            if file != '':
+                with open(file, "w") as f:
+                    rootNode = self.forest.children[self.currentTree]
+                    children = sorted(rootNode.children, key=lambda a: a.name)
+                    for c in range(0, len(children)):
+                        if c == 0:
+                            f.write(children[c].to_html(header=True))
+                        elif c == len(children)-1:
+                            f.write(children[c].to_html(footer=True))
+                        else:
+                            f.write(children[c].to_html())
 
     def pushButtonNewFromTemplateClicked(self):
         """

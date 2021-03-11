@@ -52,8 +52,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>229</width>
+         <height>796</height>
         </rect>
        </property>
        <attribute name="label">
@@ -231,6 +231,20 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pushButtonExportBranchHtml">
+          <property name="text">
+           <string>Export Branch to HTML</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonExportTreeHtml">
+          <property name="text">
+           <string>Export Tree to HTML</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer_18">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -315,8 +329,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>200</width>
+         <height>716</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -704,8 +718,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>96</width>
+         <height>26</height>
         </rect>
        </property>
        <attribute name="label">
@@ -732,8 +746,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>200</width>
+         <height>286</height>
         </rect>
        </property>
        <attribute name="label">
