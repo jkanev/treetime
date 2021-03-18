@@ -581,7 +581,7 @@ class Node:
         # page header
         if header:
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
-                   'body {font-family: sans-serif;} '\
+                   'body {font-family: sans-serif; color: black; background-color: white;} '\
                    'em {color: #555;}' \
                    'div.node {position: relative; float: left; clear: left; width: min-content; border: 1px solid; margin: 1em; padding: 1em; background-color: rgba(0, 10, 20, 0.05); border-radius: 1em; border-color: #404040;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; font-size: 1.4em; position: relative; float: left; color: #007; width: 100%;} ' \
