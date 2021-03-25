@@ -106,7 +106,7 @@ Installation
 Using pre-compiled Binaries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.2](https://github.com/jkanev/treetime/releases/tag/2021.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run *TreeTime* or *TreeTime.exe* from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.3](https://github.com/jkanev/treetime/releases/tag/2021.3) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run *TreeTime* or *TreeTime.exe* from the new folder. Unzip the data package too. Add the program folder to your path.
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -129,12 +129,12 @@ Using script code with Python
 2. Install PyQt5 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type: `pip install pyqt5`
 3. Download this project from GitHub as a zip file (https://github.com/jkanev/treetime/archive/master.zip) and unzip
 4. Install *TreeTime*: in the command line, cd into the main directory, then type:
-    Linux:
-    `python3 setup.py build`  
-    `sudo python3 setup.py install`
-    Windows:  
-    `py setup.py build`  
-    `py setup.py install`  
+    - Linux:
+        - `python3 setup.py build`  
+        - `sudo python3 setup.py install`
+    - Windows:  
+        - `py setup.py build`  
+        - `py setup.py install`  
 
 
 Execute

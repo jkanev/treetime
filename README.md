@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.2](https://github.com/jkanev/treetime/releases/tag/2021.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.3](https://github.com/jkanev/treetime/releases/tag/2021.3) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -175,24 +175,29 @@ Past
 - Done January 2021: Released version 2021.01.
 - Done January 2021: Bugfixing (timer crash)
 - Done February 2021: Released version 2021.2.
+- Done March 2021: New functions "Delete node" and "Remove node from tree" now move descendants one level up.
+  "Remove branch" removes the respective branch in all trees. "Delete branch" completely deletes a
+  branch, plus all child branches and inter-connections in all trees.
+- Done March 2021: If a file with running timers is saved, those timers will be running when the file is loaded.
+- Done March 2021: Added tooltips for main buttons
+- Done March 2021: Implemented HTML export of branches and complete trees
+- Done March 2021: Added auto-delete for orphans
+- Done March 2021: Released Version 2021.3
 
 Present
 - Running: Bugfixing
-- Running: Write documentation on readthedocs.io and create example more example and template data files
+- Running: Extend documentation on readthedocs.io 
+- Running: Add more examples and more template data files
   
 Future
 - Near Future: Implement search function
-- Near Future: Release next version
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Mid Future: Bugfixing
-- Mid Future: Release next version
 - Mid Future: Implement more tree field types (standard deviation, min, max, string concatenation),
 - Mid Future: Bugfixing
-- Mid Future: Release next version
 - Far Future: Implement tree field editing with graphical dialog (add, remove, change tree fields)
 - Far Future: Implement data item field editing with graphical dialog (add, remove, change data item fields)
 - Far Future: Bugfixing
-- Far Future: Release next version
 - Far Future: Implement tree export to PDF, and/or CSV
 - Far Future: Implement safe usage by multiple simultaneous users
 - Far Future: Implement a database backend instead of text file storage
