@@ -581,13 +581,18 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 with open(file, "w") as f:
                     rootNode = self.forest.children[self.currentTree]
                     children = sorted(rootNode.children, key=lambda a: a.name)
+                    next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
+                    background = 'blue'
                     for c in range(0, len(children)):
                         if c == 0:
-                            f.write(children[c].to_html(header=True))
+                            background = next_background[background]
+                            f.write(children[c].to_html(header=True, background=background))
                         elif c == len(children)-1:
-                            f.write(children[c].to_html(footer=True))
+                            background = next_background[background]
+                            f.write(children[c].to_html(footer=True, background=background))
                         else:
-                            f.write(children[c].to_html())
+                            background = next_background[background]
+                            f.write(children[c].to_html(background=background))
 
     def pushButtonNewFromTemplateClicked(self):
         """
