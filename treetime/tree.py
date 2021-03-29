@@ -586,7 +586,6 @@ class Node:
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
                    'em {color: #555;}' \
-                   'div.wide {padding-left: 25%; padding-right: 25%;}' \
                    'div.red {background-color: rgba(80, 0, 0, 0.05);}' \
                    'div.green {background-color: rgba(0, 80, 0, 0.05);}' \
                    'div.blue {background-color: rgba(0, 0, 80, 0.05);}' \
@@ -627,22 +626,38 @@ class Node:
         html += '</div>'
 
         # children
+        child_count = 0
         sorted_children = sorted(self.children, key=lambda c: c.name)
-        for i in range(0, len(sorted_children), 2):
-            if i+1 < len(sorted_children):
+        group_open = False
+        for i in range(len(sorted_children)):
+
+            # start new child group on first child in group of 4, or on first node with children
+            if sorted_children[i].children:
+                child_count = 0
+            if child_count == 0:
+                if group_open:
+                    html += '</div>'
                 html += '<div class="children">'
-                background = next_background[background]
-                html += sorted_children[i].to_html(background=background)
-                background = next_background[background]
-                html += sorted_children[i+1].to_html(background=background)
-                html += '</div>'
+                group_open = True
+            if sorted_children[i].children:
+                child_count = 4
             else:
-                html += '<div class="children{}">'.format(i and " wide" or "")   # not for single children
-                background = next_background[background]
-                html += sorted_children[i].to_html(background=background)
+                child_count += 1
+
+            # write next child
+            background = next_background[background]
+            html += sorted_children[i].to_html(background=background)
+
+            # close child group after fourth child of after node with children
+            if child_count == 4:
+                child_count = 0
+            if child_count == 0:
                 html += '</div>'
+                group_open = False
 
         # node footer
+        if group_open:
+            html += '</div>'
         html += "</div>"
 
         # page footer
