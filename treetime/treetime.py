@@ -381,13 +381,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
 
         # load last file
-        lastFile = self.settings.value('lastFile')
-        if lastFile:
-            self.loadFile(lastFile)
-            self.setWindowTitle("TreeTime - " + lastFile)
-            self.settings.setValue('fileDir', os.path.dirname(lastFile))
-            self.settings.setValue('lastFile', lastFile)
-            self.labelCurrentFile.setText(lastFile)
+        if filename:
+            loadFile = filename
+        else:
+            loadFile = self.settings.value('lastFile')
+        if loadFile:
+            self.loadFile(loadFile)
+            self.setWindowTitle("TreeTime - " + loadFile)
+            self.settings.setValue('fileDir', os.path.dirname(loadFile))
+            self.settings.setValue('lastFile', loadFile)
+            self.labelCurrentFile.setText(loadFile)
         else:
             self.pushButtonLoadFileClicked()
 
@@ -1313,7 +1316,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
 class TreeTime:
     
-    def __init__(self):
+    def __init__(self, filename=None):
         
         app = QtWidgets.QApplication(sys.argv)
         if platform.system() == "Windows":
@@ -1324,7 +1327,7 @@ class TreeTime:
         icon_file += os.path.sep + '..' + os.path.sep + 'data' + os.path.sep + 'treetime-logo.png'
         icon_file = resource_filename('treetime', 'data/treetime-logo.png')
         print(icon_file)
-        main_window = TreeTimeWindow()
+        main_window = TreeTimeWindow(filename=filename)
         main_window.setWindowIcon(QIcon(icon_file))
         # tray_icon = QtWidgets.QSystemTrayIcon(QIcon(file), parent=app)
         main_window.show()
