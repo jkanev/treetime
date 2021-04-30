@@ -35,7 +35,7 @@ class Ui_MainWindow(object):
         self.toolBox.setToolTip("")
         self.toolBox.setObjectName("toolBox")
         self.pageFile = QtWidgets.QWidget()
-        self.pageFile.setGeometry(QtCore.QRect(0, -21, 229, 796))
+        self.pageFile.setGeometry(QtCore.QRect(0, 0, 178, 796))
         self.pageFile.setObjectName("pageFile")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.pageFile)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -117,7 +117,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addItem(spacerItem8)
         self.toolBox.addItem(self.pageFile, "")
         self.pageEdit = QtWidgets.QWidget()
-        self.pageEdit.setGeometry(QtCore.QRect(0, 0, 250, 760))
+        self.pageEdit.setGeometry(QtCore.QRect(0, 0, 200, 716))
         self.pageEdit.setMinimumSize(QtCore.QSize(200, 716))
         self.pageEdit.setObjectName("pageEdit")
         self.formLayout = QtWidgets.QFormLayout(self.pageEdit)
@@ -242,7 +242,7 @@ class Ui_MainWindow(object):
         self.formLayout.setWidget(24, QtWidgets.QFormLayout.SpanningRole, self.pushButtonDeleteBranch)
         self.toolBox.addItem(self.pageEdit, "")
         self.pageView = QtWidgets.QWidget()
-        self.pageView.setGeometry(QtCore.QRect(0, 0, 250, 760))
+        self.pageView.setGeometry(QtCore.QRect(0, 0, 96, 26))
         self.pageView.setObjectName("pageView")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.pageView)
         self.gridLayout_3.setObjectName("gridLayout_3")
@@ -390,7 +390,7 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Noto Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime 2021.3</p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime 2021.4</p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Updates and source code:<br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">github.com/jkanev/treetime</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">    Documentation:<br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">treetime-data-manager.</span></a><br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">readthedocs.io</span></a></p></body></html>"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.pageSettings), _translate("MainWindow", "Settings"))
