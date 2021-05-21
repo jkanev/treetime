@@ -61,7 +61,8 @@ Past
 * March: Implemented HTML export of branches and complete trees
 * March: Added auto-delete for orphans
 * March: Released **version 2021.3**
-* April: Added file option and fixed broken application logo
+* April: Added file option
+* April: Implemented four-column layout and rainbow colours for html export
 * April: Released **version 2021.4**
 
 Present

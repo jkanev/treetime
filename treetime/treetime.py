@@ -352,10 +352,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonNewFromTemplate.clicked.connect(self.pushButtonNewFromTemplateClicked)
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
-        self.pushButtonExportBranchTxt.clicked.connect(self.pushButtonExportBranchTxtClicked)
-        self.pushButtonExportTreeTxt.clicked.connect(self.pushButtonExportTreeTxtClicked)
-        self.pushButtonExportBranchHtml.clicked.connect(self.pushButtonExportBranchHtmlClicked)
-        self.pushButtonExportTreeHtml.clicked.connect(self.pushButtonExportTreeHtmlClicked)
+        self.pushButtonExportTxt.clicked.connect(self.pushButtonExportTxtClicked)
+        self.pushButtonExportHtml.clicked.connect(self.pushButtonExportHtmlClicked)
         self.pushButtonRemoveNode.clicked.connect(self.pushButtonRemoveNodeClicked)
         self.pushButtonDeleteNode.clicked.connect(self.pushButtonDeleteNodeClicked)
         self.pushButtonRemoveBranch.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
@@ -531,7 +529,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.settings.setValue('lastFile', file)
             self.labelCurrentFile.setText(file)
 
-    def pushButtonExportBranchTxtClicked(self):
+    def pushButtonExportTxtClicked(self):
         """
         Callback for the txt export. Asks for a file name, then writes branch text export into it.
         """
@@ -540,27 +538,26 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to Plain Text", fileDir, 'Text Files (*.txt)')[0]
             if file != '':
                 with open(file, "w") as f:
-                    currentNode = self.currentItem.viewNodes[self.currentTree]
-                    txt = currentNode.to_txt()
-                    f.write(txt)
 
-    def pushButtonExportTreeTxtClicked(self):
-        """
-        Callback for the txt export. Asks for a file name, then writes branch text export into it.
-        """
-        if self.currentItem:
-            fileDir = self.settings.value('fileDir') or ''
-            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to Plain Text", fileDir, 'Text Files (*.txt)')[0]
-            if file != '':
-                with open(file, "w") as f:
-                    rootNode = self.forest.children[self.currentTree]
-                    children = sorted(rootNode.children, key=lambda a: a.name)
-                    for c in children:
-                        f.write('\n')
-                        f.write(c.to_txt())
-                        f.write('\n')
+                    # get depth
+                    depth = self.comboBoxExportDepth.currentIndex() - 1
 
-    def pushButtonExportBranchHtmlClicked(self):
+                    # export current branch
+                    if self.radioButtonExportBranch.isChecked():
+                        currentNode = self.currentItem.viewNodes[self.currentTree]
+                        txt = currentNode.to_txt(depth=depth)
+                        f.write(txt)
+
+                    # export entire tree
+                    if self.radioButtonExportTree.isChecked():
+                        rootNode = self.forest.children[self.currentTree]
+                        children = sorted(rootNode.children, key=lambda a: a.name)
+                        for c in children:
+                            f.write('\n')
+                            f.write(c.to_txt(depth=depth))
+                            f.write('\n')
+
+    def pushButtonExportHtmlClicked(self):
         """
         Callback for the html export. Asks for a file name, then writes branch html export into it.
         """
@@ -569,33 +566,32 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to HTML", fileDir, 'HTML Files (*.html)')[0]
             if file != '':
                 with open(file, "w") as f:
-                    currentNode = self.currentItem.viewNodes[self.currentTree]
-                    txt = currentNode.to_html(header=True, footer=True)
-                    f.write(txt)
 
-    def pushButtonExportTreeHtmlClicked(self):
-        """
-        Callback for the html export. Asks for a file name, then writes tree html export into it.
-        """
-        if self.currentItem:
-            fileDir = self.settings.value('fileDir') or ''
-            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to HTML", fileDir, 'HTML Files (*.html)')[0]
-            if file != '':
-                with open(file, "w") as f:
-                    rootNode = self.forest.children[self.currentTree]
-                    children = sorted(rootNode.children, key=lambda a: a.name)
-                    next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
-                    background = 'blue'
-                    for c in range(0, len(children)):
-                        if c == 0:
-                            background = next_background[background]
-                            f.write(children[c].to_html(header=True, background=background))
-                        elif c == len(children)-1:
-                            background = next_background[background]
-                            f.write(children[c].to_html(footer=True, background=background))
-                        else:
-                            background = next_background[background]
-                            f.write(children[c].to_html(background=background))
+                    # get depth
+                    depth = self.comboBoxExportDepth.currentIndex() - 1
+
+                    # export current branch
+                    if self.radioButtonExportBranch.isChecked():
+                        currentNode = self.currentItem.viewNodes[self.currentTree]
+                        txt = currentNode.to_html(header=True, footer=True, depth=depth)
+                        f.write(txt)
+
+                    # export entire tree
+                    if self.radioButtonExportTree.isChecked():
+                        rootNode = self.forest.children[self.currentTree]
+                        children = sorted(rootNode.children, key=lambda a: a.name)
+                        next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
+                        background = 'blue'
+                        for c in range(0, len(children)):
+                            if c == 0:
+                                background = next_background[background]
+                                f.write(children[c].to_html(header=True, background=background, depth=depth))
+                            elif c == len(children)-1:
+                                background = next_background[background]
+                                f.write(children[c].to_html(footer=True, background=background, depth=depth))
+                            else:
+                                background = next_background[background]
+                                f.write(children[c].to_html(background=background, depth=depth))
 
     def pushButtonNewFromTemplateClicked(self):
         """

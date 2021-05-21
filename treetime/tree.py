@@ -148,6 +148,9 @@ class Field:
         if self.fieldType == "string":
             self.getValue = self.getValueString
             self.getString = self.getStringUnchanged
+        elif self.fieldType == "url":
+            self.getValue = self.getValueString
+            self.getString = self.getStringUnchanged
         elif self.fieldType == "text":
             self.getValue = self.getValueString
             self.getString = self.getStringUnchanged
@@ -467,7 +470,7 @@ class Node:
         for i in range(len(self.children)):
             self.children[i].printForest(indent + 1)
 
-    def to_txt(self, lastitem=[]):
+    def to_txt(self, lastitem=[], depth=-1):
         """
         Create a text representation of the current branch.
         :param lastitem: A list of booleans showing whether the great-grandparent, grandparent, parent, is the
@@ -503,7 +506,7 @@ class Node:
 
         # create leading tree graphics
         # please pay attention: The spaces in the graphic strings are special unicode figure spaces
-        if self.children:
+        if self.children and depth:
             pre_node_prefix = ""
             first_line_prefix = "█  "
             line_prefix = "│  "
@@ -562,21 +565,24 @@ class Node:
                     text += line_prefix + "    " + line + "\n"
 
         # recurse
-        sorted_children = sorted(self.children, key=lambda c: c.name)
+        if depth:
+            sorted_children = sorted(self.children, key=lambda c: c.name)
+        else:
+            sorted_children = []
         if len(sorted_children) > 1:
             childprefix = lastitem.copy()
             childprefix.append(False)
             for i in range(len(sorted_children)-1):
-                text += sorted_children[i].to_txt(childprefix)
+                text += sorted_children[i].to_txt(childprefix, depth-1)
         if len(sorted_children):
             childprefix = lastitem.copy()
             childprefix.append(True)
-            text += sorted_children[-1].to_txt(childprefix)
+            text += sorted_children[-1].to_txt(childprefix, depth-1)
 
         # return
         return text
 
-    def to_html(self, header=False, footer=False, background='blue'):
+    def to_html(self, header=False, footer=False, background='blue', depth=-1, current_depth=0):
 
         # background colours
         next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
@@ -586,15 +592,16 @@ class Node:
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
                    'em {color: #555;}' \
-                   'div.red {background-color: rgba(80, 0, 0, 0.05);}' \
-                   'div.green {background-color: rgba(0, 80, 0, 0.05);}' \
-                   'div.blue {background-color: rgba(0, 0, 80, 0.05);}' \
+                   'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
+                   'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
+                   'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #808080;}' \
-                   'div.name {padding: 0.2em; margin: 0.2em; font-size: 1.2em; font-weight: bold; position: relative; float: left; width: 100%;} ' \
+                   'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
                    'div.fields {position: relative; float: left; clear: left; width: min-content; border-top: 1px solid; border-color: #808080;} ' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.url {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -613,7 +620,7 @@ class Node:
         html += '<div class="node {}">'.format(background)
 
         # node name
-        html += '<div class="name">' + self.name + '</div>'
+        html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(1.2+1.2/(1.0+current_depth), self.name)
 
         # node fields
         html += '<div class="fields">'
@@ -622,7 +629,11 @@ class Node:
             content = field.getString().strip()
             if content:
                 content = content.replace('\n', '<br/>')
-                html += '<div class="{}"><em>{}</em><br/>{}</div>'.format(field.fieldType, name, content)
+                if field.fieldType == "url":
+                    html += '<div class="{}"><em>{}</em><br/><a href="{}">{}</a></div>'.format(
+                        field.fieldType, name, content, len(content) > 40 and content[:37]+"..." or content)
+                else:
+                    html += '<div class="{}"><em>{}</em><br/>{}</div>'.format(field.fieldType, name, content)
         html += '</div>'
 
         # children
@@ -632,21 +643,22 @@ class Node:
         for i in range(len(sorted_children)):
 
             # start new child group on first child in group of 4, or on first node with children
-            if sorted_children[i].children:
+            if sorted_children[i].children and depth - 1:
                 child_count = 0
             if child_count == 0:
                 if group_open:
                     html += '</div>'
                 html += '<div class="children">'
                 group_open = True
-            if sorted_children[i].children:
+            if sorted_children[i].children and depth - 1:
                 child_count = 4
             else:
                 child_count += 1
 
             # write next child
             background = next_background[background]
-            html += sorted_children[i].to_html(background=background)
+            if depth:
+                html += sorted_children[i].to_html(background=background, depth=depth-1, current_depth=current_depth+1)
 
             # close child group after fourth child of after node with children
             if child_count == 4:
