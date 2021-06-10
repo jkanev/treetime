@@ -64,6 +64,9 @@ Past
 * April: Added file option
 * April: Implemented four-column layout and rainbow colours for html export
 * April: Released **version 2021.4**
+* May: Improvement to html and txt export (changed colours, headings have no different sizes)
+* May: On export of both html and txt, user can now decide how many tree levels (depth) should be exported.
+* May: Released **version 2021.5**
 
 Present
 -------
