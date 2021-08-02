@@ -67,6 +67,9 @@ Past
 * May: Improvement to html and txt export (changed colours, headings have no different sizes)
 * May: On export of both html and txt, user can now decide how many tree levels (depth) should be exported.
 * May: Released **version 2021.5**
+* July: Fixed broken application logo
+* July: Implemented CSV export
+* August: Released **version 2021.8**
 
 Present
 -------

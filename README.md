@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.5](https://github.com/jkanev/treetime/releases/tag/2021.5) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.8](https://github.com/jkanev/treetime/releases/tag/2021.8) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -189,6 +189,9 @@ Past
 - Done May 2021: Improved HTML layout
 - Done May 2021: Implemented customisable level export for html and text export
 - Done May 2021: Released version 2021.5
+- Done July 2021: Fixed broken application logo
+- Done July 2021: Implemented CSV export
+- Done August 2021: Released version 2021.8
 
 Present
 - Running: Bugfixing
@@ -198,13 +201,9 @@ Present
 Future
 - Near Future: Implement search function
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
-- Mid Future: Bugfixing
 - Mid Future: Implement more tree field types (standard deviation, min, max, string concatenation),
-- Mid Future: Bugfixing
 - Far Future: Implement tree field editing with graphical dialog (add, remove, change tree fields)
 - Far Future: Implement data item field editing with graphical dialog (add, remove, change data item fields)
-- Far Future: Bugfixing
-- Far Future: Implement tree export to PDF, and/or CSV
 - Far Future: Implement safe usage by multiple simultaneous users
 - Far Future: Implement a database backend instead of text file storage
 - Far Future: Implement a web server

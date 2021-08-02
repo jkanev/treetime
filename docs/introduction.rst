@@ -106,7 +106,7 @@ Installation
 Using pre-compiled Binaries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.5](https://github.com/jkanev/treetime/releases/tag/2021.5) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run *TreeTime* or *TreeTime.exe* from the new folder. Unzip the data package too. Add the program folder to your path.
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.8](https://github.com/jkanev/treetime/releases/tag/2021.8) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run *TreeTime* or *TreeTime.exe* from the new folder. Unzip the data package too. Add the program folder to your path.
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
