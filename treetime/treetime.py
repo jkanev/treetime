@@ -353,6 +353,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.pushButtonExportTxt.clicked.connect(self.pushButtonExportTxtClicked)
+        self.pushButtonExportCsv.clicked.connect(self.pushButtonExportCsvClicked)
         self.pushButtonExportHtml.clicked.connect(self.pushButtonExportHtmlClicked)
         self.pushButtonRemoveNode.clicked.connect(self.pushButtonRemoveNodeClicked)
         self.pushButtonDeleteNode.clicked.connect(self.pushButtonDeleteNodeClicked)
@@ -528,6 +529,34 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.settings.setValue('fileDir', os.path.dirname(file))
             self.settings.setValue('lastFile', file)
             self.labelCurrentFile.setText(file)
+
+    def pushButtonExportCsvClicked(self):
+        """
+        Callback for the csv export. Asks for a file name, then writes branch text export into it.
+        """
+        if self.currentItem:
+            fileDir = self.settings.value('fileDir') or ''
+            file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to Plain Text", fileDir, 'CSV (Comma-separated Values) Files (*.csv)')[0]
+            if file != '':
+                with open(file, "w") as f:
+
+                    # get depth
+                    depth = self.comboBoxExportDepth.currentIndex() - 1
+
+                    # export current branch
+                    if self.radioButtonExportBranch.isChecked():
+                        currentNode = self.currentItem.viewNodes[self.currentTree]
+                        csv = currentNode.to_csv(depth=depth)
+                        f.write(csv)
+
+                    # export entire tree
+                    if self.radioButtonExportTree.isChecked():
+                        rootNode = self.forest.children[self.currentTree]
+                        children = sorted(rootNode.children, key=lambda a: a.name)
+                        first = True
+                        for c in children:
+                            f.write(c.to_csv( first=first, depth=depth))
+                            first = False
 
     def pushButtonExportTxtClicked(self):
         """

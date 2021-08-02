@@ -52,8 +52,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>229</width>
-         <height>810</height>
+         <width>236</width>
+         <height>806</height>
         </rect>
        </property>
        <attribute name="label">
@@ -324,7 +324,7 @@
           </property>
          </widget>
         </item>
-        <item row="14" column="0" colspan="2">
+        <item row="15" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonExportHtml">
           <property name="toolTip">
            <string>&lt;b&gt;Export the current tree to a text file.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The file will contain all tree fields.&lt;br/&gt;• Text graphics show the tree structure.</string>
@@ -334,7 +334,7 @@
           </property>
          </widget>
         </item>
-        <item row="15" column="0" colspan="2">
+        <item row="16" column="0" colspan="2">
          <spacer name="verticalSpacer_18">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -347,7 +347,7 @@
           </property>
          </spacer>
         </item>
-        <item row="16" column="0" colspan="2">
+        <item row="17" column="0" colspan="2">
          <spacer name="verticalSpacer_19">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -360,7 +360,7 @@
           </property>
          </spacer>
         </item>
-        <item row="17" column="0" colspan="2">
+        <item row="18" column="0" colspan="2">
          <spacer name="verticalSpacer_17">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -373,7 +373,7 @@
           </property>
          </spacer>
         </item>
-        <item row="18" column="0" colspan="2">
+        <item row="19" column="0" colspan="2">
          <spacer name="verticalSpacer_16">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -386,7 +386,7 @@
           </property>
          </spacer>
         </item>
-        <item row="19" column="0" colspan="2">
+        <item row="20" column="0" colspan="2">
          <spacer name="verticalSpacer_15">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -399,7 +399,7 @@
           </property>
          </spacer>
         </item>
-        <item row="20" column="0" colspan="2">
+        <item row="21" column="0" colspan="2">
          <spacer name="verticalSpacer_13">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -412,6 +412,16 @@
           </property>
          </spacer>
         </item>
+        <item row="14" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonExportCsv">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export the current branch or tree to a CSV file&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;• The file will contain all tree fields.&lt;br/&gt;• The first field (&amp;quot;Tree&amp;quot;) shows the tree structure.&lt;/p&gt;&lt;p&gt;• The second field (&amp;quot;Name&amp;quot;) shows the name.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Export to CSV</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="pageEdit">
@@ -420,7 +430,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>760</height>
+         <height>754</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -809,7 +819,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>760</height>
+         <height>754</height>
         </rect>
        </property>
        <attribute name="label">
@@ -837,7 +847,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>760</height>
+         <height>754</height>
         </rect>
        </property>
        <attribute name="label">

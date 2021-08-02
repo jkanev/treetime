@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.4](https://github.com/jkanev/treetime/releases/tag/2021.4) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.5](https://github.com/jkanev/treetime/releases/tag/2021.5) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -186,6 +186,9 @@ Past
 - Done April 2021: Added file option
 - Done April 2021: Added four-column export for html and rainbow colours
 - Done April 2021: Released version 2021.4
+- Done May 2021: Improved HTML layout
+- Done May 2021: Implemented customisable level export for html and text export
+- Done May 2021: Released version 2021.5
 
 Present
 - Running: Bugfixing

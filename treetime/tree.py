@@ -430,7 +430,9 @@ class Node:
         return lines
 
     def map(self, function, parameter, depthFirst):
-        ''' Applies the function to each node in the tree. The function must receive one parameter and return one parameter. The return value is used as parameter for the next function call. The value Parameter is used in the first call.'''
+        ''' Applies the function to each node in the tree. The function must receive one parameter and return one
+        parameter. The return value is used as parameter for the next function call. The value Parameter is used in the
+        first call.'''
         
         # if depthFirst then recurse first and apply later
         if depthFirst:
@@ -469,6 +471,76 @@ class Node:
         # recurse
         for i in range(len(self.children)):
             self.children[i].printForest(indent + 1)
+
+    def to_csv(self, first=True, depth=-1):
+        """
+        Create a csv representation of the current branch.
+        :fieldOrder: The order of fields in the tree
+        :first: If this is the first call (first=True), add a title line with field names,
+                on recursive calls (=False) don't
+        :depth: A number listing how many levels should be in the export
+        :return: CSV. Quotes become double-quotes, fields with commas, line breaks or quotes are quoted,
+            the first field is called "Tree" and contains the tree structure by pre-pending parents to each node, the
+            second field is called "Name" and contains the node name. All other fields from the tree definition follow.
+            Children are sorted alphabetically.
+
+            Tree,Name,"Spent Hours"
+            "Projects | Build Robot","Build Robot",10
+            "Projects | Build Robot | Start Working",Design,20
+        """
+
+        def clean_field(text):
+            text.replace('"', '""')
+            if '"' in text or '\n' in text or ',' in text:
+                text = '"' + text + '"'
+            return text
+
+        csv = ""
+
+        # find root node
+        tree = self
+        while tree.parent.parent is not None:
+            tree = tree.parent
+
+        # add title line
+        if first:
+            csv = 'Tree,Name'
+            for f in tree.fieldOrder:
+                csv += ','
+                csv += clean_field(f)
+            csv += '\n'
+
+        # add node path
+        field = ''
+        pipe = False
+        if len(self.path) > 1:
+            for n in range(1, len(self.path)):
+                field += pipe and ' | ' or ''
+                field += tree.findNode(self.path[:n]).name
+                pipe = True
+        field += pipe and ' | ' or ''
+        field += self.name
+        csv += clean_field(field) + ','
+
+        # add node name
+        csv += self.name
+
+        # add fields
+        for f in tree.fieldOrder:
+            csv += ',' + clean_field(self.fields[f].getString())
+        csv += '\n'
+
+        # add children
+        if depth:
+            sorted_children = sorted(self.children, key=lambda c: c.name)
+        else:
+            sorted_children = []
+        if len(sorted_children):
+            for i in range(len(sorted_children)):
+                csv += sorted_children[i].to_csv(first=False, depth=depth-1)
+
+        # return
+        return csv
 
     def to_txt(self, lastitem=[], depth=-1):
         """
