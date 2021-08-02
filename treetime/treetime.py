@@ -1347,15 +1347,28 @@ class TreeTime:
         if platform.system() == "Windows":
             app.setStyle("Fusion")
 
-        # add application icon
-        icon_file = os.path.dirname(os.path.realpath(__file__))
-        icon_file += os.path.sep + '..' + os.path.sep + 'data' + os.path.sep + 'treetime-logo.png'
-        icon_file = resource_filename('treetime', 'data/treetime-logo.png')
-        print(icon_file)
+        # start main window
         main_window = TreeTimeWindow(filename=filename)
-        main_window.setWindowIcon(QIcon(icon_file))
-        # tray_icon = QtWidgets.QSystemTrayIcon(QIcon(file), parent=app)
+
+        # add application icon; test several options, different deploy methods are doing different things with the
+        # resources, unfortunately
+        icon_paths = [resource_filename('treetime', 'data/treetime-logo.png')]     # first choice
+        file_name = os.path.sep + 'treetime-logo.png'
+        root_path = os.path.dirname(os.path.realpath(__file__)) + os.path.sep
+        icon_paths.append(root_path + 'treetime-logo.png')
+        icon_paths.append(root_path + 'data' + file_name)
+        icon_paths.append(root_path + '..' + file_name)
+        icon_paths.append(root_path + '..' + os.path.sep + 'data' + file_name)
+        icon_paths.append(root_path + '..' + os.path.sep + '..' + file_name)
+        icon_paths.append(root_path + '..' + os.path.sep + '..' + os.path.sep + 'data' + file_name)
+        for icon_file in icon_paths:
+            if os.path.exists(icon_file):
+                main_window.setWindowIcon(QIcon(icon_file))
+                # tray_icon = QtWidgets.QSystemTrayIcon(QIcon(icon_file), parent=app)
+                # tray_icon.show()
+                break
+
+        # run
         main_window.show()
-        # tray_icon.show()
         sys.exit(app.exec_())
 
