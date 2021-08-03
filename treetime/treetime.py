@@ -1028,9 +1028,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.gridInitialised = False
                 n = 0
 
-            # empty lines to fill the 20 lines in the main view
-            if n < 20:
-                for k in range(n, 20):
+            # empty lines to fill the 23 lines in the main view
+            if n < 23:
+                for k in range(n, 23):
                     self._protectCells(k, [0, 1, 2, 3, 4])
 
             self.gridInitialised = True

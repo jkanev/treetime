@@ -963,7 +963,7 @@ p, li { white-space: pre-wrap; }
        <bool>true</bool>
       </property>
       <property name="rowCount">
-       <number>20</number>
+       <number>23</number>
       </property>
       <property name="columnCount">
        <number>5</number>
@@ -992,6 +992,9 @@ p, li { white-space: pre-wrap; }
       <attribute name="verticalHeaderCascadingSectionResizes">
        <bool>true</bool>
       </attribute>
+      <row/>
+      <row/>
+      <row/>
       <row/>
       <row/>
       <row/>

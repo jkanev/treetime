@@ -324,7 +324,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setMidLineWidth(0)
         self.tableWidget.setShowGrid(False)
         self.tableWidget.setWordWrap(True)
-        self.tableWidget.setRowCount(20)
+        self.tableWidget.setRowCount(23)
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.horizontalHeader().setVisible(False)
