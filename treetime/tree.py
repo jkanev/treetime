@@ -243,18 +243,22 @@ class Field:
             if item is None:
                 return s
             for t in self.parentFields:
+
                 # find tree
                 tree = self.sourceNode
                 while tree.parent is not None:
                     tree = tree.parent
-                tree = tree.children[t]
+                if type(tree) == Forest:
+                    tree = tree.children[t]
+
                 # find node in tree
-                path = item.trees[t]
-                node = tree.findNode(path)
-                if node is not None:
-                    parent = node.parent
-                    if parent is not None:
-                        s += parent.name
+                if type(tree) == Tree:
+                    path = item.trees[t]
+                    node = tree.findNode(path)
+                    if node is not None:
+                        parent = node.parent
+                        if parent is not None:
+                            s += parent.name
             return s
 
     def getValueNodePath(self):
@@ -266,20 +270,24 @@ class Field:
             if item is None:
                 return s
             for t in self.parentFields:
+
                 # find tree
                 tree = self.sourceNode
                 while tree.parent is not None:
                     tree = tree.parent
-                tree = tree.children[t]
+                if type(tree) == Forest:
+                    tree = tree.children[t]
+
                 # find node in tree
-                path = item.trees[t]
-                node = tree.findNode(path)
-                if node and node.parent:
-                    parent = node.parent
-                    s += parent.name
-                    while parent.parent and parent.parent.parent and parent.parent.parent.parent : # don't display forest or tree names
-                        parent = parent.parent
-                        s = parent.name + " | " + s
+                if type(tree) == Tree:
+                    path = item.trees[t]
+                    node = tree.findNode(path)
+                    if node and node.parent:
+                        parent = node.parent
+                        s += parent.name
+                        while parent.parent and parent.parent.parent and parent.parent.parent.parent : # don't display forest or tree names
+                            parent = parent.parent
+                            s = parent.name + " | " + s
             return s
 
     def getValueString(self):
@@ -789,11 +797,16 @@ class Node:
         """
         self.viewNode = viewNode
 
-    def findNode(self, path, currentIndex):
+    def findNode(self, path, currentIndex=None):
         """
         Recursive function to walk down a path in a tree and return the node at the last step
         """
-        
+
+        # if currentIndex==False this function was called with the intention of calling Tree.findNode().
+        # return None in this case.
+        if currentIndex is None:
+            return None
+
         # either recurse deeper
         if currentIndex < len(path):
             childNumber = path[currentIndex]
