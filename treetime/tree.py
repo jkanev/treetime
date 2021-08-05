@@ -670,7 +670,7 @@ class Node:
         # page header
         if header:
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
-                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 1em;} '\
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
                    'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
@@ -680,8 +680,8 @@ class Node:
                    'div.fields {position: relative; float: left; clear: left; width: min-content; border-top: 1px solid; border-color: #808080;} ' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.text {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.url {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -691,7 +691,7 @@ class Node:
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.node-path {position: relative; float: left; width: 25em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.node-path {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    '</style></head><body>'
         else:
             html = ''
@@ -700,7 +700,7 @@ class Node:
         html += '<div class="node {}">'.format(background)
 
         # node name
-        html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(1.2+1.2/(1.0+current_depth), self.name)
+        html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(1.0+1.0/(1.0+current_depth), self.name)
 
         # node fields
         html += '<div class="fields">'
