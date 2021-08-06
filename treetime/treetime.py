@@ -385,11 +385,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             loadFile = self.settings.value('lastFile')
         if loadFile:
-            self.loadFile(loadFile)
-            self.setWindowTitle("TreeTime - " + loadFile)
-            self.settings.setValue('fileDir', os.path.dirname(loadFile))
-            self.settings.setValue('lastFile', loadFile)
-            self.labelCurrentFile.setText(loadFile)
+            try:
+                self.loadFile(loadFile)
+                self.setWindowTitle("TreeTime - " + loadFile)
+                self.settings.setValue('fileDir', os.path.dirname(loadFile))
+                self.settings.setValue('lastFile', loadFile)
+                self.labelCurrentFile.setText(loadFile)
+            except BaseException:
+                self.pushButtonLoadFileClicked()
         else:
             self.pushButtonLoadFileClicked()
 
