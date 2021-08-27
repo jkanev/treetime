@@ -24,11 +24,12 @@ from .item import *
 from .tree import *
 from .mainwindow import *
 import datetime
+import time
 import os.path
 import platform
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from threading import Timer
-from PyQt5.QtGui import QPalette, QColor, QIcon
+from PyQt5.QtGui import QPalette, QColor, QIcon, QClipboard, QGuiApplication
 from pkg_resources import resource_filename
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
@@ -353,6 +354,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.pushButtonExportTxt.clicked.connect(self.pushButtonExportTxtClicked)
+        self.pushButtonClipBoardTxt.clicked.connect(self.pushButtonClipBoardTxtClicked)
         self.pushButtonExportCsv.clicked.connect(self.pushButtonExportCsvClicked)
         self.pushButtonExportHtml.clicked.connect(self.pushButtonExportHtmlClicked)
         self.pushButtonRemoveNode.clicked.connect(self.pushButtonRemoveNodeClicked)
@@ -560,6 +562,37 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         for c in children:
                             f.write(c.to_csv( first=first, depth=depth))
                             first = False
+
+    def pushButtonClipBoardTxtClicked(self):
+        """
+        Callback for the txt clipboard export. Writes branch text export into clipboard.
+        """
+        if self.currentItem:
+
+            # get depth
+            depth = self.comboBoxExportDepth.currentIndex() - 1
+            txt = ''
+
+            # export current branch
+            if self.radioButtonExportBranch.isChecked():
+                currentNode = self.currentItem.viewNodes[self.currentTree]
+                txt += currentNode.to_txt(depth=depth)
+
+            # export entire tree
+            if self.radioButtonExportTree.isChecked():
+                rootNode = self.forest.children[self.currentTree]
+                children = sorted(rootNode.children, key=lambda a: a.name)
+                for c in children:
+                    txt += '\n'
+                    txt += c.to_txt(depth=depth)
+                    txt += '\n'
+
+            # save to clipboard
+            clipboard = QGuiApplication.clipboard()
+            clipboard.setText(txt, QClipboard.Clipboard)
+            if clipboard.supportsSelection():
+                clipboard.setText(txt, QClipboard.Selection)
+            time.sleep(0.001)
 
     def pushButtonExportTxtClicked(self):
         """
