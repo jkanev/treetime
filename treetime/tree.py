@@ -433,8 +433,8 @@ class Node:
         :return: Array with text wrapped at 70 chars, preserving newlines, but trimming space (no double new lines)
         """
         lines = []
-        for line in [s.strip() for s in raw_lines.split('\n') if s.strip()]:
-            lines += wrap(line, 70)
+        for line in [s.strip() for s in raw_lines.split('\n')]:
+            lines += wrap(line, 70) or '\n'
         return lines
 
     def map(self, function, parameter, depthFirst):
@@ -622,27 +622,34 @@ class Node:
         # add node name (possibly multi-line)
         first = True
         for line in Node._wrap_lines(self.name):
+            line = line == '\n' and line or line + '\n'
             if first:
-                text += first_line_prefix + line + "\n"
+                text += first_line_prefix + line
                 first = False
             else:
-                text += line_prefix + "    " + line + "\n"
+                text += line_prefix + "    " + line
 
         for name, field in self.fields.items():
 
             # wrap field content, larger bits of text start with a newline
             lines = Node._wrap_lines(field.getString())
+
+            # empty array if only whitespace content
+            if lines == ['\n']:
+                lines = []
+
             if len(lines) > 1:
                 lines = [''] + lines
 
             # assemble final text with tree decorations
             first = True
             for line in lines:
+                line = line == '\n' and line or line + '\n'
                 if first:
-                    text += line_prefix + name + ": " + line + "\n"
+                    text += line_prefix + name + ": " + line
                     first = False
                 else:
-                    text += line_prefix + "    " + line + "\n"
+                    text += line_prefix + "    " + line
 
         # recurse
         if depth:
