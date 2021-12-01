@@ -335,16 +335,16 @@
          </widget>
         </item>
         <item row="15" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonExportHtml">
+         <widget class="QPushButton" name="pushButtonExportHtmlTiles">
           <property name="toolTip">
            <string>&lt;b&gt;Export the current tree to a text file.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The file will contain all tree fields.&lt;br/&gt;• Text graphics show the tree structure.</string>
           </property>
           <property name="text">
-           <string>HTML to File</string>
+           <string>HTML (Tiles) to File</string>
           </property>
          </widget>
         </item>
-        <item row="16" column="0" colspan="2">
+        <item row="17" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonClipBoardTxt">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export the current tree as text to the clipboard.&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;• The file will contain all tree fields.&lt;br/&gt;• Text graphics show the tree structure.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -354,7 +354,7 @@
           </property>
          </widget>
         </item>
-        <item row="17" column="0" colspan="2">
+        <item row="18" column="0" colspan="2">
          <spacer name="verticalSpacer_18">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -366,6 +366,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="16" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonExportHtmlList">
+          <property name="text">
+           <string>HTML (List) to File</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

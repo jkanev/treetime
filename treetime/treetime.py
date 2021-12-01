@@ -356,7 +356,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonExportTxt.clicked.connect(self.pushButtonExportTxtClicked)
         self.pushButtonClipBoardTxt.clicked.connect(self.pushButtonClipBoardTxtClicked)
         self.pushButtonExportCsv.clicked.connect(self.pushButtonExportCsvClicked)
-        self.pushButtonExportHtml.clicked.connect(self.pushButtonExportHtmlClicked)
+        self.pushButtonExportHtmlList.clicked.connect(lambda: self.pushButtonExportHtmlClicked(style='list'))
+        self.pushButtonExportHtmlTiles.clicked.connect(lambda: self.pushButtonExportHtmlClicked(style='tiles'))
         self.pushButtonRemoveNode.clicked.connect(self.pushButtonRemoveNodeClicked)
         self.pushButtonDeleteNode.clicked.connect(self.pushButtonDeleteNodeClicked)
         self.pushButtonRemoveBranch.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
@@ -622,7 +623,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             f.write(c.to_txt(depth=depth))
                             f.write('\n')
 
-    def pushButtonExportHtmlClicked(self):
+    def pushButtonExportHtmlClicked(self, style):
         """
         Callback for the html export. Asks for a file name, then writes branch html export into it.
         """
@@ -638,7 +639,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # export current branch
                     if self.radioButtonExportBranch.isChecked():
                         currentNode = self.currentItem.viewNodes[self.currentTree]
-                        txt = currentNode.to_html(header=True, footer=True, depth=depth)
+                        txt = currentNode.to_html(header=True, footer=True, depth=depth, style=style)
                         f.write(txt)
 
                     # export entire tree
@@ -650,13 +651,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         for c in range(0, len(children)):
                             if c == 0:
                                 background = next_background[background]
-                                f.write(children[c].to_html(header=True, background=background, depth=depth))
+                                f.write(children[c].to_html(header=True, background=background, depth=depth, style=style))
                             elif c == len(children)-1:
                                 background = next_background[background]
-                                f.write(children[c].to_html(footer=True, background=background, depth=depth))
+                                f.write(children[c].to_html(footer=True, background=background, depth=depth, style=style))
                             else:
                                 background = next_background[background]
-                                f.write(children[c].to_html(background=background, depth=depth))
+                                f.write(children[c].to_html(background=background, depth=depth, style=style))
 
     def pushButtonNewFromTemplateClicked(self):
         """

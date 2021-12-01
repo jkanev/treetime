@@ -669,13 +669,13 @@ class Node:
         # return
         return text
 
-    def to_html(self, header=False, footer=False, background='blue', depth=-1, current_depth=0):
+    def to_html(self, header=False, footer=False, style='tiles', background='blue', depth=-1, current_depth=0):
 
         # background colours
         next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
 
         # page header
-        if header:
+        if header and style=='tiles':
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 1em;} '\
                    'em {color: #555;}' \
@@ -685,6 +685,31 @@ class Node:
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #808080;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
                    'div.fields {position: relative; float: left; clear: left; width: min-content; border-top: 1px solid; border-color: #808080;} ' \
+                   'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
+                   'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.difference-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.node-path {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   '</style></head><body>'
+        elif header and style=='list':
+            html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 1em;} ' \
+                   'em {color: #555;}' \
+                   'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
+                   'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
+                   'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
+                   'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #808080;}' \
+                   'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
+                   'div.fields {position: relative; float: left; clear: left; width: max-content; border-top: 1px solid; border-color: #808080;}' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
@@ -745,7 +770,7 @@ class Node:
             # write next child
             background = next_background[background]
             if depth:
-                html += sorted_children[i].to_html(background=background, depth=depth-1, current_depth=current_depth+1)
+                html += sorted_children[i].to_html(background=background, depth=depth-1, current_depth=current_depth+1, style=style)
 
             # close child group after fourth child of after node with children
             if child_count == 4:
