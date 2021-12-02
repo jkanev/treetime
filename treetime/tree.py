@@ -700,16 +700,16 @@ class Node:
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-path {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    '</style></head><body>'
-        elif header and style=='list':
+        elif header and style == 'list':
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 1em;} ' \
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
                    'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
                    'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
-                   'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #808080;}' \
-                   'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
-                   'div.fields {position: relative; float: left; clear: left; width: max-content; border-top: 1px solid; border-color: #808080;}' \
+                   'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: max-content; border-radius: 1em; border-color: #808080;}' \
+                   'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left;} ' \
+                   'div.fields {position: relative; float: left; width: max-content; border-color: #808080;}' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
@@ -732,14 +732,19 @@ class Node:
         html += '<div class="node {}">'.format(background)
 
         # node name
-        html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(1.0+1.0/(1.0+current_depth), self.name)
+        font_size = 1.0 + 1.0 / (1.0 + current_depth)
+        if style == 'tiles':
+            html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
+        if style == 'list':
+            html += '<div class="name" style="font-size: {:0.2f}em; ' \
+                    'width: {:0.2f}em;">{}</div>'.format(font_size, (20.0 - (1.2*current_depth))/font_size, self.name)
 
         # node fields
         html += '<div class="fields">'
 
         for name, field in self.fields.items():
             content = field.getString().strip()
-            if content:
+            if content or (style == 'list'):   # in tile mode empty fields are hidden, in list mode always displayed
                 content = content.replace('\n', '<br/>')
                 if field.fieldType == "url":
                     html += '<div class="{}"><em>{}</em><br/><a href="{}">{}</a></div>'.format(
