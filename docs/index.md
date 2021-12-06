@@ -1,5 +1,5 @@
 
-<img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64"> 
+<img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="128" height="128"> 
 
 #### _TreeTime_ is a time planner, to-do list manager, mind-map editor, test report tool, project planner, family ancestry editor, and more.
 
@@ -9,7 +9,7 @@ A tree arranges data into units and sub-units instead of using flat lists. Mathe
 
 Linked trees are distinct trees that share data between them. In _TreeTime_, any data object may be part of several trees at the same time. 
 
-![Screenshot 3](https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png)  
+<img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" width="100%">
 
 ## What is a Tree? ##
 
