@@ -1,0 +1,30 @@
+--trees--
+
+tree "Tree 1"
+    field "Text"
+        field-type "text"
+        own-fields ["text"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+
+tree "Tree 2"
+    field "Text"
+        field-type "text"
+        own-fields ["text"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+
+--item-types--
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[], []]
+
+--item-pool--
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[0], [0]]
+
