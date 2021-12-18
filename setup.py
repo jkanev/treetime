@@ -11,7 +11,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='TreeTime',
-    version='2021.8',
+    version='2021.9',
     description='TreeTime is a to-do list manager, test report tool, project manager, family ancestry editor,'
                 'mind-mapping tool, etc. Using TreeTime you can categorise and organise any data in tree structures.'
                 'You can define several trees, each with a different structure, on the same data. You can use functions'
@@ -25,7 +25,7 @@ setup(
     package_dir={'treetime': 'treetime'},
     include_package_data=True,
     entry_points={'gui_scripts': ['treetime = treetime.__main__:main']},
-    package_data={'treetime': ['../data/Simple-Task-List.trt', '../data/treetime-logo.png', '../docs/*.png']},
+    package_data={'treetime': ['../data/Simple-Task-List.trt', '../data/Dual-MindMap.empty.trt', '../data/Simple-Task-List.empty.trt', '../data/Single-MindMap.empty.trt', '../data/treetime-logo.png', '../docs/*.png']},
     exclude_package_data={'treetime': ['treetime/compile-ui.py',]},
     # according to some people on the web install_requiring PyQt5 should work, but as my system gives me an error for
     # this, I'll comment it out. Please install it separately (pip3 PyQt5 apparently works)

@@ -70,6 +70,10 @@ Past
 * July: Fixed broken application logo
 * July: Implemented CSV export
 * August: Released **version 2021.8**
+* September: Added new export option "Text to Clipboard"
+* November: Added new export option "Html (List) to File"
+* December: Added two primitive template files (a text-only single tree and dual tree mindmap)
+* December: Released **version 2021.9**
 
 Present
 -------
