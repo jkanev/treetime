@@ -677,17 +677,17 @@ class Node:
         # page header
         if header and style=='tiles':
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
-                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 1em;} '\
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
                    'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
                    'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
-                   'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #808080;}' \
+                   'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
                    'div.fields {position: relative; float: left; clear: left; width: min-content; border-top: 1px solid; border-color: #808080;} ' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.text {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
@@ -707,12 +707,12 @@ class Node:
                    'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
                    'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
                    'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
-                   'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: max-content; border-radius: 1em; border-color: #808080;}' \
+                   'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: max-content; border-color: #808080;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left;} ' \
                    'div.fields {position: relative; float: left; width: max-content; border-color: #808080;}' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.text {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
@@ -730,6 +730,7 @@ class Node:
 
         # node header
         html += '<div class="node {}">'.format(background)
+        needed_columns = 1    # the amount of columns needed by this child
 
         # node name
         font_size = 1.0 + 1.0 / (1.0 + current_depth)
@@ -759,26 +760,29 @@ class Node:
         group_open = False
         for i in range(len(sorted_children)):
 
-            # start new child group on first child in group of 4, or on first node with children
-            if sorted_children[i].children and depth - 1:
+            # write next child
+            background = next_background[background]
+            child_columns = 1     # number of columns needed by child sub-branch
+            if depth:
+                child_columns, child_html = sorted_children[i].to_html(background=background, depth=depth-1,
+                                                                       current_depth=current_depth+1, style=style)
+
+            # start new child group on first child in group of 5, or if child needs more columns than available
+            if child_columns > 5-child_count:
                 child_count = 0
             if child_count == 0:
                 if group_open:
                     html += '</div>'
                 html += '<div class="children">'
                 group_open = True
-            if sorted_children[i].children and depth - 1:
-                child_count = 4
-            else:
-                child_count += 1
 
-            # write next child
-            background = next_background[background]
-            if depth:
-                html += sorted_children[i].to_html(background=background, depth=depth-1, current_depth=current_depth+1, style=style)
+            # add html to main html
+            html += child_html
+            child_count += child_columns
+            needed_columns = max(needed_columns, min(child_count, 5))
 
             # close child group after fourth child of after node with children
-            if child_count == 4:
+            if child_count >= 5:
                 child_count = 0
             if child_count == 0:
                 html += '</div>'
@@ -794,7 +798,7 @@ class Node:
             html += '</body></html>'
 
         # finished.
-        return html
+        return needed_columns, html
 
     def createPathTo(self, item, treeindex, nodeindex, viewtemplate):
         """

@@ -338,11 +338,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Initialise the application, connect all button signals to application functions, load theme and last file
         """
 
+        print("starting TreeTime...")
+
         # initialise main window
         super().__init__()
         self.setupUi(self)
 
         # connect all button signals
+        print("setting up GUI...")
         self.pushButtonNewChild.clicked.connect(lambda: self.createNode("child", False))
         self.pushButtonNewSibling.clicked.connect(lambda: self.createNode("sibling", False))
         self.pushButtonNewParent.clicked.connect(lambda: self.createNode("parent", False))
@@ -380,9 +383,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.update_timer.start(1000)
 
         # init application settings
+        print("loading system settings...")
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
 
         # load last file
+        print("opening last file...")
         if filename:
             loadFile = filename
         else:
@@ -400,6 +405,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.pushButtonLoadFileClicked()
 
         # init themes and set last theme
+        print("initialising fonts and colours...")
         self.system_palette = self.palette()
         self.fillThemeBox()
         self.fillColourBox()
@@ -409,6 +415,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.cboxColours.currentTextChanged.connect(self.cboxColoursTextChanged)
 
         # show window
+        print("showing main window...")
         self.showMaximized()
 
     def closeEvent(self, event):
@@ -639,7 +646,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # export current branch
                     if self.radioButtonExportBranch.isChecked():
                         currentNode = self.currentItem.viewNodes[self.currentTree]
-                        txt = currentNode.to_html(header=True, footer=True, depth=depth, style=style)
+                        if currentNode:
+                            dummy, txt = currentNode.to_html(header=True, footer=True, depth=depth, style=style)
+                        else:
+                            txt = ("No branch selected, export is empty")
                         f.write(txt)
 
                     # export entire tree
@@ -651,13 +661,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         for c in range(0, len(children)):
                             if c == 0:
                                 background = next_background[background]
-                                f.write(children[c].to_html(header=True, background=background, depth=depth, style=style))
+                                f.write(children[c].to_html(header=True, background=background, depth=depth, style=style)[1])
                             elif c == len(children)-1:
                                 background = next_background[background]
-                                f.write(children[c].to_html(footer=True, background=background, depth=depth, style=style))
+                                f.write(children[c].to_html(footer=True, background=background, depth=depth, style=style)[1])
                             else:
                                 background = next_background[background]
-                                f.write(children[c].to_html(background=background, depth=depth, style=style))
+                                f.write(children[c].to_html(background=background, depth=depth, style=style)[1])
 
     def pushButtonNewFromTemplateClicked(self):
         """

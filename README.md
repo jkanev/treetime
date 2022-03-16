@@ -135,7 +135,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 4. Install _TreeTime_: in the command line, cd into the main directory, then type:
    - Linux:  
        `python3 setup.py build`  
-       `sudo python3 setup.py install`  
+       `python3 setup.py install --user`  
    - Windows:  
        `py setup.py build`  
        `py setup.py install`  
