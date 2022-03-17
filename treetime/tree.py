@@ -687,7 +687,7 @@ class Node:
                    'div.fields {position: relative; float: left; clear: left; width: min-content; border-top: 1px solid; border-color: #808080;} ' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.text {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
