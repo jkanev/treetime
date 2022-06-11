@@ -1,0 +1,184 @@
+--trees--
+
+tree "Task"
+    field "Area"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [1]
+    field "Progress"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [2]
+    field "Summary"
+        field-type "text"
+        own-fields ["1. summary"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+
+tree "Area"
+
+tree "Progress"
+
+tree "Sandbox"
+    field "Amount"
+        field-type "sum"
+        own-fields ["5. amount"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Sum"
+        field-type "sum"
+        own-fields ["5. amount"]
+        child-fields ["Sum"]
+        sibling-fields []
+        parent-fields []
+    field "Diff"
+        field-type "difference"
+        own-fields ["5. amount"]
+        child-fields ["Sum"]
+        sibling-fields []
+        parent-fields []
+    field "Mean"
+        field-type "mean"
+        own-fields []
+        child-fields []
+        sibling-fields ["5. amount"]
+        parent-fields []
+    field "Ratio"
+        field-type "ratio"
+        own-fields ["5. amount"]
+        child-fields []
+        sibling-fields ["5. amount"]
+        parent-fields []
+    field "Mean %"
+        field-type "mean-percent"
+        own-fields []
+        child-fields []
+        sibling-fields ["5. amount"]
+        parent-fields []
+    field "Ratio %"
+        field-type "ratio-percent"
+        own-fields ["5. amount"]
+        child-fields []
+        sibling-fields ["5. amount"]
+        parent-fields []
+    field "Stop Watch"
+        field-type "sum"
+        own-fields ["6. stop watch"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Sum Time"
+        field-type "sum-time"
+        own-fields ["6. stop watch"]
+        child-fields ["Sum Time"]
+        sibling-fields []
+        parent-fields []
+    field "Diff Time"
+        field-type "difference-time"
+        own-fields ["6. stop watch"]
+        child-fields ["Sum Time"]
+        sibling-fields []
+        parent-fields []
+
+--item-types--
+
+item New Item
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "", "type": "text"}, "3. then try": {"content": "", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [], [], []]
+
+--item-pool--
+
+item A
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "Amount \u2014 the \"amount\" field of the item.\nSum \u2014 Node's \"amount\" field plus sum of all children's \"Sum\" fields.\nDiff \u2014 Node's \"amount\" field minus sum of all children's \"Diff\" fields.\nMean \u2014 Mean of all sibling's \"amount\" fields.\nRatio \u2014 Own \"amount\" field divided by sum of sibling's \"amount\" fields.\n", "type": "text"}, "3. then try": {"content": "Mean % \u2014 The same, times 100, and with a % sign.\nRatio % \u2014 The same, times 100, and with a % sign.\nStop Watch \u2014 Node's \"stop watch\" field.\nSum Time \u2014 Node's \"stop watch\" field plus sum of all children's \"Sum Time\" fields.\nDiff Time \u2014 Node's \"stop watch\" field minus sum of all children's \"Diff Time\" fields.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": null, "type": "integer"}, "6. stop watch": {"content": 0.0, "running_since": false, "type": "timer"}}
+    trees [[], [], [], [0]]
+
+item To do
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "", "type": "text"}, "3. then try": {"content": "", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [], [0], []]
+
+item Running
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "", "type": "text"}, "3. then try": {"content": "", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [], [1], []]
+
+item Done
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "", "type": "text"}, "3. then try": {"content": "", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [], [2], []]
+
+item Trees
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "", "type": "text"}, "3. then try": {"content": "", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [0], [], []]
+
+item Items
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "", "type": "text"}, "3. then try": {"content": "", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [1], [], []]
+
+item User Interface
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "", "type": "text"}, "3. then try": {"content": "", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [2], [], []]
+
+item File Storage
+    fields {"1. summary": {"content": "", "type": "string"}, "2. read first": {"content": "", "type": "text"}, "3. then try": {"content": "", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [3], [], []]
+
+item 02. Data Items
+    fields {"1. summary": {"content": "Get familiar with data", "type": "string"}, "2. read first": {"content": "Your data consists of two levels: Data items and tree nodes.\n\nData items are the objects we're looking at.\nEach item can have several fields. \nFields are like properties of an object.\n\nItem fields are shown in the centre-left part of TreeTime.", "type": "text"}, "3. then try": {"content": "Look at this item: \n\n\u2022 At the top theres a heading, \"02. Data Items\".\n\u2022 Underneath are four buttons that indicate the node position in each of the four trees.\n\u2022 Below are data fields ([1. summary], [2. read first], [3. then try], ...).\n\nGo to step 03.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[0], [], [], []]
+
+item 04. Tree Nodes
+    fields {"1. summary": {"content": "Get familiar with trees", "type": "string"}, "2. read first": {"content": "You store your objects and their properties using items, but you use trees to organise them.\n\nItems tell you \"what\" something is, tree nodes \"where\" something is.\n\nEach item can be organised as a node in several trees. A tree is a hierarchy. At this point (step 04) the trees are still flat. This will change in step 06.", "type": "text"}, "3. then try": {"content": "Look at the tree area on the right and:\n\n\u2022 Hover with the mouse between [^] and [Summary] and change the width of the column.\n\u2022 Click the first list heading to change the sort order.\n\u2022 Click the summary to change the sorting.\n\u2022 Restore the original sorting.\n\nDo the same with the [Area] and [Progress] tree, then go to step 05.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[1], [], [], []]
+
+item 03. Edit Item Fields
+    fields {"1. summary": {"content": "Edit data yourself", "type": "string"}, "2. read first": {"content": "There are five different possible field types:\n\u2022 String \u2014 a small text. Example: \"1. summary\".\n\u2022 Text \u2014 a larger text. Examples: \"2. read first\"\n\u2022 URL \u2014 an internet or file address. Can be edited or opened.\n\u2022 Value \u2014 a number. Example: \"5. amount\".\n\u2022 Stop Watch \u2014 counts seconds and lists them as hours in the item field and as time in the tree field (0.5 vs. \"00:30:00\").", "type": "text"}, "3. then try": {"content": "\u2022 Double click the title \"03. Edit Item Fields\". Make a small change.\n\u2022 Double click \"Edit data yourself\", then make a small change to the text.\n\u2022 Make a small change to the text above (next to \"read first\").\n\u2022 In this field, click and scroll down.\n\u2022 Click [Open] in the URL field. Then edit the address, and click [Open] again.\n\u2022 Double click next to \"5. amount\" and enter a value.\n\u2022 Hit the [Start] button. Switch to the [Progress] tree and back. Hit [Stop].\n\nAfter this, go to step 04.", "type": "text"}, "4. url": {"content": "www.tree-time.info", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0.0, "running_since": false, "type": "timer"}}
+    trees [[2], [], [], []]
+
+item 05. Create Items
+    fields {"1. summary": {"content": "Learn how to create new nodes", "type": "string"}, "2. read first": {"content": "New items are alway created in the tree that is currently active (in this case, [Task]). \n\nIf an item is created using one of the [New...] buttons, the item will appear as a node only in the current tree.\n\nIf an item is created by one of the [Copy...] actions then existing parent-child relations in other threes are copied too.", "type": "text"}, "3. then try": {"content": "Create four new items by hitting the button [New Sibling], and give them the following names (not including the quotes):\n\n\"1. First Steps\"\n\"2. Intermediate Measures\"\n\"3. Advanced Moves\"\n\"4. Expert Knowledge\"", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[3], [], [], []]
+
+item 07. Move Nodes and Branches
+    fields {"1. summary": {"content": "Moving larger parts of a tree", "type": "string"}, "2. read first": {"content": "Nodes that have child nodes are called \"branches\". When moving a branch to a different position in the tree, all its children are moved as well.\nThey stay children of the original node.", "type": "text"}, "3. then try": {"content": "In the [Area] tree, create two new items:\n\n\"Data Model\", and \"Tool Use\". \nMove the nodes \"Items\" and \"Trees\" underneath \"Data Model\". Move the nodes \"File Storage\" and \"User Interface\" underneath \"Tool Use\".\n\nGo back to the [Task] tree and look at the \"Area\" and \"Progress\" tree fields. Then proceed to 08.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[4], [], [], []]
+
+item 08. Remove Nodes and Branches
+    fields {"1. summary": {"content": "Removing larger parts of a tree", "type": "string"}, "2. read first": {"content": "When removing a node using [Remove Node], the node is removed from the tree, and all its children are assigned to the node's parent.\n\nWhen removing a branch ([Remove Branch]), children are removed too.\n\nBoth operations only affect the current tree. Nodes are not removed from other trees.", "type": "text"}, "3. then try": {"content": "In the [Area] tree, remove the node \"Data Model\" using the [Remove Node (this Tree)] button.\n\nRemove the branch \"Tool Use\" by using the [Remove Branch (this Tree)] button.\n\nSwitch back to the [Task] tree and investigate the results, then proceed to 09.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[5], [], [], []]
+
+item 09. Delete Items
+    fields {"1. summary": {"content": "The difference between removal and deletion", "type": "string"}, "2. read first": {"content": "There are two cases when items get actually deleted:\n\n\u2022 One of the [Delete...] buttons is chosen,\n\u2022 or during a [Remove...] operation an item is no node in any tree any more. This is to prevent orphaned items that would be invisible, but stay in the data file.\n\nDeleting an entire branch can be dangerous, that's why an additional dialog asks whether you're sure.", "type": "text"}, "3. then try": {"content": "\u2022 Hit the button [Copy Node as Child] four times, creating four cascaded children in this tree, and siblings in the [Area] and [Progress] trees. Rename them \"A\", \"B\", \"C\", \"D\".\n\n\u2022 Select \"A\" and hit [Delete Item].\n\u2192 A is deleted from all trees, B-C-D is now a child branch of this node.\n\n\u2022 Select \"B\" and hit [Delete Branch].\n\u2192 B, C and D are entirely deleted.\n\nProceed to 10.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[6], [], [], []]
+
+item 11. Data Analysis
+    fields {"1. summary": {"content": "Mathematical operations on trees", "type": "string"}, "2. read first": {"content": "The fields you see in the tree area are calculated from the item fields. Possible operations are sums, differences, ratios, or string concatenations.\n\nEach operation can include a node's own fields, it's parent's fields, it's sibling's fields, and it's children's fields. Results can be displayed as numbers, text, percentage, or time.\n\nThis tree [Task] has the fields\n\u2022 \"Area\" (parents of the node in the [Area] tree),\n\u2022 \"Progress\" (parents in the [Progress] tree,\n\u2022 and \"Summary\" (the \"summary\" item field).\nThe trees \"Area\" and \"Progress\" have no tree fields.", "type": "text"}, "3. then try": {"content": "Go to the [Sandbox] tree. There is a node \"Fields\" describing the analysis fields.\n\n\u2022 Create child nodes \"B\", \"C\", then \"D\" and \"E\" as children of \"B\", and \"F\", \"G\" as schildren of \"C\". \n\u2022 Play with the \"amount\" and \"stop watch\" fields.\n\u2022 Remember that you can change column width and sorting.\n\nAfter this, proceed to step 12.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[7], [], [], []]
+
+item 13. View Options
+    fields {"1. summary": {"content": "Changing the look and feel of your software", "type": "string"}, "2. read first": {"content": "TreeTime can be used with three different colour schemes (dark, light, system) and two to four different window styles (depending on your operating system).\n\nThe settings can be changed in the [Settings] section of the button area and are remembered when TreeTime is restarted.", "type": "text"}, "3. then try": {"content": "Click [Settings] in the button area and try all colour and style combinations.\n\nThis is the end of this tutorial.\nThe next point (\"File Format\") is purely optional, and only manageable if you have some programming experience.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[8], [], [], []]
+
+item 12. Data Export
+    fields {"1. summary": {"content": "How to create text, csv, and html files", "type": "string"}, "2. read first": {"content": "Data can be exported as text with graphical tree decorations, as CSV to be imported into spreadsheet software, or as html to store or distribute information to others. There are two types of html export \u2014 list and tiles.\n\nIn addtion a [Copy to Clipboard] button copies the text to the clipboard.\n\nOperations can be executed on the entire current tree, or a selected branch. The level down to which children are included can be specified.", "type": "text"}, "3. then try": {"content": "In the button area, select [File]. \n\n\u2022 Export each of the different file types and look at them using external software (web browser, text editor, spread sheet software).\n\u2022 Try different values of the level parameter.\n\u2022 Click the [Text to Clipboard] button, open a text editor, and paste using [Ctrl]+[V].\n\nProceed to 13.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[9], [], [], []]
+
+item 10. Data Files
+    fields {"1. summary": {"content": "How data is stored and how changes are saved", "type": "string"}, "2. read first": {"content": "Once TreeTime has been opened with a data file, all changes you make are stored on the fly. There is no extra file saving necessary.\n\nWhen starting TreeTime, the last file is automatically opened.\n\nAny running stop watches keep running while TreeTime is closed.", "type": "text"}, "3. then try": {"content": "\n\u2022 Start the stop watch below, then close this window.\n\u2022 Wait some time, then start TreeTime again.\n\u2192 All last changes are saved and visible. The stop watch is still running.\n\nProceed to step 11.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[10], [], [], []]
+
+item 14. File Format
+    fields {"1. summary": {"content": "Optional: Only if you want to create your own .trt files.", "type": "string"}, "2. read first": {"content": "TreeTime stores its data in plain text files. A .trt file consists of three sections:\n\u2022 The tree definition. All trees are listed with their field definitions.\n\u2022 The default item. This is what a newly created item will look like. The item itself is in json format.\n\u2022 The pool of items. Each item is listed with its content (json), and an array of arrays, showing the tree paths for each tree for that item.", "type": "text"}, "3. then try": {"content": "Copy the Tutorial.trt file to a new file and open that in a text editor. Make changes, then try to load the result in TreeTime. The indent matters, and so do the newlines. Unfortunately atm there is no good error handling in case the syntax is wrong. In particular, see whether you can:\n\n\u2022 Create new tree fields in the other two trees.\n\u2022 Delete all data entries except one (TreeTime will not start with no entries. This is a bug).\n\u2022 Create a new tree. Remember to adjust all the arrays for each item.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[11], [], [], []]
+
+item 01. The User Interface
+    fields {"1. summary": {"content": "Welcome to TreeTime", "type": "string"}, "2. read first": {"content": "The TreeTime Window consists of\n\u2022 a button area (on the very left),\n\u2022 an item area (you're reading here now), and\n\u2022 a tree area (to the right of this text).\n\nThe button area has three main sections: [File], [Edit], [View], and [Settings].\nThe Item area has several fields.\nThe tree area has several tabs, each with a tree list.", "type": "text"}, "3. then try": {"content": "Maximise the TreeTime window.\n\n\u2022 In the button area, click [File], then [Edit], then [Settings]. \u2192 You see different buttons.\n\u2022 In the tree area, click [Area], then [Progress], then click [Task]. \u2192 You see different trees.\n\nIn the tree area, select the next step, \"02. Data Items\".", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[12], [], [], []]
+
+item 06. Move Nodes in Trees
+    fields {"1. summary": {"content": "Re-arrange data inside the tree, add and remove", "type": "string"}, "2. read first": {"content": "In the item area, the buttons underneath the item's heading are the tree location buttons.\nThey display the path for each tree, respectively. Possible values of those buttons are:\n\n[ ] \u2014 the item is not a node in the tree.\n[>] \u2014 the item is a node at top level.\n[grandparent] [parent] [>] \u2014 the item is the child of node \"parent\", who is the child of node \"grandparent\" in the tree.\n\nClicking each button will open a menu with siblings of the current value, plus the two special entries \"move to top\" and \"remove\".\n\n", "type": "text"}, "3. then try": {"content": "Click on each of the items in this tree, and:\n\n\u2022 Click the button [>] next to the label \"Task\" and select one of the four new entries.\n\u2022 Click on the [ ] next to \"Area\" and select an area.\n\u2022 In the same way, select a progress.\n\nAfter this, look at the other trees,\nthen find and select step 07.", "type": "text"}, "4. url": {"content": "", "type": "url"}, "5. amount": {"content": 0, "type": "integer"}, "6. stop watch": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[13], [], [], []]
+
