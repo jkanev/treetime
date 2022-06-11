@@ -164,7 +164,6 @@ class TextEdit(QtWidgets.QPlainTextEdit):
     Special custom widget class for URL fields
     """
 
-
     def __init__(self, text, callback, parent=None):
         """
         Initialise
@@ -327,6 +326,45 @@ class TimerWidget(QtWidgets.QWidget):
         if update:
             self.callback()
 
+class EntryDialog(QtWidgets.QDialog):
+    """
+    Dialog that is shown when the software is openend for the first time.
+    Contains an informative message, and a button "load file", and a button
+    "new from template".
+    """
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle("Not connected to Data Source")
+
+        buttons = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        self.buttonBox = QtWidgets.QDialogButtonBox(buttons)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText("Create new Data File from Template")
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText("Open existing Data File")
+
+        self.layout = QtWidgets.QVBoxLayout()
+        message = "To start, please choose to either:"\
+            "<ul>"\
+            "<li>Create a new data file using an existing template file to define your data structure.<br/>"\
+            "Template files are standard <i>TreeTime</i> files (*.empty.trt) without data.<br/>"\
+            "They define your data structure (number of trees, item fields, display fields).<br/>"\
+            "First you will be asked to select a template file,<br/>"\
+            "then you'll be asked for a file name for your new data file.<br/></li>"\
+            "<li>Open an existing data file.<br/>"\
+            "Data files are <i>TreeTime</i> files (*.trt) containing data.</li>"\
+            "</ul>"\
+            "<i>TreeTime</i> saves all changes to its data file on the fly.<br/>"\
+            "Next time you open <i>TreeTime</i> it will be auto-connected to the file used last.<br/><br/>"\
+            "<i>TreeTime</i> comes with several template files and example files.<br/>"\
+            "If you're new to <i>TreeTime</i>, you might want to try the Tutorial first.<br/>"\
+            "Please have a look in the data directory of your installation.<br/><br/>"
+        message = QtWidgets.QLabel(message)
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
 
 class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
@@ -402,7 +440,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             except BaseException:
                 self.pushButtonLoadFileClicked()
         else:
-            self.pushButtonLoadFileClicked()
+            msg = EntryDialog(self)
+            if msg.exec():
+                self.pushButtonNewFromTemplateClicked()
+            else:
+                self.pushButtonLoadFileClicked()
 
         # init themes and set last theme
         print("initialising fonts and colours...")
@@ -676,7 +718,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # First load template file
         templateDir = self.settings.value('templateDir') or ''
-        template = QtWidgets.QFileDialog.getOpenFileName(self, "Load Template", templateDir, '*.trt')[0]
+        template = QtWidgets.QFileDialog.getOpenFileName(self, "Load Template", templateDir,
+                                                         'TreeTime Templates (*.empty.trt)')[0]
         if template != '':
             self.loadFile(template)
             self.settings.setValue('templateDir', os.path.dirname(template))

@@ -702,7 +702,7 @@ class Node:
                    '</style></head><body>'
         elif header and style == 'list':
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
-                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 1em;} ' \
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} ' \
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
                    'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
