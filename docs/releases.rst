@@ -75,6 +75,15 @@ Past
 * December: Added two primitive template files (a text-only single tree and dual tree mindmap)
 * December: Released **version 2021.9**
 
+2022
+^^^^
+
+* March: Fixed crash bug on non-export
+* March 2022: Improved sorting and grouping in html export, changed to five columns
+* June 2022: Added a tutorial file
+* June 2022: Added first-use dialog when no file is loaded, instead of the file-open dialog
+* June 2022: Released **version 2022.1**
+
 Present
 -------
 

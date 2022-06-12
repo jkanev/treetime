@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.9](https://github.com/jkanev/treetime/releases/tag/2021.9) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2022.1](https://github.com/jkanev/treetime/releases/tag/2022.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -192,10 +192,15 @@ Past
 - Done July 2021: Fixed broken application logo
 - Done July 2021: Implemented CSV export
 - Done August 2021: Released version 2021.8
-- Done September: Added new export option "Text to Clipboard"
-- Done November: Added new export option "Html (List) to File"
-- Done December: Added two primitive template files (a text-only single tree and dual tree mindmap)
-- Done December: Released version 2021.9
+- Done September 2021: Added new export option "Text to Clipboard"
+- Done November 2021: Added new export option "Html (List) to File"
+- Done December 2021: Added two primitive template files (a text-only single tree and dual tree mindmap)
+- Done December 2021: Released version 2021.9
+- Done March 2022: Fixed crash bug on non-export
+- Done March 2022: Improved sorting and grouping in html export, changed to five columns.
+- Done June 2022: Added a tutorial file.
+- Done June 2022: Added first-use dialog when no file is loaded, instead of the file-open dialog.
+- Done June 2022: Release 2022.1
 
 Present
 - Running: Bugfixing
