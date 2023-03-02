@@ -95,10 +95,10 @@ class Field:
         else:
             return field["content"]
 
-    def getFieldValues(self):
+    def getFieldValues(self, sort=False):
         """ Gets all values of all related fields in a list.
         Order is: own fields first, then child fields, then sibling fields, then parent fields.
-        Item fields of the same name have precence over tree fields.
+        Item fields of the same name have precedence over tree fields.
         """
 
         values = []
@@ -115,7 +115,7 @@ class Field:
         # look in child fields
         node = self.sourceNode
         for f in self.childFields:
-            for c in node.children:
+            for c in sort and sorted(node.children, key=lambda n: n.name) or node.children:
                 if f in c.fields:
                     values += [c.fields[f].getValue()]
                 elif c.item and c.item.fields and f in c.item.fields:
@@ -126,7 +126,7 @@ class Field:
 
             # look in sibling fields
             for f in self.siblingFields:
-                for c in node.children:
+                for c in sort and sorted(node.children, key=lambda n: n.name) or node.children:
                     if c != self.sourceNode:
                         if f in c.fields:
                             values += [c.fields[f].getValue()]
@@ -157,6 +157,12 @@ class Field:
         elif self.fieldType == "sum":
             self.getValue = self.getValueSum
             self.getString = self.getStringRounded
+        elif self.fieldType == "set":
+            self.getValue = self.getValueSet
+            self.getString = self.getStringSet
+        elif self.fieldType == "concatenation":
+            self.getValue = self.getValueConcat
+            self.getString = self.getStringUnchanged
         elif self.fieldType == "sum-time":
             self.getValue = self.getValueSum
             self.getString = self.getStringTime
@@ -199,6 +205,12 @@ class Field:
                 return ""
         else:
             return ""
+
+    def getStringSet(self):
+        if self.sourceNode and self.getValue:
+            return ', '.join([str(n) for n in self.getValue()])
+        else:
+            return "[undefined]"
 
     def getStringTime(self):
         if self.sourceNode and self.getValue:
@@ -298,13 +310,33 @@ class Field:
                 s += str(v)
         return s
 
+    def getValueSet(self):
+        values = self.getFieldValues(sort=True)
+        result_set = set()
+        for v in values:
+            if isinstance(v, set):
+                result_set = result_set | v
+            elif v:     # either sum up using the value
+                result_set.add(v)
+        return result_set
+
+    def getValueConcat(self):
+        values = self.getFieldValues(sort=True)
+        sum = ''
+        for v in values:
+            if v:     # either sum up using the value
+                sum += v
+            else:     # or the neutral element for addition ('')
+                sum += ''
+        return sum
+
     def getValueSum(self):
         values = self.getFieldValues()
         sum = 0
         for v in values:
             if v:     # either sum up using the value
                 sum += v
-            else:     # or the neutral element for addtion (0)
+            else:     # or the neutral element for addition (0)
                 sum += 0
         return sum
 

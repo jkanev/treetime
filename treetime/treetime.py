@@ -326,6 +326,7 @@ class TimerWidget(QtWidgets.QWidget):
         if update:
             self.callback()
 
+
 class EntryDialog(QtWidgets.QDialog):
     """
     Dialog that is shown when the software is openend for the first time.
@@ -430,21 +431,29 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             loadFile = filename
         else:
             loadFile = self.settings.value('lastFile')
-        if loadFile:
+
+        # try loading silently once
+        try:
+            self.loadFile(loadFile)
+            self.setWindowTitle("TreeTime - " + loadFile)
+            self.settings.setValue('fileDir', os.path.dirname(loadFile))
+            self.settings.setValue('lastFile', loadFile)
+            self.labelCurrentFile.setText(loadFile)
+            fileLoaded = True
+        except BaseException:
+            fileLoaded = False
+
+        # keep trying
+        while not fileLoaded:
             try:
-                self.loadFile(loadFile)
-                self.setWindowTitle("TreeTime - " + loadFile)
-                self.settings.setValue('fileDir', os.path.dirname(loadFile))
-                self.settings.setValue('lastFile', loadFile)
-                self.labelCurrentFile.setText(loadFile)
+                msg = EntryDialog(self)
+                if msg.exec():
+                    self.pushButtonNewFromTemplateClicked()
+                else:
+                    self.pushButtonLoadFileClicked()
+                fileLoaded = True
             except BaseException:
-                self.pushButtonLoadFileClicked()
-        else:
-            msg = EntryDialog(self)
-            if msg.exec():
-                self.pushButtonNewFromTemplateClicked()
-            else:
-                self.pushButtonLoadFileClicked()
+                pass
 
         # init themes and set last theme
         print("initialising fonts and colours...")
@@ -469,10 +478,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.write_timer:
             self.write_timer.cancel()
         self.write_delay = 0
-        self.writeToFile()
-
-        # cancel all running stop watches
-        # \todo
+        try:
+            self.writeToFile()
+        except AttributeError:
+            pass
 
         # continue closing the window
         event.accept()  # let the window close
@@ -895,7 +904,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.write_timer.start()
 
     def writeToFile(self, delayed=False, countdown=False):
-        self.forest.writeToFile(self.labelCurrentFile.text())
+            self.forest.writeToFile(self.labelCurrentFile.text())
 
     def removeBranchTabs(self):
             self.tabWidget.clear()

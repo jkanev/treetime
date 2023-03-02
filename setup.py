@@ -30,6 +30,7 @@ setup(
                                '../data/Simple-Task-List.empty.trt',
                                '../data/Single-MindMap.empty.trt',
                                '../data/treetime-logo.png',
+                               '../data/Tutorial.trt',
                                '../docs/*.png']},
     exclude_package_data={'treetime': ['treetime/compile-ui.py']},
     # according to some people on the web install_requiring PyQt5 should work, but as my system gives me an error for
