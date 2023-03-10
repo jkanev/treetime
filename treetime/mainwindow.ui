@@ -53,7 +53,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>792</height>
+         <height>786</height>
         </rect>
        </property>
        <attribute name="label">
@@ -139,7 +139,6 @@
          <widget class="QLabel" name="label_5">
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -201,7 +200,6 @@
          <widget class="QLabel" name="label_11">
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -382,7 +380,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>792</height>
+         <height>786</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -398,11 +396,23 @@
         <property name="fieldGrowthPolicy">
          <enum>QFormLayout::ExpandingFieldsGrow</enum>
         </property>
+        <item row="1" column="0" colspan="2">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="2" column="0" colspan="2">
          <widget class="QLabel" name="label">
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -444,11 +454,23 @@
           </property>
          </widget>
         </item>
+        <item row="6" column="0" colspan="2">
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="7" column="0" colspan="2">
          <widget class="QLabel" name="label_2">
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -490,11 +512,23 @@
           </property>
          </widget>
         </item>
+        <item row="11" column="0" colspan="2">
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="12" column="0" colspan="2">
          <widget class="QLabel" name="label_3">
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -521,117 +555,6 @@
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
-        </item>
-        <item row="15" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonCopyBranchSibling">
-          <property name="toolTip">
-           <string>&lt;b&gt;Copy the current branch&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The current node and all its children will be copied.&lt;br/&gt;• The copy will be inserted as sibling.&lt;br/&gt;• Other trees are not affected.</string>
-          </property>
-          <property name="toolTipDuration">
-           <number>-1</number>
-          </property>
-          <property name="text">
-           <string>Copy Branch as Sibling</string>
-          </property>
-         </widget>
-        </item>
-        <item row="16" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonCopyChildrenSiblings">
-          <property name="toolTip">
-           <string>&lt;b&gt;Copy all child branches&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• All children are copied underneath the siblings of the current node.&lt;br/&gt;• The copy depth can be selected in the box above.&lt;br/&gt;• Other trees are not affected.</string>
-          </property>
-          <property name="text">
-           <string>Copy Children to Siblings</string>
-          </property>
-         </widget>
-        </item>
-        <item row="18" column="0" colspan="2">
-         <widget class="QLabel" name="label_4">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Remove Single Node</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="19" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonRemoveNode">
-          <property name="toolTip">
-           <string>&lt;b&gt;Remove the current node&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• Children of the node are moved up, to be children of the node's parent.&lt;br/&gt;• Other trees are not affected.</string>
-          </property>
-          <property name="text">
-           <string>Remove Node (this Tree)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="20" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonDeleteNode">
-          <property name="toolTip">
-           <string>&lt;b&gt;Delete the current item&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• In each tree, children of the node are moved up, to be children of the node's parent.&lt;br/&gt;• The node is removed from all trees.</string>
-          </property>
-          <property name="text">
-           <string>Delete Item (all Trees)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="6" column="0" colspan="2">
-         <spacer name="verticalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="11" column="0" colspan="2">
-         <spacer name="verticalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="17" column="0" colspan="2">
-         <spacer name="verticalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
         <item row="13" column="1">
          <widget class="QComboBox" name="comboBoxCopyDepth">
@@ -701,8 +624,31 @@
           </item>
          </widget>
         </item>
-        <item row="26" column="0" colspan="2">
-         <spacer name="verticalSpacer_6">
+        <item row="15" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonCopyBranchSibling">
+          <property name="toolTip">
+           <string>&lt;b&gt;Copy the current branch&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• The current node and all its children will be copied.&lt;br/&gt;• The copy will be inserted as sibling.&lt;br/&gt;• Other trees are not affected.</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>-1</number>
+          </property>
+          <property name="text">
+           <string>Copy Branch as Sibling</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonCopyChildrenSiblings">
+          <property name="toolTip">
+           <string>&lt;b&gt;Copy all child branches&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• All children are copied underneath the siblings of the current node.&lt;br/&gt;• The copy depth can be selected in the box above.&lt;br/&gt;• Other trees are not affected.</string>
+          </property>
+          <property name="text">
+           <string>Copy Children to Siblings</string>
+          </property>
+         </widget>
+        </item>
+        <item row="17" column="0" colspan="2">
+         <spacer name="verticalSpacer_5">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -713,6 +659,41 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="18" column="0" colspan="2">
+         <widget class="QLabel" name="label_4">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Remove Single Node</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonRemoveNode">
+          <property name="toolTip">
+           <string>&lt;b&gt;Remove the current node&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• Children of the node are moved up, to be children of the node's parent.&lt;br/&gt;• Other trees are not affected.</string>
+          </property>
+          <property name="text">
+           <string>Remove Node (this Tree)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonDeleteNode">
+          <property name="toolTip">
+           <string>&lt;b&gt;Delete the current item&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• In each tree, children of the node are moved up, to be children of the node's parent.&lt;br/&gt;• The node is removed from all trees.</string>
+          </property>
+          <property name="text">
+           <string>Delete Item (all Trees)</string>
+          </property>
+         </widget>
         </item>
         <item row="21" column="0" colspan="2">
          <spacer name="verticalSpacer_7">
@@ -731,7 +712,6 @@
          <widget class="QLabel" name="label_12">
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -763,6 +743,19 @@
           </property>
          </widget>
         </item>
+        <item row="26" column="0" colspan="2">
+         <spacer name="verticalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="pageSettings">
@@ -771,7 +764,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>792</height>
+         <height>786</height>
         </rect>
        </property>
        <attribute name="label">
@@ -795,7 +788,6 @@
          <widget class="QLabel" name="label_9">
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -830,7 +822,6 @@
          <widget class="QLabel" name="label_10">
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -846,10 +837,13 @@
          <widget class="QLabel" name="label_7">
           <property name="text">
            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     TreeTime 2023.0&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     TreeTime 2023.1&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     Official website:&lt;br /&gt;     &lt;a href=&quot;https://github.com/jkanev/treetime&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;tree-time.info&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     Updates and source code:&lt;br /&gt;     &lt;a href=&quot;https://github.com/jkanev/treetime&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;github.com/jkanev/treetime&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;    Documentation:&lt;br /&gt;     &lt;a href=&quot;https://treetime-data-manager.readthedocs.io&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;treetime-data-manager.&lt;/span&gt;&lt;/a&gt;&lt;br /&gt;     &lt;a href=&quot;https://treetime-data-manager.readthedocs.io&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;readthedocs.io&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

@@ -98,7 +98,13 @@ In this example a new node in the tree *Time Plan* has just been created, and is
 Data Files
 ----------
 
-*TreeTime*'s data is stored in .*trt* files. These are plain editable text files. Please have a look at the file *Simple-Task-List.trt* to understand the syntax. A detailed description will follow later. (Sorry...)
+The data in TreeTime is stored in a plain text file, marked with a 'trt' file ending ('trt' for 'TreeTime').
+
+The button 'Load File' will open an existing 'trt' file. After this, all changes are written to that file. There is no 'Save' button, changes are written to the file immediately.
+
+The button 'New From Template' opens an existing data file, creates a copy, and saves this copy. A data file can be created by copying the currently open file. All write operations will be performed on that copy. This is to create a new file from a basically empty 'trt' file that has a pre-defined data structure.
+
+A data file can be created by saving the currently open file to a copy. The button 'Save As' saves the current state. All write operations will be on the new file.
 
 Installation
 ------------
@@ -106,7 +112,7 @@ Installation
 Using pre-compiled Binaries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2022.1](https://github.com/jkanev/treetime/releases/tag/2022.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run *TreeTime* or *TreeTime.exe* from the new folder. Unzip the data package too. Add the program folder to your path.
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2023.1](https://github.com/jkanev/treetime/releases/tag/2023.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run *TreeTime* or *TreeTime.exe* from the new folder. Unzip the data package too. Add the program folder to your path.
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 

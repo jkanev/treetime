@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2022.1](https://github.com/jkanev/treetime/releases/tag/2022.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2023.1](https://github.com/jkanev/treetime/releases/tag/2023.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -201,16 +201,20 @@ Past
 - Done June 2022: Added a tutorial file.
 - Done June 2022: Added first-use dialog when no file is loaded, instead of the file-open dialog.
 - Done June 2022: Release 2022.1
+- Done February 2023: Added new tree field types "concatenation" and "set".
+- Done February 2023: Implemented adjustable width for the data item and the tree table main view.
+- Done February 2023: Release 2023.1
 
 Present
 - Running: Bugfixing
-- Running: Extend documentation on readthedocs.io 
+- Running: Extend documentation on readthedocs.io
+- Running: Add more fields
 - Running: Add more examples and more template data files
   
 Future
 - Near Future: Implement search function
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
-- Mid Future: Implement more tree field types (standard deviation, min, max, string concatenation),
+- Mid Future: Implement more tree field types (standard deviation, min, max),
 - Far Future: Implement tree field editing with graphical dialog (add, remove, change tree fields)
 - Far Future: Implement data item field editing with graphical dialog (add, remove, change data item fields)
 - Far Future: Implement safe usage by multiple simultaneous users

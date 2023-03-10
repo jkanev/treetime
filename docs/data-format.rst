@@ -2,20 +2,6 @@
 Data Format
 ===========
 
-Loading and Saving
-------------------
-
-The data in TreeTime is stored in a plain text file, marked with a 'trt' file ending ('trt' for 'TreeTime').
-
-The button 'Load File' will open an existing 'trt' file. After this, all changes are written to that file. There is no 'Save' button, changes are written to the file immediately.
-
-The button 'New From Template' opens an existing data file, creates a copy, and saves this copy. A data file can be created by copying the currently open file. All write operations will be performed on that copy. This is to create a new file from a basically empty 'trt' file that has a pre-defined data structure.
-
-A data file can be created by saving the currently open file to a copy. The button 'Save As' saves the current state. All write operations will be on the new file.
-
-File Format
------------
-
 Global Structure
 ^^^^^^^^^^^^^^^^
 
@@ -112,8 +98,11 @@ More about how to define tree fields in the next chapter.
 Data Item Definition
 ^^^^^^^^^^^^^^^^^^^^
 
+Documentation still in progress.
+
 More about how to define data fields in the next chapter.
 
 The Data Pool
 ^^^^^^^^^^^^^
 
+Documentation still in progress.
