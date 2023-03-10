@@ -43,7 +43,7 @@ A mean priority can be shown per work package and project.
 
 #### Unpack-and-run Zip Files ####
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2021.9](https://github.com/jkanev/treetime/releases/tag/2021.9) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2023.1](https://github.com/jkanev/treetime/releases/tag/2023.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
