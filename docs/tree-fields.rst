@@ -41,6 +41,7 @@ Syntax::
             parent-fields [...]
 
 were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
 Result: The strings found in *field1, field2, field3, ...*, put together, in the order they are mentioned.
 
 difference
@@ -57,6 +58,7 @@ Syntax::
             parent-fields [...]
 
 were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
 Result: The value *field1 - (field2 + field3 + ...)*, in the order they are mentioned.
 
 difference-time
@@ -78,6 +80,7 @@ Syntax::
             parent-fields [...]
 
 were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
 Result: The value *(field1 + field2 + field3 + ...) / N*, where *N* is the number of fields.
 
 mean-percent
@@ -99,6 +102,7 @@ Syntax::
             parent-fields [N]
 
 were *N* is an integer number.
+
 Result: Displays the name of the node's parent in tree *N*. Trees are counted starting with 0.
 
 Example: This field is called "Project" and is defined in a tree "Time", which is the first tree (i.e. Tree 0). There is another tree called "Projects", which is the third tree (i.e. Tree 2)::
@@ -127,39 +131,87 @@ Same as "node-name", but instead of the paren't name, the entire path is shown, 
 ratio
 -----
 
-Documentation still in progress.
+The ratio between the first and the sum of all following input fields.
+Syntax::
+
+        field "Name"
+            field-type "ratio"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
+Result: The value *field1 / (field2 + field3 + ...)*, where *N* is the number of fields.
 
 ratio-percent
 -------------
 
-Documentation still in progress.
+Same as "ratio", but displayed as percentage (e.g., 0.75 is displayed as 75 %).
 
 set
 ---
 
-Documentation still in progress.
+A list of unique occurrences of values of all input fields.
+Syntax::
+
+        field "Name"
+            field-type "set"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
+Result: A list like *value1, value2, value3, value4*, where each value is the value of at least on input field and each value is listed only once.
 
 string
 ------
 
-Documentation still in progress.
+The simple display of the content of a data field or another tree field.
+Syntax::
+
+        field "Name"
+            field-type "string"
+            own-fields ["field1"]
+            child-fields []
+            sibling-fields []
+            parent-fields []
+
+were "field1" is the name of a current data or tree field. The "string" function only takes one parameter.
+
+Result: The value of *field1*.
 
 sum
 ---
 
-Documentation still in progress.
+The sum of all input fields.
+Syntax::
+
+        field "Name"
+            field-type "sum"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields. Fields must be integer fields, the result for string fields is not defined.
+
+Result: The value *field1 + field2 + field3 + ...*.
 
 sum-time
 --------
 
-Documentation still in progress.
+Same as "sum", but will show the result as hour format, e.g. the value *1.5* will be displayed and exported as *1:30:00*.
 
 text
 ----
 
-Documentation still in progress.
+Same as "string", but the exported field has a larger width and can span several lines.
 
 url
 ---
 
-Documentation still in progress.
+Same as "string", but in an html export the field is formated as url link (clickable).
