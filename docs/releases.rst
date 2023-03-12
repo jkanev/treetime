@@ -83,9 +83,13 @@ Past
 * June 2022: Added a tutorial file
 * June 2022: Added first-use dialog when no file is loaded, instead of the file-open dialog
 * June 2022: Released **version 2022.1**
+
+2023
+^^^^
+
 * February 2023: Added new tree field types "concatenation" and "set".
 * February 2023: Implemented adjustable width for the data item and the tree table main view.
-* February 2023: Release 2023.1
+* February 2023: Release **version 2023.1**
 
 Present
 -------
