@@ -160,9 +160,6 @@ class Field:
         elif self.fieldType == "set":
             self.getValue = self.getValueSet
             self.getString = self.getStringSet
-        elif self.fieldType == "concatenation":
-            self.getValue = self.getValueConcat
-            self.getString = self.getStringUnchanged
         elif self.fieldType == "sum-time":
             self.getValue = self.getValueSum
             self.getString = self.getStringTime
@@ -208,7 +205,7 @@ class Field:
 
     def getStringSet(self):
         if self.sourceNode and self.getValue:
-            return ', '.join([str(n) for n in self.getValue()])
+            return ', '.join(sorted([str(n) for n in self.getValue()]))
         else:
             return "[undefined]"
 
@@ -303,11 +300,13 @@ class Field:
             return s
 
     def getValueString(self):
-        values = self.getFieldValues()
-        s = ""
+        values = self.getFieldValues(sort=True)
+        s = ''
         for v in values:
-            if v:
-                s += str(v)
+            if v:     # either sum up using the value
+                s += v
+            else:     # or the neutral element for addition ('')
+                s += ''
         return s
 
     def getValueSet(self):
@@ -319,16 +318,6 @@ class Field:
             elif v:     # either sum up using the value
                 result_set.add(v)
         return result_set
-
-    def getValueConcat(self):
-        values = self.getFieldValues(sort=True)
-        sum = ''
-        for v in values:
-            if v:     # either sum up using the value
-                sum += v
-            else:     # or the neutral element for addition ('')
-                sum += ''
-        return sum
 
     def getValueSum(self):
         values = self.getFieldValues()
