@@ -29,7 +29,6 @@ setup(
                                '../data/Dual-MindMap.empty.trt',
                                '../data/Simple-Task-List.empty.trt',
                                '../data/Single-MindMap.empty.trt',
-                               '../data/treetime-logo.png',
                                '../data/Tutorial.trt',
                                '../docs/*.png']},
     exclude_package_data={'treetime': ['treetime/compile-ui.py']},

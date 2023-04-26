@@ -23,6 +23,7 @@ import sys
 from .item import *
 from .tree import *
 from .mainwindow import *
+import base64
 import datetime
 import time
 import os.path
@@ -1451,23 +1452,116 @@ class TreeTime:
 
         # add application icon; test several options, different deploy methods are doing different things with the
         # resources, unfortunately
-        icon_paths = [resource_filename('treetime', 'data/treetime-logo.png')]     # first choice
-        file_name = os.path.sep + 'treetime-logo.png'
-        root_path = os.path.dirname(os.path.realpath(__file__)) + os.path.sep
-        icon_paths.append(root_path + 'treetime-logo.png')
-        icon_paths.append(root_path + 'data' + file_name)
-        icon_paths.append(root_path + '..' + file_name)
-        icon_paths.append(root_path + '..' + os.path.sep + 'data' + file_name)
-        icon_paths.append(root_path + '..' + os.path.sep + '..' + file_name)
-        icon_paths.append(root_path + '..' + os.path.sep + '..' + os.path.sep + 'data' + file_name)
-        for icon_file in icon_paths:
-            if os.path.exists(icon_file):
-                main_window.setWindowIcon(QIcon(icon_file))
-                # tray_icon = QtWidgets.QSystemTrayIcon(QIcon(icon_file), parent=app)
-                # tray_icon.show()
-                break
+        logo = ApplicationLogo()
+        main_window.setWindowIcon(logo.icon)
 
         # run
         main_window.show()
         sys.exit(app.exec_())
 
+class ApplicationLogo:
+
+    _data = ("iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9"
+             "kT1Iw0AcxV8/pCKVDnaQ4pChCopdVMRRq1CECqFWaNXB5NIvaNKQpLg4Cq4FBz8Wqw4uzro6uAqC"
+             "4AeIq4uToouU+L+k0CLGg+N+vLv3uHsH+JtVpprBWUDVLCOTSgq5/KoQekUQMUQwhlGJmfqcKKbh"
+             "Ob7u4ePrXYJneZ/7c/QrBZMBPoF4lumGRbxBPL1p6Zz3iaOsLCnE58TjBl2Q+JHrsstvnEsO+3lm"
+             "1Mhm5omjxEKpi+UuZmVDJZ4ijiuqRvn+nMsK5y3OarXO2vfkLwwXtJVlrtMcQgqLWIIIATLqqKAK"
+             "CwlaNVJMZGg/6eGPOX6RXDK5KmDkWEANKiTHD/4Hv7s1i5MTblI4CfS82PbHMBDaBVoN2/4+tu3W"
+             "CRB4Bq60jr/WBGY+SW90tPgRENkGLq47mrwHXO4Ag0+6ZEiOFKDpLxaB9zP6pjwwcAv0rbm9tfdx"
+             "+gBkqav0DXBwCIyUKHvd49293b39e6bd3w/a8HLQYu1JmQAAAwBQTFRFfwAAgQIAgwQBhAYDhQgE"
+             "hQkMiA4OixIQgxUMhhgOhhgUiRwWih0cjB4YhiIcjSAfjyEaiCQdkCMhiiYfiiYkkiYjii0mii4s"
+             "kS0pjDAtjTEulDAsizYvkjUyjDc1mTQvjTg2jjk3mzYxkDoznDc3kDs4jj85mTw3j0A6j0FAnD45"
+             "l0E+kUNCkEdDokM+o0VFlExMoElFm0tEkVBNl09PmlBMpU5JqFBMlFhTqlJTlFlZm1hWlltbqVhV"
+             "mV1dlV9dl2Ffp11crlxZmWNhsV9comVfmGhjrmJdo2ZmmWpqoWtom21trmlmmXButGlom3JwoHFx"
+             "p3BtnXRytG5rnnVzm3l1p3ZwsnR0p3h4nnx3u3Vxnn1+s3t4unp0nYKBpIF9qYB+n4SDpoWGoYeG"
+             "pImIwYKBvISAoIyJw4SDuIiIo4+LpZCNr42Oo5GTtoyKwomGrJGQxIuHvo2NqZSRopaXx46KspaV"
+             "ppqauJWWypGNo56dr5uYqZ2eyJWPwpeUpaCfyJeXv5ydqKOiy5mZwp6Zq6alzpybvqKhp6mm0J6e"
+             "uKWns6enxqKdrqmoqauoqqypq62qzqOgtqqqyKWmrK6rra+s0aWiua2urrGtr7Kux6uq1KimsLOv"
+             "sbSws7Wy16ypzLCvtbe0tri1wbW2t7m2uLq317Ktubu4zLe02bSvu726xrq62LW207e2vL67wr27"
+             "w768vcC83Li5wMK/2Ly71L6737u84Ly9w8XC1MDD3L++z8PExcfE3sHAxsnGyMrH08fH4cTDz8rI"
+             "yczIzM7L5MfG0s3M2MzMzdDMztHO58rJ0NLP0dPQ487K19LQ0tTR3dHR09bS1dfU6NLO4NTU29bU"
+             "1tnV6NTX3djW2NrX69XR7dbT2t3a493c3d/c8NrW3uDd6d3d3+He4OPg7ODg4uXh4+bi8OPj5efk"
+             "5+nm8+bm6Orn6evo6u3q9+rr7O/r7vDt9O/u8PLv8fTw+PPx9Pbz+vXz9fj0/Pf29vn2/vn4+fv4"
+             "+/36//z6/P/7////RZ/1PwAAAAF0Uk5TAEDm2GYAAAABYktHRACIBR1IAAAACXBIWXMAAA9hAAAP"
+             "YQGoP6dpAAAAB3RJTUUH5wQaDzUmdtGQ1wAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lN"
+             "UFeBDhcAABB3SURBVHja7Z17cBXVHcezExLShIcgSIlAARUBxUrrk6JRo7RAAy1CWwRT8QUMptSK"
+             "RWwVDdWe0vYmSi6dVCYoJgRT3HZCeShhIp1QMiYYEzRthhSWTG7MJRlv4BLicONOz9m9z3Dv7jnZ"
+             "H2d3b/j+m5vd/X727OM8vvtLSNCWbF8lGJdsdw1s98YYhG1CsK/6jSAu3IcY9Nu+EB9iRBBv9lkR"
+             "xKF9FQGbfyH+JA9s+3QI4tu/PoF4969HIO7tEw10/1oEePtPnZG5aMWanJw12QszpqWZT4Cv/2EZ"
+             "a1CE1s8ZZS4Brv4nZaMoWjPVRAI8bwCjVgQsO8XK6rrGpqbGuuqKMidCK9PNBcDHf8ZrqvvCikYp"
+             "Qk2VRWh+ojkE+PlP8bf+0jopihpKn0wzhQA3/8PWKfaLotonqn9ziAkEuDWAEesV/5WShg4ONwcA"
+             "l0e/4j+/TtLUZ9/gTYBXA0hcSfxva9L2L7X/0wwAPBrAXOXyb5b05F3LlwCvBjBBefQ36fqX2i9O"
+             "5g6ARwPIwf4dDRKFeo5wbQKcANyqe/8PqlN+gCMAXg2AvAGUUPmXWuTjHJsAJwBTyAXQSAdA8sk3"
+             "xh2ApRjAHkr/0jn5DW4AOPlPysUNoIkWQKd8lts1wAnARNIBovUvuXp7J8cZgAwMoFpi0A85AuDx"
+             "DFiGrwAW/9LLvK4BGgBorL7SJ2mK6Qog+ig5OSVJkQUAjEEQqpAYtSfy/197MaDfbt78PRsCqGEF"
+             "UBVrS9tE8QecATiKDwRVEabKCFVfqhqiUkUs3n1E3j1YIlGpXyUlJXnmACioNrJQyc167t2xtuTz"
+             "uZqbm90+31pbAfCwAvBow+yU5Q38AbQ+GtKCkB64J6g7ZwZ1y+SQRo8eOXz4/5gAeGX54uigrg3b"
+             "2OTp06fvwgA2cQUwlgD40NC+/soEwCfL5bG3tcWOAJaz+G+TNR0SAH/gD2C/oX3d4HTSA+jCB/Vg"
+             "7G09LlZ737AbgBSEalmuAPmq2Nta4hS7tvIHsM/YzlbSvwmSh+ApQROA5y3bAbiVvi/Qg4/pKY1N"
+             "LcIAtnMG4KzWui1TXQO5+dSjIfghOFILQIHo2ckVQDoAAGEhqqcbESV3gN2aWyoQO3fzBlBjGMCw"
+             "3D20L0Hy15pjoln5Yme5/QAIc/JOUvjvIO+72re4+RjAfhsCSNlIMSbW1osP6MJoQacFdByyIQDh"
+             "1kL90VByA5Af1t5OVp7oPswfAMBtZ2kllX+9OzwBcMSWAJKe074LuEn7l48PpgBwzJYAhLR3tZ5/"
+             "XUqH//RQva1kOUT3ca4AxhEA70HscsjRtpin36f6HynoAyhzn+APAOTdS0g95HVFtd+tDviUD9bf"
+             "RhZytNkWgJD4/MVud0ufe59HPfvyxVU0m8hCqPo/vAHUQgEQhJmnZLm7y91GKLS43J1eX2C878Nr"
+             "BUoAVZ+mcb4JAgIQEh/+Itpw56G7Kd+p12MA0gej7QsAI7h794VI962brqX831FksWGVJH1yo10v"
+             "Af87wR2ryk+cx3s//8Wh1xfQn07FPwEgfT6FL4DtwmUR4/LwMRtDiy0/vz0eAPTHf2CxZfO8gQZg"
+             "XG7kYtOTpYH50twXL9H6nJyc9Zs3z4sjAGMU/+8EOhQdnR0dlU6iAr/y/XIQKakMUfxZHAGYG+6/"
+             "xas8Plzq/HEUFcIBmEAAvGU+gMQVCBWfDO85h6vXFyl3c3OTq6dnUxwBEJJWBs5/u+L/6+1bt6va"
+             "uU/V/mN+nWo9evDg59qTaGyXgBUACKnvhobOZfnCgzo//xUcgDp5qxUACEMOhi7/1m8JnABMsA4A"
+             "4ep/BRaQHNbvD/2ircf3OgiAwssAoJ/h4TGfSO3E/yaKd8i5hWK7RQEYCA9f918M4KsFVM9NDGCT"
+             "FQEYCw//yIX7zgIlADcEgImwAIyGhzNLe+XDVHuav82KAAyHhzPz6+Qj/AEARRj0wsO79G+HmXli"
+             "u20BQISHMYC2j+lGD+EA1MOsywIJDxMAx+wJACY8fF+e6DpuSwBA4eH7HLwBTAICABQezsAATlAD"
+             "eAUKwOuG/UOFh20LACo8TACc4g/A8PJksPAwAXCaapcLMYCXQABsAwAAFh4mAFppAXRYBgBceHg2"
+             "BvCF/QDAhYftCQAwPIwBtJyh2ukiDGCDRQCwhYfbZTn2k3AWMgXAKwY7wXDhYQLgS64ApgAAAAwP"
+             "EwBnaQF0Ps8PQOqMqRF54XHh2WLm8PCumPu5CwM4zx/AS/rjtZchPJwbnOjFekLR0hwkSpQAirgC"
+             "GMstPCxKF6gALIYEsIEGgLO+rqamti4of4K4dAcRc3jYEwgMqyr2a8c7ovSVRQGUXIbwsH/Wt4eo"
+             "26vI03ORCsASDOBZfgDSYwKADA/7l1RyBlBULz9PA6BUls+QuO/QwSENUv74QT/Cw4G88PXBTHIw"
+             "p7yA+hLgCGCcAiDGWzpkeJhaSywEADI8bA6AZykBnInZF2ikBqATHrYqgAlaACDDw/RdcAsBgAwP"
+             "MwFYCwBgGh2AiQqAL2MOCYKFh1kAeCwDADA8bA4A/e+2TFIAxOyowoWHuQOYCgIALjxMPwhhBoDY"
+             "HVWw8DB3AJSXwBQdAGDhYSYAq2AANMirDAMACw8z3QO4A9AaqgAKD9sXAFB42IRLoLCB4s1kmgJA"
+             "c6wGJjxsAgBUSQFgKgbg7tUeqgAJDzMBeAoGQFkXXQuQ2nXGaiDCw/QAnDAAZmAAFF85naEM/bcN"
+             "0v4VQHiYHgByQgAga7vKJOlpnZ+RJXCkv/N2ss4PDYeHGQCgJuMAksi6bgxA+qnmz5RIJ/mZPgGD"
+             "4WFqpaxDqPZPhgEsU6cisH6sc/79P5P2puodmpHwMLUSyarcWul3iWwAUvp8MDgrbG3XQ9rnP7gE"
+             "bleq/uH1NzzMdAEow1BbBjEBmBZlKiovsLbrLzk5OSuVGboVSxUtXqhoboR/qfMz+gTIZasttYgc"
+             "krIm4/dJLACmaM7qVWjM/QX94w7d6asFk6WsynSo45DVDrSRTLL++c3NN+kCmIhQ/o5IVakvah6i"
+             "mqJLlRfpX8m0taaZ6/++iDNX41APURRv1wVwQ2lpXTB92dZnoAaLTNF5/VN0ijo73HVVVVWVzeEd"
+             "eh4VErT0XcWw0v1ucblaWurzHbQArhPF+tCHjF19/evOfqr+zU4aD3sxsCqzzRf6KjPWI7oAxocD"
+             "CBJQ/Z99NobW7o2c1zU/Zpqeq/pv7408VY/qAkhMSxs+OuyrxnvD/MeOaia/H+7fCt8amLEndDzn"
+             "W1vPEl2IHG6nexEa+pF/pF4+e73WY32LAkDZ385ECwAQMpsD/k8MNfQmOPKoOlel6V8QBr0aAFBu"
+             "Cf+C8Jg6ySgfGWywMzTq3wSAjn987byqAigfRHd8JDqbrURn586elHI5CPxaAbA7yXB3+LYmDOAW"
+             "fUe1CgAq/5dEZ3NmwZeaTPk7BvAexICIs1uW9QdqUh01El3NlujR2eyx0ATWNWtOMjKMCFX6KKar"
+             "U5GjhmZzUaKztZUVpfkILRsBDKDonAwxJjgVlTVRAUBOis3FjM42HnDm3gUMoMIHAWAKKmugAJCm"
+             "AtB+BmhHZ+t2LIOsOJpTJPashQKgP1g9hAKAbnS25jepgAC2cQfQq/0UoInO/g2u7u4aDABmiUxZ"
+             "PQWAYSqAJO3hVf3o7Kep8QqAe91dAgBirfAkagCFGECy9iANz7q7+B7QbSEA/OvuEgAbrAOAf91d"
+             "fAl0Q8TmJtIDwJ2GWH0vE+rurikUu1/hCmCbBgAT6u4SAJv4ARihCcCMurtQACbQARilAogxHm5G"
+             "3V0oAOMAAJhSd5cAgPmWWFkdHYAiDGBojMsILDpLr5UYAMz3BI0DYIvOumT5EQgAThgA6fQAPB5P"
+             "9B8yRmfd7peBALwB1QLSqADgY0+L9RbEFp19GwjAVpgWUEsPIHoLyGWNzh61LYDVy5ffOxsrc46q"
+             "LLKAYAl7dHbLlheWxtDPn3lmHiUAL0cA16gAsAqirh9okhhVH2slQoEo/pIWwFsAAMaishomAM6o"
+             "h83qX2qyG4CSkgol4dtzsknVSb9qq7BYvh/hVpcndIZLXY3QRCo5N3o879MC2M4PQLooxihP3M16"
+             "7r3aKxHclB8VhQIwBok1sv4S1vExAfhYAfjgAOyEAVBN0QKSxo+/cWZ0TZ++izU6W66uTwiPYfvP"
+             "wRZzABhcxDyTBYB2dJY/gGsAAKSxXgFXAQB4AgN4zyIAhOd21FM/A7Sjs4tRQRclgALRu9sqAOCi"
+             "s4tQgYceQLlVAMBFZxdyBzAKAgBcdDYLFXTaEQBYdHY+NYAVGMA+ywAAi87ORQUd9AD2QwFINgwA"
+             "Kjo7BxW4KQHki94PYQBUAQCAis6yAThkIQBA0dlMJgCHrQQAJjqLAbTbFABMdDaDBcC5IwAARiCx"
+             "EgYASHQ2AzlcdACygQAMgwMAEZ2djVClz7YAAKKzsxCqaKEaEsvOE899bDUAxqOzs8kUwwfJlACO"
+             "WQ+AwehsujrHsveb9gVgKDpL/KMDpObqd2gAdB23JACh39FZxb86y9Zwr60BBBsD069V/zvU96nG"
+             "x1P4ABhCACQJFlCEf0k6+UftCm3ZDrHrBBSAZOv5x/rHMmW2VI1wL5zvn4/NmK1qHRCANIu0gEv9"
+             "S1Jtvta3nIEApFoDQNLGPv7b3FgtpQWx5RS7TsUPAOGG3FDZ3WDfSe5VZ007VLnbVblaVPWchgIw"
+             "yAL3gJtfC53/Np9MpdY4agGCcNvJ8LFzMnawT09b46kFCMJD/t6T2ne8aOzLoyYD6F/V2XmhkSP5"
+             "xLcEbgAqgAH0v+rsTwLrJ77eZPSqZAMAGQk3VHX2MRXAmTsMH4ZZLcBo1dkXCIDdAB9dM6kFGK46"
+             "O6sSA/i+wBFACiAAvaqzT+rfDjOQBPPtdTMAQFSdzUAlXXYFAFN1Fu2QQFJV/AHAVJ3NRMUt3AEc"
+             "kAF2CBSdnYOKXfYEABSdnUsA3GNDAFDR2SxU3MYXQBIMAKjo7EJU3G5HAGDR2cWo2C3fbT8AYNHZ"
+             "pfYEABedxQA65DttBwAuOpuNSjr5AkgEAAAYncUAPPYDABidXcEdgIAKizqNdoLZqs56vbGXyq0k"
+             "naE7+AJADsngzgCrzmIA5+wHADA6m4NKvCYAWL169RwazY4u9qqz999/+83hVXyDH/teTwDM5A4A"
+             "CxkTXNXZkm7OAEpKSkkeMlT4NVj/tY+Kogs6OssdgCjuISPx7ZRq6auqCiIG6+29ihoaGupDNXxr"
+             "aqr8qvbJ34YCkMAAoN+CrzpL8YlTSADjx4+/tPBroP5rHz3aR+TD008vX84GwGsxAABirjr78eAo"
+             "Ghn84vUgMACcCJhSdZbKPycAN7HcBKGqzloJgClVZ+kAcCJgRtVZOv+cAJhRdZYSQAKfa8CEqrPU"
+             "ALgQMKHqLKV/Tk3AhKqz9AC4EOBfdZbWP6+7APeqswwA+DwIeFedpfbPqQlwrzrLAIAPAd5VZxn8"
+             "JyRwaQKcq84yAeBzEfCtOsvinxcBrlVnmfzzIsCz6iybf063AZ5VZ1kB8CLAq+oss39uBPhUne2H"
+             "f34EeFSd7Y9/ngQCjYHr3hIoJMSvEug00P3HLYEEBg1w+3GIIKEfGuD24whBghENbPe2Z5BwRVd0"
+             "RVekrf8DQpnvQNJVVVIAAAAASUVORK5CYII=")
+
+    def __init__(self):
+        self._buffer = base64.b64decode(self._data)
+        self._pixmap = QtGui.QPixmap()
+        self._pixmap.loadFromData(self._buffer, format='png')
+        self.icon = QIcon(self._pixmap)
