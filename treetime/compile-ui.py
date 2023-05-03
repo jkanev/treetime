@@ -1,6 +1,6 @@
 
 import os.path
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt6 import uic
 
 # compile ui file if necessary
 if os.path.getmtime("mainwindow.py") < os.path.getmtime("mainwindow.ui"):

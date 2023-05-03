@@ -123,8 +123,8 @@ Using a PyPi package in Python
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. If you don't have it yet, install python3
-2. Install PyQt5 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:  
-    `pip install pyqt5`
+2. Install PyQt6 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:
+    `pip install PyQt6`
 3. Install *TreeTime* -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:
     `pip install treetime`
 
@@ -132,7 +132,7 @@ Using script code with Python
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. If you don't have it yet, install python3
-2. Install PyQt5 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type: `pip install pyqt5`
+2. Install PyQt6 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type: `pip install PyQt6`
 3. Download this project from GitHub as a zip file (https://github.com/jkanev/treetime/archive/master.zip) and unzip
 4. Install *TreeTime*: in the command line, cd into the main directory, then type:
     - Linux:

@@ -20,6 +20,7 @@
 #!/usr/bin/python3
 
 import sys
+
 from .item import *
 from .tree import *
 from .mainwindow import *
@@ -28,9 +29,10 @@ import datetime
 import time
 import os.path
 import platform
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from threading import Timer
-from PyQt5.QtGui import QPalette, QColor, QIcon, QClipboard, QGuiApplication
+from PyQt6.QtGui import QPalette, QColor, QIcon, QClipboard, QGuiApplication
+from PyQt6.QtWidgets import QAbstractItemView
 from pkg_resources import resource_filename
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
@@ -339,12 +341,12 @@ class EntryDialog(QtWidgets.QDialog):
         super().__init__(parent)
         self.setWindowTitle("Not connected to Data Source")
 
-        buttons = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
+        buttons = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
         self.buttonBox = QtWidgets.QDialogButtonBox(buttons)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText("Create new Data File from Template")
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText("Open existing Data File")
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText("Create new Data File from Template")
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText("Open existing Data File")
 
         self.layout = QtWidgets.QVBoxLayout()
         message = "To start, please choose to either:"\
@@ -405,14 +407,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonDeleteNode.clicked.connect(self.pushButtonDeleteNodeClicked)
         self.pushButtonRemoveBranch.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
         self.pushButtonDeleteBranch.clicked.connect(self.pushButtonDeleteBranchClicked)
+        self.pushButtonDataFields.clicked.connect(self.pushButtonDataFieldsClicked)
+        self.pushButtonTreeFields.clicked.connect(self.pushButtonTreeFieldsClicked)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
-        self.tableWidget.verticalHeader().setSectionResizeMode(3)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(0, 2)     # column 0: fixed
-        self.tableWidget.horizontalHeader().setSectionResizeMode(1, 2)     # column 1: fixed, 100
+        self.tableWidget.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)     # column 0: fixed
+        self.tableWidget.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Fixed)     # column 1: fixed, 100
         self.tableWidget.horizontalHeader().resizeSection(1, 100)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(2, 2)     # column 2: fixed
-        self.tableWidget.horizontalHeader().setSectionResizeMode(3, 1)     # column 3: stretch
-        self.tableWidget.horizontalHeader().setSectionResizeMode(4, 2)     # column 4: fixed
+        self.tableWidget.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.Fixed)     # column 2: fixed
+        self.tableWidget.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.Stretch)     # column 3: stretch
+        self.tableWidget.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Fixed)     # column 4: fixed
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
         self.write_delay = 0
         self.write_timer = False
@@ -421,6 +425,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.update_timer = QtCore.QTimer(self)
         self.update_timer.timeout.connect(self.updateTimers)
         self.update_timer.start(1000)
+        self.tabWidgets = []
+        self.treeWidgets = []
+        self.currentTree = 0
+        self.currentItem = None
+        self.gridInitialised = False
+        self.editMode = 'content'     # one of 'content', 'tree', or 'data'
 
         # init application settings
         print("loading system settings...")
@@ -469,6 +479,33 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # show window
         print("showing main window...")
         self.showMaximized()
+
+    def endisableButtons(self, state):
+        """
+        Enables all buttons if state==True, disables them otherwise
+        :param state: the button state to set
+        """
+        self.pushButtonNewChild.setEnabled(state)
+        self.pushButtonNewSibling.setEnabled(state)
+        self.pushButtonNewParent.setEnabled(state)
+        self.pushButtonCopyNodeChild.setEnabled(state)
+        self.pushButtonCopyNodeSibling.setEnabled(state)
+        self.pushButtonCopyNodeParent.setEnabled(state)
+        self.pushButtonCopyBranchSibling.setEnabled(state)
+        self.pushButtonNewFromTemplate.setEnabled(state)
+        self.pushButtonLoadFile.setEnabled(state)
+        self.pushButtonSaveToFile.setEnabled(state)
+        self.pushButtonExportTxt.setEnabled(state)
+        self.pushButtonClipBoardTxt.setEnabled(state)
+        self.pushButtonExportCsv.setEnabled(state)
+        self.pushButtonExportHtmlList.setEnabled(state)
+        self.pushButtonExportHtmlTiles.setEnabled(state)
+        self.pushButtonRemoveNode.setEnabled(state)
+        self.pushButtonDeleteNode.setEnabled(state)
+        self.pushButtonRemoveBranch.setEnabled(state)
+        self.pushButtonDeleteBranch.setEnabled(state)
+        self.pushButtonDataFields.setEnabled(state)
+        self.pushButtonTreeFields.setEnabled(state)
 
     def closeEvent(self, event):
         """
@@ -529,43 +566,42 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Apply dark colours
         if colour == "Dark":
-            palette.setColor(QPalette.Window, QColor(50, 52, 54))
-            palette.setColor(QPalette.WindowText, QtCore.Qt.white)
-            palette.setColor(QPalette.Base, QColor(40, 42, 44))
-            palette.setColor(QPalette.AlternateBase, QColor(50, 52, 54))
-            palette.setColor(QPalette.ToolTipBase, QtCore.Qt.black)
-            palette.setColor(QPalette.ToolTipText, QtCore.Qt.white)
-            palette.setColor(QPalette.Text, QtCore.Qt.white)
-            palette.setColor(QPalette.Disabled, QPalette.Text, QColor(150, 150, 150))
-            palette.setColor(QPalette.Button, QColor(60, 62, 64))
-            palette.setColor(QPalette.ButtonText, QtCore.Qt.white)
-            palette.setColor(QPalette.BrightText, QtCore.Qt.red)
-            palette.setColor(QPalette.Link, QColor(60, 200, 255))
-            palette.setColor(QPalette.Highlight, QColor(60, 200, 255))
-            palette.setColor(QPalette.HighlightedText, QtCore.Qt.black)
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Window, QColor(50, 52, 54))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.WindowText, QColor(255, 255, 255))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Base, QColor(40, 42, 44))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.AlternateBase, QColor(50, 52, 54))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ToolTipBase, QColor(0, 0, 0))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ToolTipText, QColor(255, 255, 255))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Text, QColor(255, 255, 255))
+            palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, QColor(150, 150, 150))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Button, QColor(60, 62, 64))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ButtonText, QColor(255, 255, 255))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.BrightText, QColor(255, 0, 0))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Link, QColor(60, 200, 255))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Highlight, QColor(60, 200, 255))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.HighlightedText, QColor(0, 0, 0))
 
         # apply light colours
         elif colour == "Light":
             palette = QPalette()
-            palette.setColor(QPalette.Window, QColor(255-53, 255-53, 255-53))
-            palette.setColor(QPalette.WindowText, QtCore.Qt.black)
-            palette.setColor(QPalette.Base, QColor(255-25, 255-25, 255-25))
-            palette.setColor(QPalette.AlternateBase, QColor(255-53, 255-53, 255-53))
-            palette.setColor(QPalette.ToolTipBase, QtCore.Qt.white)
-            palette.setColor(QPalette.ToolTipText, QtCore.Qt.black)
-            palette.setColor(QPalette.Text, QtCore.Qt.black)
-            palette.setColor(QPalette.Disabled, QPalette.Text, QColor(70, 70, 70))
-            palette.setColor(QPalette.Button, QColor(255-53, 255-53, 255-53))
-            palette.setColor(QPalette.ButtonText, QtCore.Qt.black)
-            palette.setColor(QPalette.BrightText, QtCore.Qt.blue)
-            palette.setColor(QPalette.Link, QColor(255-42, 255-130, 255-218))
-            palette.setColor(QPalette.Highlight, QColor(255-42, 255-130, 255-218))
-            palette.setColor(QPalette.HighlightedText, QtCore.Qt.white)
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Window, QColor(255-53, 255-53, 255-53))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.WindowText, QColor(0, 0, 0))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Base, QColor(255-25, 255-25, 255-25))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.AlternateBase, QColor(255-53, 255-53, 255-53))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ToolTipBase, QColor(255, 255, 255))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ToolTipText, QColor(0, 0, 0))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Text, QColor(0, 0, 0))
+            palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, QColor(70, 70, 70))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Button, QColor(255-53, 255-53, 255-53))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ButtonText, QColor(0, 0, 0))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.BrightText, QColor(0, 0, 255))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Link, QColor(255-42, 255-130, 255-218))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Highlight, QColor(255-42, 255-130, 255-218))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
 
         # apply system colours
         elif colour == "System":
             palette = self.system_palette
-
         application.setPalette(palette)
         self.treeSelectionChanged(self.currentTree)
 
@@ -649,10 +685,33 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # save to clipboard
             clipboard = QGuiApplication.clipboard()
-            clipboard.setText(txt, QClipboard.Clipboard)
+            clipboard.setText(txt, QClipboard.Mode.Clipboard)
+            clipboard.setText()
             if clipboard.supportsSelection():
-                clipboard.setText(txt, QClipboard.Selection)
+                clipboard.setText(txt, QClipboard.Mode.Selection)
             time.sleep(0.001)
+
+    def pushButtonDataFieldsClicked(self):
+        """
+        Callback for the data field edit button.
+        """
+        """
+        Callback for the data field edit button. Toggles the tree-field edit mode.
+        """
+        if self.editMode == 'data':
+            self.changeEditMode('content')
+        else:
+            self.changeEditMode('data')
+
+
+    def pushButtonTreeFieldsClicked(self):
+        """
+        Callback for the data field edit button. Toggles the tree-field edit mode.
+        """
+        if self.editMode == 'tree':
+            self.changeEditMode('content')
+        else:
+            self.changeEditMode('tree')
 
     def pushButtonExportTxtClicked(self):
         """
@@ -746,10 +805,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                   + "\". \n\n" \
                   + "This will move all children in this tree to the node's parent.\n" \
                   + "Changes are saved to file immediately and cannot be reverted."
-        msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
-        result = msgBox.exec_()
-        if result == QtWidgets.QMessageBox.Ok:
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setText(message)
+        msgBox.setWindowTitle("TreeTime Message")
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+        result = msgBox.exec()
+
+        # remove if the user has confirmed
+        if result == QtWidgets.QMessageBox.StandardButton.Ok:
 
             # move all children to parent node
             currentNode = self.currentItem.viewNodes[self.currentTree]
@@ -771,10 +834,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         message = "Deleting node \"" + self.currentItem.name + "\". \n\n" \
                   + "This will move all children in all trees to their nodes' parents.\n" \
                   + "Changes are saved to file immediately and cannot be reverted."
-        msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
-        result = msgBox.exec_()
-        if result == QtWidgets.QMessageBox.Ok:
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setText(message)
+        msgBox.setWindowTitle("TreeTime Message")
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+        result = msgBox.exec()
+
+        # delete if the user has confirmed
+        if result == QtWidgets.QMessageBox.StandardButton.Ok:
 
             # move all children in all trees to parent node
             for t in range(0, len(self.forest.children)):
@@ -842,6 +909,37 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.forest.itemPool.deleteItem(i)
                 self.delayedWriteToFile()
 
+    def changeEditMode(self, mode):
+        """
+        Changes the current editing mode to the mode in the parameters.
+        Disables/enables buttons, changes button text.
+        :param mode: The new mode
+        """
+
+        # set button states and texts
+        self.endisableButtons(mode == 'content' and True or False)
+        self.pushButtonTreeFields.setText(mode != 'tree' and "View Tree Fields" or "Finished")
+        self.pushButtonDataFields.setText(mode != 'data' and "View Data Fields" or "Finished")
+        self.pushButtonTreeFields.setEnabled(mode != 'data' and True or False)
+        self.pushButtonDataFields.setEnabled(mode != 'tree' and True or False)
+
+        # entering/leaving tree field mode, set selection type to column/row
+        if mode == 'tree' and self.editMode != 'tree':
+            for tree in self.treeWidgets:
+                tree.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectColumns)
+                tree.clearSelection()
+            for i in range(0, len(self.tabWidgets)):
+                if i != self.currentTree:
+                    self.tabWidgets[i].setEnabled(False)
+        elif mode != 'tree' and self.editMode == 'tree':
+            for tree in self.treeWidgets:
+                tree.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+                tree.clearSelection()
+            for tab in self.tabWidgets:
+                tab.setEnabled(True)
+
+        self.editMode = mode
+
     def loadFile(self, filename):
         self.removeBranchTabs()
         self.tabWidgets = []
@@ -849,6 +947,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.currentTree = 0
         self.currentItem = None
         self.gridInitialised = False
+        self.editMode = 'content'     # one of 'content', 'tree', or 'data'
         if filename is not None and filename != '':
             try:
                 # load file
@@ -955,12 +1054,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # init sorting
             self.treeWidgets[n].setSortingEnabled(True)
-            self.treeWidgets[n].sortItems(0, QtCore.Qt.AscendingOrder)
+            self.treeWidgets[n].sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
 
     def _protectCells(self, row, columns):
 
         if not self.gridInitialised:
-            nonEditFlags = QtCore.Qt.ItemFlags()
+            nonEditFlags = QtCore.Qt.ItemFlag.NoItemFlags
             empties = []
             for i in columns:
                 if not self.tableWidget.item(row, i):
@@ -971,7 +1070,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.tableWidget.item(row, i).setFlags(nonEditFlags)
 
     def treeSelectionChanged(self, treeIndex):
-        
+
+        if self.editMode == 'content':
+            self.showContentInDataView(treeIndex)
+        else:
+            column = self.treeWidgets[treeIndex].currentColumn()
+            pass
+
+    def showContentInDataView(self, treeIndex):
         if not self.locked:
             
             self.locked = True
@@ -1008,7 +1114,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     parent = parent.parent()
                 
                 # create non-edit flags
-                nonEditFlags = QtCore.Qt.ItemFlags()
+                nonEditFlags = QtCore.Qt.ItemFlag.NoItemFlags
 
                 # go through all lines of the table
                 n = 0
@@ -1044,44 +1150,45 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     if not len(path):
                         button = QtWidgets.QToolButton()
                         button.setText("")
-                        button.setToolButtonStyle(1)  # 1 - text only
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
                         button.setFixedWidth(button.sizeHint().height())
                         button.setFixedHeight(button.sizeHint().height())
-                        button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                        button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)     # no down arrow is shown, menu pops up on click
                         button.setStyleSheet("::menu-indicator{ image: none; }")
                         button.setMenu(self.createParentMenu(treeNumber, self.forest))
                         buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
                     elif len(path) == 1:
                         parent = tree.findNode(path).parent
                         button = QtWidgets.QToolButton()
-                        button.setArrowType(4)     # 4 - rightarrow
-                        button.setToolButtonStyle(1)     # get square buttons of same size as text buttons for > buttons
+                        button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
+                        # get square buttons of same size as text buttons for > buttons
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
                         button.setStyleSheet("::menu-indicator{ image: none; }")
                         button.setFixedWidth(button.sizeHint().height())
                         button.setFixedHeight(button.sizeHint().height())
-                        button.setToolButtonStyle(0)     # 0 - icon only
-                        button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
+                        button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)     # no down arrow is shown, menu pops up on click
                         button.setMenu(self.createParentMenu(treeNumber, parent))
                         buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
                     else:
                         for p in range(1, len(path)):
                             parent = tree.findNode(path[0:p])
                             button = QtWidgets.QToolButton()
-                            button.setArrowType(4)     # 4 - rightarrow
+                            button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
                             button.setText(parent.name)
-                            button.setToolButtonStyle(1)     # 2 - text beside icon
-                            button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                            button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
+                            button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)     # no down arrow is shown, menu pops up on click
                             button.setStyleSheet("::menu-indicator{image:none;}")
                             button.setMenu(self.createParentMenu(treeNumber, parent.parent))
                             buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
                         button = QtWidgets.QToolButton()
-                        button.setArrowType(4)     # 4 - rightarrow
-                        button.setToolButtonStyle(1)     # get square buttons of same size as text buttons for > buttons
+                        button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)     # get square buttons of same size as text buttons for > buttons
                         button.setStyleSheet("::menu-indicator{ image: none; }")
                         button.setFixedWidth(button.sizeHint().height())
                         button.setFixedHeight(button.sizeHint().height())
-                        button.setToolButtonStyle(0)     # 0 - icon only
-                        button.setPopupMode(QtWidgets.QToolButton.InstantPopup)     # no down arrow is shown, menu pops up on click
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
+                        button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)     # no down arrow is shown, menu pops up on click
                         button.setMenu(self.createParentMenu(treeNumber, parent))
                         buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
 
@@ -1122,7 +1229,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self._protectCells(n, [0, 2, 4])
                     n += 1
 
-            # an empty page, clear an initialise
+            # an empty page, clear and initialise
             else:
                 self.tableWidget.clear()
                 self.gridInitialised = False
@@ -1144,7 +1251,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # root node
         if not parent.parent:
-            action = QtWidgets.QAction("Add to Top Level", menu)
+            action = QtGui.QAction("Add to Top Level", menu)
             action.triggered.connect(lambda checked, t=treeIndex,
                                             p=self.forest.children[treeIndex]: self.moveCurrentItemToNewParent(t, p))
             menu.addAction(action)
@@ -1154,10 +1261,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # top level node only
         else:
             if not parent.parent.parent:
-                action = QtWidgets.QAction("Remove from Tree", menu)
+                action = QtGui.QAction("Remove from Tree", menu)
                 action.triggered.connect(lambda checked, t=treeIndex, p=False: self.moveCurrentItemToNewParent(t, p))
                 menu.addAction(action)
-                action = QtWidgets.QAction("Add to Top Level", menu)
+                action = QtGui.QAction("Add to Top Level", menu)
                 action.triggered.connect(lambda checked, t=treeIndex, p=self.forest.children[treeIndex]:
                                          self.moveCurrentItemToNewParent(t, p))
                 menu.addAction(action)
@@ -1168,7 +1275,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         currentNode = self.currentItem.viewNodes[treeIndex]
         for c in sorted(parent.children, key=lambda x: x.name):
             if c != currentNode:
-                action = QtWidgets.QAction(c.name, menu)
+                action = QtGui.QAction(c.name, menu)
                 action.triggered.connect(lambda checked, t=treeIndex, p=c: self.moveCurrentItemToNewParent(t, p))
                 menu.addAction(action)
 
@@ -1209,8 +1316,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     result = self.currentItem.changeFieldContent(fieldName, newValue)
                     if result is not True:
                         message = "Couldn't update field content.\n" + str(result)
-                        msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-                        msgBox.exec_()
+                        result = QtWidgets.QMessageBox.warning(self, message)
 
                     # add/remove timer to list
                     if fieldType == 'timer':
@@ -1360,9 +1466,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # error message if recursion is tried
             if newParent and (newParent.item == item):
                 message = "You are trying to set\n" + item.name + "\nto be its own parent. This is not supported."
-                msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-                msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel);
-                return msgBox.exec_()
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText(message)
+                msgBox.setWindowTitle("TreeTime Message")
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                return msgBox.exec()
 
             # find old parent
             oldParent = item.viewNodes[treeIndex]
@@ -1375,13 +1483,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 message = "Removing node \"" + item.name + "\" from the tree \"" \
                           + self.forest.children[self.currentTree].name +"\".\n\n" \
                           "This will remove all descendants (children, grandchildren, ...). " \
-                          "Changes are saved to file immediately and cannot be reverted."
-                msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-                msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
-                result = msgBox.exec_()
-                
-                # remove if user has confirmed
-                if result == QtWidgets.QMessageBox.Ok:
+                          "Changes are saved to file immediately and cannot be reverted.\nProceed?"
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText(message)
+                msgBox.setWindowTitle("TreeTime Message")
+                msgBox.setStandardButtons(
+                    QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+                result = msgBox.exec()
+
+                # remove if the user has confirmed
+                if result == QtWidgets.QMessageBox.StandardButton.Ok:
 
                     # recursive function to collect all child nodes in the trees
                     def collect_children(item, item_list, tree):
@@ -1457,7 +1568,7 @@ class TreeTime:
 
         # run
         main_window.show()
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
 
 class ApplicationLogo:
 

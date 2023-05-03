@@ -122,15 +122,15 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 ### Using a PyPi package in Python ###
 
 1. If you don't have it yet, install python3
-2. Install PyQt5 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:  
-    `pip install pyqt5`
+2. Install PyQt6 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:  
+    `pip install PyQt6`
 3. Install _TreeTime_ -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:
     `pip install treetime`
 
 ### Using script code with Python ###
 
 1. If you don't have it yet, install python3
-2. Install PyQt5 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type: `pip install pyqt5`
+2. Install PyQt6 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type: `pip install PyQt6`
 3. Download this project from GitHub as a zip file (https://github.com/jkanev/treetime/archive/master.zip) and unzip
 4. Install _TreeTime_: in the command line, cd into the main directory, then type:
    - Linux:  
@@ -227,4 +227,4 @@ Future
 ##  Dependencies  ##
 [Table of Contents](#id-contents)
 
-_TreeTime_ depends on [`Python 3`](https://www.python.org/downloads/), [`Qt5`](http://www.qt.io/download/), and [`PyQt5`](https://pypi.python.org/pypi/PyQt5).
+_TreeTime_ depends on [`Python 3`](https://www.python.org/downloads/), [`Qt5`](http://www.qt.io/download/), and [`PyQt6`](https://pypi.python.org/pypi/PyQt6).

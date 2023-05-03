@@ -53,15 +53,15 @@ A mean priority can be shown per work package and project.
 #### Python / PyPi ####
 
 1. Install python3
-2. Install PyQt5 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:
-    `pip install pyqt5`
+2. Install PyQt6 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:
+    `pip install PyQt6`
 3. Install _TreeTime_ -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type:
     `pip install treetime`
 
 #### Python / Source Code ####
 
 1. Install python3
-2. Install PyQt5 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type: `pip install pyqt5`
+2. Install PyQt6 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type: `pip install PyQt6`
 3. Download this project from GitHub as a zip file (https://github.com/jkanev/treetime/archive/master.zip) and unzip
 4. Install _TreeTime_: in the command line, cd into the main directory, then type:
    - Linux:  
