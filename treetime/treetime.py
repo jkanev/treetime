@@ -2,6 +2,7 @@
 # Tis file is part of TreeTime, a tree editor and data analyser
 #
 # Copyright (C) GPLv3, 2015, Jacob Kanev
+# Tree folding icons by Alexhuszagh/BreezeStyleSheets, slightly modified
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -558,12 +559,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         style = self.cboxTheme.currentText()
         self.settings.setValue('theme', style)
 
+        # set style sheets first and then apply QStyle, otherwise the stylesheet break everything
         if ' + Breeze' in style:
             wd = __file__[:-12]
             colour = wd + '/themes/' + style[style.find('/')+1:]
             style = 'Fusion'
 
-            # tree folding icons from QtBreeze
+            # tree folding icons from Alexhuszagh/BreezeStyleSheets
             qss = ("QTreeView::branch:has-siblings:adjoins-item { border-image:url(" + colour + "_branch_more.svg); }"
                    "QTreeView::branch:!has-children:!has-siblings:adjoins-item { border-image:url(" + colour + "_branch_end.svg); }"
                    "QTreeView::branch:has-children:!has-siblings:closed,"
@@ -967,11 +969,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 tree.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectColumns)
                 tree.clearSelection()
 
-            # disable other tabs
-            for i in range(0, len(self.tabWidgets)):
-                if i != self.currentTree:
-                    self.tabWidgets[i].setEnabled(False)
-
             # fold tree and select first item
             currentTree = self.treeWidgets[self.currentTree]
             rootItem = currentTree.invisibleRootItem()
@@ -1355,6 +1352,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.ownFields)))
                 self._protectCells(n, [0, 2, 4])
                 n += 1
+                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Child fields"))
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.childFields)))
+                self._protectCells(n, [0, 2, 4])
+                n += 1
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Sibling fields"))
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.siblingFields)))
                 self._protectCells(n, [0, 2, 4])
@@ -1364,70 +1365,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self._protectCells(n, [0, 2, 4])
                 n += 1
 
-                """
-                # add all parents in tree parent path
-                for treeNumber, path in enumerate(self.currentItem.trees):
-                    tree = self.forest.children[treeNumber]
-                    name = QtWidgets.QTableWidgetItem(tree.name)
-                    name.setFlags(nonEditFlags)
-                    name.setTextAlignment(0x82)
-                    self.tableWidget.setItem(n, 1, name)
-                    buttonbox = QtWidgets.QDialogButtonBox()
-                    if not len(path):
-                        button = QtWidgets.QToolButton()
-                        button.setText("")
-                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
-                        button.setFixedWidth(button.sizeHint().height())
-                        button.setFixedHeight(button.sizeHint().height())
-                        button.setPopupMode(
-                            QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)  # no down arrow is shown, menu pops up on click
-                        button.setStyleSheet("::menu-indicator{ image: none; }")
-                        button.setMenu(self.createParentMenu(treeNumber, self.forest))
-                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-                    elif len(path) == 1:
-                        parent = tree.findNode(path).parent
-                        button = QtWidgets.QToolButton()
-                        button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
-                        # get square buttons of same size as text buttons for > buttons
-                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
-                        button.setStyleSheet("::menu-indicator{ image: none; }")
-                        button.setFixedWidth(button.sizeHint().height())
-                        button.setFixedHeight(button.sizeHint().height())
-                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
-                        button.setPopupMode(
-                            QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)  # no down arrow is shown, menu pops up on click
-                        button.setMenu(self.createParentMenu(treeNumber, parent))
-                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-                    else:
-                        for p in range(1, len(path)):
-                            parent = tree.findNode(path[0:p])
-                            button = QtWidgets.QToolButton()
-                            button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
-                            button.setText(parent.name)
-                            button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
-                            button.setPopupMode(
-                                QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)  # no down arrow is shown, menu pops up on click
-                            button.setStyleSheet("::menu-indicator{image:none;}")
-                            button.setMenu(self.createParentMenu(treeNumber, parent.parent))
-                            buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-                        button = QtWidgets.QToolButton()
-                        button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
-                        button.setToolButtonStyle(
-                            QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)  # get square buttons of same size as text buttons for > buttons
-                        button.setStyleSheet("::menu-indicator{ image: none; }")
-                        button.setFixedWidth(button.sizeHint().height())
-                        button.setFixedHeight(button.sizeHint().height())
-                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
-                        button.setPopupMode(
-                            QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)  # no down arrow is shown, menu pops up on click
-                        button.setMenu(self.createParentMenu(treeNumber, parent))
-                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-    
-                    self.tableWidget.setCellWidget(n, 3, buttonbox)
-                    self._protectCells(n, [0, 2, 4])
-                    n += 1
-
-                """
             # an empty page, clear and initialise
             else:
                 self.tableWidget.clear()
