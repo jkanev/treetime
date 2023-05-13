@@ -29,10 +29,12 @@ import datetime
 import time
 import os.path
 import platform
-from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtSvg
 from threading import Timer
 from PyQt6.QtGui import QPalette, QColor, QIcon, QClipboard, QGuiApplication
 from PyQt6.QtWidgets import QAbstractItemView
+from PyQt6.QtCore import QFile, QTextStream
+
 from pkg_resources import resource_filename
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
@@ -429,6 +431,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.treeWidgets = []
         self.currentTree = 0
         self.currentItem = None
+        self.currentColumn = None
         self.gridInitialised = False
         self.editMode = 'content'     # one of 'content', 'tree', or 'data'
 
@@ -528,6 +531,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         Fills the theme selection box with all themes the system is capable of
         """
+        self.cboxTheme.addItem("Fusion + Breeze/light")
+        self.cboxTheme.addItem("Fusion + Breeze/dark")
         for k in QtWidgets.QStyleFactory.keys():
             self.cboxTheme.addItem(k)
         current = self.settings.value('theme')
@@ -552,7 +557,28 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         application = QtWidgets.QApplication.instance()
         style = self.cboxTheme.currentText()
         self.settings.setValue('theme', style)
-        application.setStyle(QtWidgets.QStyleFactory.create(style))
+
+        if ' + Breeze' in style:
+            wd = __file__[:-12]
+            colour = wd + '/themes/' + style[style.find('/')+1:]
+            style = 'Fusion'
+
+            # tree folding icons from QtBreeze
+            qss = ("QTreeView::branch:has-siblings:adjoins-item { border-image:url(" + colour + "_branch_more.svg); }"
+                   "QTreeView::branch:!has-children:!has-siblings:adjoins-item { border-image:url(" + colour + "_branch_end.svg); }"
+                   "QTreeView::branch:has-children:!has-siblings:closed,"
+                   "QTreeView::branch:open:has-children:!has-siblings { border-image:url(" + colour + "_branch_end_arrow.svg); }"
+                   "QTreeView::branch:closed:has-children:has-siblings,"
+                   "QTreeView::branch:open:has-children:has-siblings { border-image:url(" + colour + "_branch_more_arrow.svg); }"
+                   "QTreeView::branch:open:has-children:!has-siblings,"
+                   "QTreeView::branch:open:has-children:has-siblings { image:url(" + colour + "_branch_open.svg); }"
+                   "QTreeView::branch:closed:has-children:!has-siblings,"
+                   "QTreeView::branch:closed:has-children:has-siblings { image:url(" + colour + "_branch_closed.svg); }"
+                   "QTreeView::branch:has-siblings { border-image:url(" + colour + "_vline.svg); image:none; }")
+            application.setStyleSheet(qss)
+
+        style = QtWidgets.QStyleFactory.create(style)
+        application.setStyle(style)
         self.treeSelectionChanged(self.currentTree)
 
     def cboxColoursTextChanged(self):
@@ -603,7 +629,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         elif colour == "System":
             palette = self.system_palette
         application.setPalette(palette)
-        self.treeSelectionChanged(self.currentTree)
+        self.cboxThemeTextChanged()
 
     def pushButtonSaveToFileClicked(self):
         """
@@ -702,7 +728,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.changeEditMode('content')
         else:
             self.changeEditMode('data')
-
 
     def pushButtonTreeFieldsClicked(self):
         """
@@ -868,11 +893,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                   + "This will delete all branches in all trees.\n" \
                   + "This remove large parts of your data due to connections between trees.\n" \
                   + "Changes are saved to file immediately and cannot be reverted."
-        msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
-        result = msgBox.exec_()
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setText(message)
+        msgBox.setWindowTitle("TreeTime Message")
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+        result = msgBox.exec()
 
-        if result == QtWidgets.QMessageBox.Ok:
+        # delete if the user has confirmed
+        if result == QtWidgets.QMessageBox.StandardButton.Ok:
 
             # recursive function to collect all child nodes in all trees
             def collect_children(item, item_list):
@@ -888,15 +916,19 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             to_delete = []
             collect_children(self.currentItem, to_delete)
 
-            message = ("The selected action will remove {} of all {} nodes.\n" \
-                       + "This is {:.0f} % of your data.\n" \
+            message = ("The selected action will remove {} of all {} nodes.\n"
+                       + "This is {:.0f} % of your data.\n"
                        + "Are you sure?").format(len(to_delete), len(self.forest.itemPool.items),
                                                  100.0*len(to_delete)/len(self.forest.itemPool.items))
-            msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", message)
-            msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
-            result = msgBox.exec_()
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setText(message)
+            msgBox.setWindowTitle("TreeTime Message")
+            msgBox.setStandardButtons(
+                QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+            result = msgBox.exec()
 
-            if result == QtWidgets.QMessageBox.Ok:
+            # delete if the user has confirmed
+            if result == QtWidgets.QMessageBox.StandardButton.Ok:
                 # remove all running timers
                 for i in to_delete:
                     for f in i.fields.keys():
@@ -923,18 +955,38 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonTreeFields.setEnabled(mode != 'data' and True or False)
         self.pushButtonDataFields.setEnabled(mode != 'tree' and True or False)
 
-        # entering/leaving tree field mode, set selection type to column/row
+        # clear data view
+        self.tableWidget.clear()
+        self.gridInitialised = False
+
+        # entering tree field mode
         if mode == 'tree' and self.editMode != 'tree':
+
+            # set selection type
             for tree in self.treeWidgets:
                 tree.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectColumns)
                 tree.clearSelection()
+
+            # disable other tabs
             for i in range(0, len(self.tabWidgets)):
                 if i != self.currentTree:
                     self.tabWidgets[i].setEnabled(False)
+
+            # fold tree and select first item
+            currentTree = self.treeWidgets[self.currentTree]
+            rootItem = currentTree.invisibleRootItem()
+            for c in range(0, rootItem.childCount()):
+                currentTree.collapseItem(rootItem.child(c))
+
+        # entering data edit mode
         elif mode != 'tree' and self.editMode == 'tree':
+
+            # set selection type
             for tree in self.treeWidgets:
                 tree.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
                 tree.clearSelection()
+
+            # enable tabs
             for tab in self.tabWidgets:
                 tab.setEnabled(True)
 
@@ -967,10 +1019,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # in case of failure, show user message and reload
             except KeyError as e:
-                msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "Tree Time Message", str(e))
-                msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                result = msgBox.exec_()
+
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText(str(e))
+                msgBox.setWindowTitle("TreeTime Message")
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                result = msgBox.exec()
                 self.pushButtonLoadFileClicked()
+
         else:
             self.pushButtonLoadFileClicked()
 
@@ -1049,6 +1105,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             for b in c.children:
                 parent = QNode(b, c.fieldOrder)
                 root.addChild(parent)
+
             # expand name column so all names are readable
             self.treeWidgets[n].resizeColumnToContents(0)
 
@@ -1074,8 +1131,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.editMode == 'content':
             self.showContentInDataView(treeIndex)
         else:
-            column = self.treeWidgets[treeIndex].currentColumn()
-            pass
+            self.showTreeFieldInDataView(treeIndex)
 
     def showContentInDataView(self, treeIndex):
         if not self.locked:
@@ -1242,7 +1298,150 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             self.gridInitialised = True
             self.locked = False
+
+    def showTreeFieldInDataView(self, treeIndex):
+        """ Shows the content of the tree field indicated by the current column
+        :param treeIndex: The ID of the tree
+        :return: None
+        """
+
+        if not self.locked:
+            self.locked = True
+
+            # init
+            self.currentColumn = self.treeWidgets[treeIndex].currentColumn()
+
+            # we have something to write
+            if self.currentColumn > 0:
+
+                # create non-edit flags
+                nonEditFlags = QtCore.Qt.ItemFlag.NoItemFlags
+
+                # go through all lines of the table
+                n = 0
+
+                # empty line
+                self._protectCells(0, [0, 1, 2, 3, 4])
+                n += 1
+
+                # find field
+                fieldname = self.forest.children[treeIndex].fieldOrder[self.currentColumn-1]
+                field = self.forest.children[treeIndex].fields[fieldname]
+
+                # field name plus empty line
+                name = QtWidgets.QTableWidgetItem("")
+                name.setFlags(nonEditFlags)
+                value = QtWidgets.QTableWidgetItem(fieldname)
+                font = name.font()
+                font.setPointSize(font.pointSize() + 3)
+                value.setFont(font)
+                self.tableWidget.setItem(n, 1, name)
+                self.tableWidget.setItem(n, 3, value)
+                self._protectCells(n, [0, 2, 4])
+                n += 1
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+
+                # field type plus empty line
+                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Type"))
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(field.fieldType))
+                self._protectCells(n, [0, 2, 4])
+                n += 1
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+
+                # own fields, sibling fields, parent fields
+                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Own fields"))
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.ownFields)))
+                self._protectCells(n, [0, 2, 4])
+                n += 1
+                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Sibling fields"))
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.siblingFields)))
+                self._protectCells(n, [0, 2, 4])
+                n += 1
+                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parent fields"))
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.parentFields)))
+                self._protectCells(n, [0, 2, 4])
+                n += 1
+
+                """
+                # add all parents in tree parent path
+                for treeNumber, path in enumerate(self.currentItem.trees):
+                    tree = self.forest.children[treeNumber]
+                    name = QtWidgets.QTableWidgetItem(tree.name)
+                    name.setFlags(nonEditFlags)
+                    name.setTextAlignment(0x82)
+                    self.tableWidget.setItem(n, 1, name)
+                    buttonbox = QtWidgets.QDialogButtonBox()
+                    if not len(path):
+                        button = QtWidgets.QToolButton()
+                        button.setText("")
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
+                        button.setFixedWidth(button.sizeHint().height())
+                        button.setFixedHeight(button.sizeHint().height())
+                        button.setPopupMode(
+                            QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)  # no down arrow is shown, menu pops up on click
+                        button.setStyleSheet("::menu-indicator{ image: none; }")
+                        button.setMenu(self.createParentMenu(treeNumber, self.forest))
+                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+                    elif len(path) == 1:
+                        parent = tree.findNode(path).parent
+                        button = QtWidgets.QToolButton()
+                        button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
+                        # get square buttons of same size as text buttons for > buttons
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
+                        button.setStyleSheet("::menu-indicator{ image: none; }")
+                        button.setFixedWidth(button.sizeHint().height())
+                        button.setFixedHeight(button.sizeHint().height())
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
+                        button.setPopupMode(
+                            QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)  # no down arrow is shown, menu pops up on click
+                        button.setMenu(self.createParentMenu(treeNumber, parent))
+                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+                    else:
+                        for p in range(1, len(path)):
+                            parent = tree.findNode(path[0:p])
+                            button = QtWidgets.QToolButton()
+                            button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
+                            button.setText(parent.name)
+                            button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
+                            button.setPopupMode(
+                                QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)  # no down arrow is shown, menu pops up on click
+                            button.setStyleSheet("::menu-indicator{image:none;}")
+                            button.setMenu(self.createParentMenu(treeNumber, parent.parent))
+                            buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+                        button = QtWidgets.QToolButton()
+                        button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
+                        button.setToolButtonStyle(
+                            QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)  # get square buttons of same size as text buttons for > buttons
+                        button.setStyleSheet("::menu-indicator{ image: none; }")
+                        button.setFixedWidth(button.sizeHint().height())
+                        button.setFixedHeight(button.sizeHint().height())
+                        button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly)
+                        button.setPopupMode(
+                            QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)  # no down arrow is shown, menu pops up on click
+                        button.setMenu(self.createParentMenu(treeNumber, parent))
+                        buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
     
+                    self.tableWidget.setCellWidget(n, 3, buttonbox)
+                    self._protectCells(n, [0, 2, 4])
+                    n += 1
+
+                """
+            # an empty page, clear and initialise
+            else:
+                self.tableWidget.clear()
+                self.gridInitialised = False
+                n = 0
+
+            # empty lines to fill the 23 lines in the main view
+            if n < 23:
+                for k in range(n, 23):
+                    self._protectCells(k, [0, 1, 2, 3, 4])
+
+            self.gridInitialised = True
+            self.locked = False
+
     def createParentMenu(self, treeIndex, parent):
         """
         Displays a menu with possible children to select, at the current mouse cursor position.
