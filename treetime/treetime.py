@@ -1086,6 +1086,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         self.locked = False
 
+
+    def resizeNameColumn(self):
+        self.treeWidgets[self.currentTree].resizeColumnToContents(0)
+
     def fillTreeWidgets(self):
         """
         Fills all tree tabs by creating all nodes
@@ -1093,7 +1097,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # for each tree in the forest
         for n, c in enumerate(self.forest.children):
-            self.treeWidgets[n].itemSelectionChanged.connect(lambda x=n: self.treeSelectionChanged(x))
+            self.treeWidgets[n].itemSelectionChanged.connect(self.resizeNameColumn)
+            self.treeWidgets[n].itemCollapsed.connect(self.resizeNameColumn)
+            self.treeWidgets[n].itemExpanded.connect(self.resizeNameColumn)
             self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
             root = self.treeWidgets[n].invisibleRootItem()
             c.viewNode = root
