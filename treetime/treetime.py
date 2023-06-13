@@ -616,7 +616,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if colour == "Dark":
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Window, QColor(50, 52, 54))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.WindowText, QColor(255, 255, 255))
-            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Base, QColor(40, 42, 44))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.AlternateBase, QColor(50, 52, 54))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ToolTipBase, QColor(0, 0, 0))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ToolTipText, QColor(255, 255, 255))
@@ -628,13 +627,18 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Link, QColor(60, 200, 255))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Highlight, QColor(60, 200, 255))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.HighlightedText, QColor(0, 0, 0))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Light, QColor(80, 84, 88))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Midlight, QColor(60, 63, 66))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Base, QColor(40, 42, 44))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Mid, QColor(30, 31, 33))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Dark, QColor(20, 21, 22))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Shadow, QColor(10, 10, 11))
 
         # apply light colours
         elif colour == "Light":
             palette = QPalette()
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Window, QColor(255-53, 255-53, 255-53))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.WindowText, QColor(0, 0, 0))
-            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Base, QColor(255-25, 255-25, 255-25))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.AlternateBase, QColor(255-53, 255-53, 255-53))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ToolTipBase, QColor(255, 255, 255))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.ToolTipText, QColor(0, 0, 0))
@@ -646,6 +650,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Link, QColor(255-42, 255-130, 255-218))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Highlight, QColor(255-42, 255-130, 255-218))
             palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Light, QColor(255-10, 255-10, 255-10))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Midlight, QColor(255-20, 255-20, 255-20))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Base, QColor(255-25, 255-25, 255-25))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Mid, QColor(255-100, 255-100, 255-100))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Dark, QColor(255-150, 255-150, 255-150))
+            palette.setColor(QPalette.ColorGroup.All, QPalette.ColorRole.Shadow, QColor(255-200, 255-200, 255-200))
 
         # apply system colours
         elif colour == "System":
