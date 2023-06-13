@@ -532,8 +532,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         Fills the theme selection box with all themes the system is capable of
         """
-        self.cboxTheme.addItem("Fusion + Breeze/light")
-        self.cboxTheme.addItem("Fusion + Breeze/dark")
+
+        # our own theme, basically Fusion with some changes
+        self.cboxTheme.addItem("Organic/light")
+        self.cboxTheme.addItem("Organic/dark")
+
+        # built-in themes
         for k in QtWidgets.QStyleFactory.keys():
             self.cboxTheme.addItem(k)
         current = self.settings.value('theme')
@@ -560,28 +564,41 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settings.setValue('theme', style)
 
         # set style sheets first and then apply QStyle, otherwise the stylesheet break everything
-        if ' + Breeze' in style:
+        if 'Organic' in style:
             wd = __file__[:-12]
             colour = wd + '/themes/' + style[style.find('/')+1:]
             style = 'Fusion'
 
-            # tree folding icons from Alexhuszagh/BreezeStyleSheets
-            qss = ("QTreeView::branch:has-siblings:adjoins-item { border-image:url(" + colour + "_branch_more.svg); }"
-                   "QTreeView::branch:!has-children:!has-siblings:adjoins-item { border-image:url(" + colour + "_branch_end.svg); }"
-                   "QTreeView::branch:has-children:!has-siblings:closed,"
-                   "QTreeView::branch:open:has-children:!has-siblings { border-image:url(" + colour + "_branch_end_arrow.svg); }"
-                   "QTreeView::branch:closed:has-children:has-siblings,"
-                   "QTreeView::branch:open:has-children:has-siblings { border-image:url(" + colour + "_branch_more_arrow.svg); }"
-                   "QTreeView::branch:open:has-children:!has-siblings,"
-                   "QTreeView::branch:open:has-children:has-siblings { image:url(" + colour + "_branch_open.svg); }"
-                   "QTreeView::branch:closed:has-children:!has-siblings,"
-                   "QTreeView::branch:closed:has-children:has-siblings { image:url(" + colour + "_branch_closed.svg); }"
-                   "QTreeView::branch:has-siblings { border-image:url(" + colour + "_vline.svg); image:none; }")
+            # QML for more padding and folding icons
+            qss = (
+                "QPushButton { padding: 0.3em; }"
+                "QToolButton { padding: 0.3em; margin-top: 0.1em; margin-bottom: 0.1em; margin-right: 0.0em; margin-left: 0.0em; }"
+                "QTreeView::item { padding: 0.2em; }"
+                # has-siblings: not the last in the sibling list
+                # !has-siblings: the last in the sibling list
+                # adjoins-item: the direct markers (the last before the text)
+                # !adjoins-item: the higher-level unfolded markers (the non-rightmost tree markers);
+                #                if set the children and siblings flags apply to the respective level parent
+                # has-children / !has-children: whether or nor there are children
+                # open / closed: whether the item is folded or unfolded
+                # border-image: scales with multi-line entries
+                # image: does not scale with multi-line entres
+                # unfolded node that is not the last sibling
+
+                "QTreeView::branch:has-children:adjoins-item { image:url(" + colour + "_triangle_right.svg); }"
+
+
+                "QTreeView::branch:has-siblings:adjoins-item { border-image:url(" + colour + "_branch_full.svg); }"
+                "QTreeView::branch:has-siblings:!has-children:adjoins-item { image:url(" + colour + "_twig_empty.svg); }"
+                "QTreeView::branch:!has-siblings:adjoins-item { border-image:url(" + colour + "_branch_top.svg); }"
+                "QTreeView::branch:!has-siblings:!has-children:adjoins-item { image:url(" + colour + "_twig_empty.svg); }"
+                "QTreeView::branch:has-siblings:!adjoins-item { border-image:url(" + colour + "_branch_full.svg); }"
+            )
             application.setStyleSheet(qss)
 
         style = QtWidgets.QStyleFactory.create(style)
         application.setStyle(style)
-        self.treeSelectionChanged(self.currentTree)
+        self.itemSelectionChanged()
 
     def cboxColoursTextChanged(self):
         """
@@ -1097,7 +1114,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # for each tree in the forest
         for n, c in enumerate(self.forest.children):
-            self.treeWidgets[n].itemSelectionChanged.connect(self.resizeNameColumn)
+            self.treeWidgets[n].itemSelectionChanged.connect(self.itemSelectionChanged)
             self.treeWidgets[n].itemCollapsed.connect(self.resizeNameColumn)
             self.treeWidgets[n].itemExpanded.connect(self.resizeNameColumn)
             self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
@@ -1129,12 +1146,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 else:
                     self.tableWidget.item(row, i).setFlags(nonEditFlags)
 
-    def treeSelectionChanged(self, treeIndex):
+    def itemSelectionChanged(self):
 
         if self.editMode == 'content':
-            self.showContentInDataView(treeIndex)
+            self.showContentInDataView(self.currentTree)
         else:
-            self.showTreeFieldInDataView(treeIndex)
+            self.showTreeFieldInDataView(self.currentTree)
 
     def showContentInDataView(self, treeIndex):
         if not self.locked:
@@ -1428,7 +1445,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         '''
 
         self.currentTree = tree
-        self.treeSelectionChanged(tree)
+        self.itemSelectionChanged()
 
     def tableWidgetCellChanged(self, row, column):
         """
@@ -1688,7 +1705,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableWidget.clear()
 
             # update table and write to file
-            self.treeSelectionChanged(self.currentTree)
+            self.itemSelectionChanged()
             self.delayedWriteToFile()
 
 
