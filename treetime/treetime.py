@@ -571,9 +571,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # QML for more padding and folding icons
             qss = (
+                # padding on the buttons
                 "QPushButton { padding: 0.3em; }"
                 "QToolButton { padding: 0.3em; margin-top: 0.1em; margin-bottom: 0.1em; margin-right: 0.0em; margin-left: 0.0em; }"
                 "QTreeView::item { padding: 0.2em; }"
+                
+                # tree decorators
                 # has-siblings: not the last in the sibling list
                 # !has-siblings: the last in the sibling list
                 # adjoins-item: the direct markers (the last before the text)
@@ -584,10 +587,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # border-image: scales with multi-line entries
                 # image: does not scale with multi-line entres
                 # unfolded node that is not the last sibling
-
-                "QTreeView::branch:has-children:adjoins-item { image:url(" + colour + "_triangle_right.svg); }"
-
-
+                "QTreeView::branch:has-children:closed:adjoins-item { image:url(" + colour + "_triangle_right.svg); }"
+                "QTreeView::branch:has-children:closed:adjoins-item:hover { image:url(" + colour + "_triangle_right_hover.svg); }"
+                "QTreeView::branch:has-children:open:adjoins-item { image:url(" + colour + "_triangle_down.svg); }"
+                "QTreeView::branch:has-children:open:adjoins-item:hover { image:url(" + colour + "_triangle_down_hover.svg); }"
                 "QTreeView::branch:has-siblings:adjoins-item { border-image:url(" + colour + "_branch_full.svg); }"
                 "QTreeView::branch:has-siblings:!has-children:adjoins-item { image:url(" + colour + "_twig_empty.svg); }"
                 "QTreeView::branch:!has-siblings:adjoins-item { border-image:url(" + colour + "_branch_top.svg); }"
