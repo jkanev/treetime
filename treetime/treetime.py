@@ -758,9 +758,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def pushButtonDataFieldsClicked(self):
         """
-        Callback for the data field edit button.
-        """
-        """
         Callback for the data field edit button. Toggles the tree-field edit mode.
         """
         if self.editMode == 'data':
@@ -1012,7 +1009,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             for c in range(0, rootItem.childCount()):
                 currentTree.collapseItem(rootItem.child(c))
 
-        # entering data edit mode
+            # init display
+            self.tableWidget.clear()
+            self.gridInitialised = False
+
+        # entering content edit mode
         elif mode != 'tree' and self.editMode == 'tree':
 
             # set selection type
@@ -1023,6 +1024,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # enable tabs
             for tab in self.tabWidgets:
                 tab.setEnabled(True)
+
+            # init display
+            self.tableWidget.clear()
+            self.gridInitialised = False
+
+        # entering data field edit mode
+        elif mode == 'data':
+            self.showDataFieldsInDataView()
 
         self.editMode = mode
 
@@ -1123,7 +1132,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         
         self.locked = False
 
-
     def resizeNameColumn(self):
         self.treeWidgets[self.currentTree].resizeColumnToContents(0)
 
@@ -1170,7 +1178,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if self.editMode == 'content':
             self.showContentInDataView(self.currentTree)
-        else:
+        elif self.editMode == 'tree':
             self.showTreeFieldInDataView(self.currentTree)
 
     def showContentInDataView(self, treeIndex):
@@ -1377,7 +1385,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 value.setFont(font)
                 self.tableWidget.setItem(n, 1, name)
                 self.tableWidget.setItem(n, 3, value)
-                self._protectCells(n, [0, 2, 4])
+                self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
@@ -1385,7 +1393,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # field type plus empty line
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Type"))
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(field.fieldType))
-                self._protectCells(n, [0, 2, 4])
+                self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
@@ -1393,19 +1401,19 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # own fields, sibling fields, parent fields
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Own fields"))
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.ownFields)))
-                self._protectCells(n, [0, 2, 4])
+                self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Child fields"))
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.childFields)))
-                self._protectCells(n, [0, 2, 4])
+                self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Sibling fields"))
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.siblingFields)))
-                self._protectCells(n, [0, 2, 4])
+                self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parent fields"))
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.parentFields)))
-                self._protectCells(n, [0, 2, 4])
+                self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
 
             # an empty page, clear and initialise
@@ -1413,6 +1421,69 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.tableWidget.clear()
                 self.gridInitialised = False
                 n = 0
+
+            # empty lines to fill the 23 lines in the main view
+            if n < 23:
+                for k in range(n, 23):
+                    self._protectCells(k, [0, 1, 2, 3, 4])
+
+            self.gridInitialised = True
+            self.locked = False
+
+    def showDataFieldsInDataView(self):
+        """ Shows the content of the tree field indicated by the current column
+        :param treeIndex: The ID of the tree
+        :return: None
+        """
+
+        if not self.locked:
+            self.locked = True
+
+            # create non-edit flags
+            nonEditFlags = QtCore.Qt.ItemFlag.NoItemFlags
+
+            fields = self.forest.itemTypes.items[0].fields
+
+            # go through all lines of the table
+            n = 0
+
+            # empty line
+            self._protectCells(n, [0, 1, 2, 3, 4])
+            n += 1
+
+            # go through all fields
+            for name, field in fields.items():
+
+                # field name
+                fieldName = QtWidgets.QTableWidgetItem("Name")
+                fieldName.setFlags(nonEditFlags)
+                fieldName.setTextAlignment(0x82)
+                self.tableWidget.setItem(n, 1, fieldName)
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(name))
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+
+                # field type
+                fieldType = QtWidgets.QTableWidgetItem("Type")
+                fieldType.setFlags(nonEditFlags)
+                fieldType.setTextAlignment(0x82)
+                self.tableWidget.setItem(n, 1, fieldType)
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(field['type']))
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+
+                # field content
+                fieldContent = QtWidgets.QTableWidgetItem("Default Content")
+                fieldContent.setFlags(nonEditFlags)
+                fieldContent.setTextAlignment(0x82)
+                self.tableWidget.setItem(n, 1, fieldContent)
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(field['content']))
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+
+                # empty line
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
 
             # empty lines to fill the 23 lines in the main view
             if n < 23:
