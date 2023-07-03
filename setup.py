@@ -30,7 +30,8 @@ setup(
                                '../data/Simple-Task-List.empty.trt',
                                '../data/Single-MindMap.empty.trt',
                                '../data/Tutorial.trt',
-                               '../docs/*.png']},
+                               '../docs/*.png',
+                               'themes/*.svg']},
     exclude_package_data={'treetime': ['treetime/compile-ui.py']},
     # according to some people on the web install_requiring PyQt6 should work, but as my system gives me an error for
     # this, I'll comment it out. Please install it separately (pip3 PyQt6 apparently works)
