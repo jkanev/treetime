@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2023.1](https://github.com/jkanev/treetime/releases/tag/2023.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2023.2](https://github.com/jkanev/treetime/releases/tag/2023.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -204,19 +204,25 @@ Past
 - Done February 2023: Added new tree field types "concatenation" and "set".
 - Done February 2023: Implemented adjustable width for the data item and the tree table main view.
 - Done February 2023: Release 2023.1
+* Done April 2023: Removed deprecated tree field ("concatenation"), fixed missing logo.
+* Done May 2023: Ported to PyQt 6.0
+* Done May 2023: Implemented auto-adjusting name column
+* Done June 2023: Created new default theme "Organic", a mix between Fusion and Breeze
+* Done June 2023: Implemented display of tree field definitions and of data field definitions
+* Done July 2023: Release **version 2023.2**
 
 Present
 - Running: Bugfixing
 - Running: Extend documentation on readthedocs.io
 - Running: Add more fields
 - Running: Add more examples and more template data files
+- Running: Implement tree field editing with graphical dialog (add, remove, change tree fields)
+- Running: Implement data item field editing with graphical dialog (add, remove, change data item fields)
   
 Future
 - Near Future: Implement search function
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Mid Future: Implement more tree field types (standard deviation, min, max),
-- Far Future: Implement tree field editing with graphical dialog (add, remove, change tree fields)
-- Far Future: Implement data item field editing with graphical dialog (add, remove, change data item fields)
 - Far Future: Implement safe usage by multiple simultaneous users
 - Far Future: Implement a database backend instead of text file storage
 - Far Future: Implement a web server
@@ -227,4 +233,4 @@ Future
 ##  Dependencies  ##
 [Table of Contents](#id-contents)
 
-_TreeTime_ depends on [`Python 3`](https://www.python.org/downloads/), [`Qt5`](http://www.qt.io/download/), and [`PyQt6`](https://pypi.python.org/pypi/PyQt6).
+_TreeTime_ depends on [`Python 3`](https://www.python.org/downloads/), [`Qt6`](http://www.qt.io/download/), and [`PyQt6`](https://pypi.python.org/pypi/PyQt6).
