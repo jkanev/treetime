@@ -564,7 +564,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # set style sheets first and then apply QStyle, otherwise the stylesheet break everything
         if 'Organic' in style:
-            wd = __file__[:-12]
+            wd = __file__[:-12].replace('\\', '/')     # for windows file separators
             colour = wd + '/themes/' + (self.cboxColours.currentText() == "Light" and "light" or "dark")
 
             # QML for more padding and folding icons
