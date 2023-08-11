@@ -751,7 +751,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # save to clipboard
             clipboard = QGuiApplication.clipboard()
             clipboard.setText(txt, QClipboard.Mode.Clipboard)
-            clipboard.setText()
             if clipboard.supportsSelection():
                 clipboard.setText(txt, QClipboard.Mode.Selection)
             time.sleep(0.001)
