@@ -90,6 +90,12 @@ Past
 * February 2023: Added new tree field types "concatenation" and "set".
 * February 2023: Implemented adjustable width for the data item and the tree table main view.
 * February 2023: Release **version 2023.1**
+* April 2023: Removed deprecated tree field ("concatenation"), fixed missing logo.
+* May 2023: Ported to PyQt 6.0
+* May 2023: Implemented auto-adjusting name column
+* June 2023: Created new default theme "Organic", a mix between Fusion and Breeze
+* June 2023: Implemented display of tree field definitions and of data field definitions
+* July 2023: Release **version 2023.2**
 
 Present
 -------
@@ -98,6 +104,8 @@ Present
 * Extend documentation on readthedocs.io
 * Add more fields
 * Add more examples and more template data files
+* Implement tree field editing with graphical dialog (add, remove, change tree fields)
+* Implement data item field editing with graphical dialog (add, remove, change data item fields)
 
 Future
 ------
@@ -116,8 +124,6 @@ Mid Future
 Far Future
 ^^^^^^^^^^
 
-* Implement tree field editing with graphical dialog (add, remove, change tree fields)
-* Implement data item field editing with graphical dialog (add, remove, change data item fields)
 * Implement safe usage by multiple simultaneous users
 * Implement a database backend instead of text file storage
 * Implement a web server

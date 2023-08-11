@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
         self.toolBox.setToolTip("")
         self.toolBox.setObjectName("toolBox")
         self.pageFile = QtWidgets.QWidget()
-        self.pageFile.setGeometry(QtCore.QRect(0, 0, 250, 754))
+        self.pageFile.setGeometry(QtCore.QRect(0, 0, 250, 760))
         self.pageFile.setObjectName("pageFile")
         self.formLayout = QtWidgets.QFormLayout(self.pageFile)
         self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -65,6 +65,7 @@ class Ui_MainWindow(object):
         self.label_5 = QtWidgets.QLabel(parent=self.pageFile)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_5.setFont(font)
         self.label_5.setScaledContents(False)
         self.label_5.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -84,6 +85,7 @@ class Ui_MainWindow(object):
         self.label_11 = QtWidgets.QLabel(parent=self.pageFile)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_11.setFont(font)
         self.label_11.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_11.setObjectName("label_11")
@@ -142,7 +144,7 @@ class Ui_MainWindow(object):
         self.formLayout.setWidget(16, QtWidgets.QFormLayout.ItemRole.SpanningRole, self.pushButtonExportHtmlList)
         self.toolBox.addItem(self.pageFile, "")
         self.pageEdit = QtWidgets.QWidget()
-        self.pageEdit.setGeometry(QtCore.QRect(0, 0, 250, 754))
+        self.pageEdit.setGeometry(QtCore.QRect(0, 0, 250, 760))
         self.pageEdit.setMinimumSize(QtCore.QSize(200, 716))
         self.pageEdit.setObjectName("pageEdit")
         self.formLayout1 = QtWidgets.QFormLayout(self.pageEdit)
@@ -153,6 +155,7 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(parent=self.pageEdit)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label.setFont(font)
         self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label.setObjectName("label")
@@ -171,6 +174,7 @@ class Ui_MainWindow(object):
         self.label_2 = QtWidgets.QLabel(parent=self.pageEdit)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_2.setFont(font)
         self.label_2.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_2.setObjectName("label_2")
@@ -189,6 +193,7 @@ class Ui_MainWindow(object):
         self.label_3 = QtWidgets.QLabel(parent=self.pageEdit)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_3.setFont(font)
         self.label_3.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_3.setObjectName("label_3")
@@ -233,6 +238,7 @@ class Ui_MainWindow(object):
         self.label_4 = QtWidgets.QLabel(parent=self.pageEdit)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_4.setFont(font)
         self.label_4.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_4.setObjectName("label_4")
@@ -248,6 +254,7 @@ class Ui_MainWindow(object):
         self.label_12 = QtWidgets.QLabel(parent=self.pageEdit)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_12.setFont(font)
         self.label_12.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_12.setObjectName("label_12")
@@ -262,7 +269,7 @@ class Ui_MainWindow(object):
         self.formLayout1.setItem(26, QtWidgets.QFormLayout.ItemRole.SpanningRole, spacerItem9)
         self.toolBox.addItem(self.pageEdit, "")
         self.pageStructure = QtWidgets.QWidget()
-        self.pageStructure.setGeometry(QtCore.QRect(0, 0, 250, 754))
+        self.pageStructure.setGeometry(QtCore.QRect(0, 0, 250, 760))
         self.pageStructure.setObjectName("pageStructure")
         self.formLayout2 = QtWidgets.QFormLayout(self.pageStructure)
         self.formLayout2.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -270,6 +277,7 @@ class Ui_MainWindow(object):
         self.label_13 = QtWidgets.QLabel(parent=self.pageStructure)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_13.setFont(font)
         self.label_13.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_13.setObjectName("label_13")
@@ -280,6 +288,7 @@ class Ui_MainWindow(object):
         self.label_14 = QtWidgets.QLabel(parent=self.pageStructure)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_14.setFont(font)
         self.label_14.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_14.setObjectName("label_14")
@@ -299,7 +308,7 @@ class Ui_MainWindow(object):
         self.formLayout2.setItem(7, QtWidgets.QFormLayout.ItemRole.SpanningRole, spacerItem14)
         self.toolBox.addItem(self.pageStructure, "")
         self.pageSettings = QtWidgets.QWidget()
-        self.pageSettings.setGeometry(QtCore.QRect(0, 0, 251, 740))
+        self.pageSettings.setGeometry(QtCore.QRect(0, 0, 250, 760))
         self.pageSettings.setObjectName("pageSettings")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.pageSettings)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -308,6 +317,7 @@ class Ui_MainWindow(object):
         self.label_9 = QtWidgets.QLabel(parent=self.pageSettings)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_9.setFont(font)
         self.label_9.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_9.setObjectName("label_9")
@@ -323,6 +333,7 @@ class Ui_MainWindow(object):
         self.label_10 = QtWidgets.QLabel(parent=self.pageSettings)
         font = QtGui.QFont()
         font.setBold(True)
+        font.setWeight(75)
         self.label_10.setFont(font)
         self.label_10.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_10.setObjectName("label_10")
@@ -475,13 +486,10 @@ class Ui_MainWindow(object):
         self.label_9.setText(_translate("MainWindow", "Look and Feel"))
         self.label_10.setText(_translate("MainWindow", "About"))
         self.label_7.setText(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:\'Noto Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime 2023.X Developer Version</p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime 2023.2</p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Official website:<br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">tree-time.info</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Updates and source code:<br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">github.com/jkanev/treetime</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">    Documentation:<br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">treetime-data-manager.</span></a><br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">readthedocs.io</span></a></p></body></html>"))
