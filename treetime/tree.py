@@ -609,11 +609,11 @@ class Node:
         # please pay attention: The spaces in the graphic strings are special unicode figure spaces
         if self.children and depth:
             pre_node_prefix = ""
-            first_line_prefix = "█  "
+            first_line_prefix = "●  "
             line_prefix = "│  "
         else:
             pre_node_prefix = ""
-            first_line_prefix = "█  "
+            first_line_prefix = "●  "
             line_prefix = "   "
         n = 0
         for last in lastitem[::-1]:
