@@ -20,7 +20,7 @@
 from .item import *
 from textwrap import wrap
 import datetime
-from math import floor, ceil
+from math import floor, ceil, inf
 
 class Field:
     """
@@ -175,6 +175,18 @@ class Field:
         elif self.fieldType == "mean-percent":
             self.getValue = self.getValueMean
             self.getString = self.getStringPercent
+        elif self.fieldType == "min":
+            self.getValue = self.getValueMin
+            self.getString = self.getStringUnchanged
+        elif self.fieldType == "max":
+            self.getValue = self.getValueMax
+            self.getString = self.getStringUnchanged
+        elif self.fieldType == "min-string":
+            self.getValue = self.getValueMinString
+            self.getString = self.getStringUnchanged
+        elif self.fieldType == "max-string":
+            self.getValue = self.getValueMaxString
+            self.getString = self.getStringUnchanged
         elif self.fieldType == "ratio":
             self.getValue = self.getValueRatio
             self.getString = self.getStringRounded
@@ -341,15 +353,48 @@ class Field:
                 if v:
                     difference = v     # first element is positive
                 else:
-                    difference = 0     # or the neutral element for addtion (0)
+                    difference = 0     # or the neutral element for addition (0)
                 first = False
             else:
                 if v:
                     difference -= v     # all other elements are negative
                 else:
-                    difference += 0     # or the neutral element for addtion (0)
+                    difference += 0     # or the neutral element for addition (0)
         return difference
 
+    def getValueMin(self):
+        values = self.getFieldValues()
+        minValue = inf
+        for v in values:
+            if v < minValue:     # either sum up using the value
+                minValue = v
+        return minValue
+
+    def getValueMax(self):
+        values = self.getFieldValues()
+        maxValue = -inf
+        for v in values:
+            if v > maxValue:     # either sum up using the value
+                maxValue = v
+        return maxValue
+
+
+    def getValueMinString(self):
+        values = self.getFieldValues()
+        minValue = ""
+        # find minimum ignoring "" (otherwise empty fields will overrule everything)
+        for v in values:
+            if v and (not minValue or v < minValue):
+                minValue = v
+        return minValue
+
+    def getValueMaxString(self):
+        values = self.getFieldValues()
+        maxValue = ""
+        for v in values:
+            if v > maxValue:
+                maxValue = v
+        return maxValue
     def getValueMean(self):
         values = self.getFieldValues()
         sum = 0.0
@@ -708,6 +753,8 @@ class Node:
                    'div.fields {position: relative; float: left; clear: left; width: min-content; border-top: 1px solid; border-color: #808080;} ' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.min-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.max-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.set {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
@@ -715,6 +762,8 @@ class Node:
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.min {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.max {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -734,6 +783,8 @@ class Node:
                    'div.fields {position: relative; float: left; width: max-content; border-color: #808080;}' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.min-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.max-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.set {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
@@ -741,6 +792,8 @@ class Node:
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.min {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.max {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
