@@ -101,6 +101,12 @@ tree "Projects"
         child-fields ["Spent Hours"]
         sibling-fields []
         parent-fields []
+    field "Team"
+        field-type "set"
+        own-fields ["Person"]
+        child-fields ["Team"]
+        sibling-fields []
+        parent-fields []
     field "Planned Hours"
         field-type "sum-time"
         own-fields ["hours planned"]
@@ -131,12 +137,6 @@ tree "Projects"
         child-fields []
         sibling-fields []
         parent-fields [4]
-    field "Communication"
-        field-type "node-name"
-        own-fields []
-        child-fields []
-        sibling-fields []
-        parent-fields [5]
 
 tree "Status"
     field "Planning"

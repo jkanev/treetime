@@ -170,7 +170,7 @@ class TextEdit(QtWidgets.QPlainTextEdit):
     Special custom widget class for URL fields
     """
 
-    def __init__(self, text, callback, parent=None):
+    def __init__(self, text, callback, height, parent=None):
         """
         Initialise
         """
@@ -180,6 +180,7 @@ class TextEdit(QtWidgets.QPlainTextEdit):
         self.callback = callback
         self.has_changed = False
         self.textChanged.connect(self.notifyChange)
+        self.setFixedHeight(height * int(self.height()/25))
 
     def notifyChange(self):
         self.has_changed = True
@@ -1310,10 +1311,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     name = QtWidgets.QTableWidgetItem(key)
                     name.setFlags(nonEditFlags)
                     name.setTextAlignment(0x82)
-                    if self.currentItem.fields[key]['type'] == 'text':
+                    if self.currentItem.fields[key]['type'] in ('text', 'longtext'):
                         text = self.currentItem.fields[key]["content"]
                         text = text and str(text) or ""     # display "None" values as empty string
-                        widget = TextEdit(text, lambda row=n: self.tableWidgetCellChanged(row, 3))
+                        height = self.currentItem.fields[key]['type'] == 'text' and 10 or 25
+                        widget = TextEdit(text, lambda row=n: self.tableWidgetCellChanged(row, 3), height)
                         self.tableWidget.setCellWidget(n, 3, widget)
                     elif self.currentItem.fields[key]['type'] == 'url':
                         value = self.currentItem.fields[key]["content"]
@@ -1557,7 +1559,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 else:
                     fieldName = self.tableWidget.item(row, 1).text()
                     fieldType = self.currentItem.fields[fieldName]['type']
-                    if fieldType in ('text', 'url'):
+                    if fieldType in ('longtext', 'text', 'url'):
                         newValue = self.tableWidget.cellWidget(row, 3).toPlainText()
                     elif fieldType == 'timer':
                         newValue = (self.tableWidget.cellWidget(row, 3).toPlainText(),
