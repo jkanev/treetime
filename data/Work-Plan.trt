@@ -1,0 +1,256 @@
+--trees--
+
+tree "Running Tasks"
+    field "Priority"
+        field-type "min-string"
+        own-fields ["Status"]
+        child-fields ["Status"]
+        sibling-fields []
+        parent-fields []
+    field "Project"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [2]
+    field "Planned Hours"
+        field-type "sum-time"
+        own-fields ["hours planned"]
+        child-fields ["Planned Hours"]
+        sibling-fields []
+        parent-fields []
+    field "Spent Hours"
+        field-type "sum-time"
+        own-fields ["hours spent"]
+        child-fields ["Spent Hours"]
+        sibling-fields []
+        parent-fields []
+    field "Progress"
+        field-type "ratio-percent"
+        own-fields ["Spent Hours", "Planned Hours"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Planning"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [1]
+    field "Status"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [3]
+
+tree "Time"
+    field "Spent Hours"
+        field-type "sum-time"
+        own-fields ["hours spent"]
+        child-fields ["Spent Hours"]
+        sibling-fields []
+        parent-fields []
+    field "Planned Hours"
+        field-type "sum-time"
+        own-fields ["hours planned"]
+        child-fields ["Planned Hours"]
+        sibling-fields []
+        parent-fields []
+    field "Total Difference"
+        field-type "difference-time"
+        own-fields ["Spent Hours", "Planned Hours"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Relative Difference"
+        field-type "ratio-percent"
+        own-fields ["Total Difference", "Planned Hours"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Status"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [3]
+    field "Project"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [2]
+
+tree "Projects"
+    field "Start"
+        field-type "min-string"
+        own-fields ["Planning"]
+        child-fields ["Start"]
+        sibling-fields []
+        parent-fields []
+    field "End"
+        field-type "max-string"
+        own-fields ["Planning"]
+        child-fields ["End"]
+        sibling-fields []
+        parent-fields []
+    field "Spent Hours"
+        field-type "sum-time"
+        own-fields ["hours spent"]
+        child-fields ["Spent Hours"]
+        sibling-fields []
+        parent-fields []
+    field "Team"
+        field-type "set"
+        own-fields ["Person"]
+        child-fields ["Team"]
+        sibling-fields []
+        parent-fields []
+    field "Planned Hours"
+        field-type "sum-time"
+        own-fields ["hours planned"]
+        child-fields ["Planned Hours"]
+        sibling-fields []
+        parent-fields []
+    field "Total Difference"
+        field-type "difference-time"
+        own-fields ["Spent Hours", "Planned Hours"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Relative Difference"
+        field-type "ratio-percent"
+        own-fields ["Total Difference", "Planned Hours"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Planning"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [1]
+    field "Person"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [4]
+
+tree "Status"
+    field "Planning"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [1]
+    field "Project"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [2]
+    field "Person"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [4]
+    field "Communication"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [5]
+    field "Spent Hours"
+        field-type "sum-time"
+        own-fields ["hours spent"]
+        child-fields ["Spent Hours"]
+        sibling-fields []
+        parent-fields []
+
+tree "Persons"
+    field "Project"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [2]
+    field "Planning"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [1]
+    field "Status"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [3]
+    field "Spent Hours"
+        field-type "sum-time"
+        own-fields ["hours spent"]
+        child-fields ["Spent Hours"]
+        sibling-fields []
+        parent-fields []
+
+tree "Communication"
+    field "Project"
+        field-type "node-path"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [2]
+    field "Details"
+        field-type "text"
+        own-fields ["details"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Planning"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [1]
+    field "Person"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [4]
+    field "Status"
+        field-type "node-name"
+        own-fields []
+        child-fields []
+        sibling-fields []
+        parent-fields [3]
+    field "Link"
+        field-type "url"
+        own-fields ["external link"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+
+tree "Reference"
+    field "Details"
+        field-type "text"
+        own-fields ["details"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+
+--item-types--
+
+item Entry
+    fields {"external link": {"content": "", "type": "url"}, "details": {"content": "", "type": "text"}, "hours planned": {"content": 0, "type": "integer"}, "hours spent": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [], [], [], [], [], []]
+
+--item-pool--
+
+item Entry
+    fields {"external link": {"content": "", "type": "url"}, "details": {"content": "", "type": "text"}, "hours planned": {"content": 0, "type": "integer"}, "hours spent": {"content": 0, "running_since": false, "type": "timer"}}
+    trees [[], [], [], [0], [], [], []]
+

@@ -160,7 +160,7 @@ class Item:
             if fieldContent:
 
                 # changing the content of a string field - read the string plainly
-                if type in ("string", "text", "url"):
+                if type in ("string", "longtext", "text", "url"):
                     field["content"] = fieldContent
 
                 # changing the content of a number - read the string into a value
