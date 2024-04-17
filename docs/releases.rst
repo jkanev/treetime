@@ -96,6 +96,15 @@ Past
 * June 2023: Created new default theme "Organic", a mix between Fusion and Breeze
 * June 2023: Implemented display of tree field definitions and of data field definitions
 * July 2023: Release **version 2023.2**
+* October 2023: Fixed crash when exporting text to clipboard.
+
+2024
+----
+
+* January 2024: Changed node symbol to small circle in text eport (after asking users on social media).
+* February 2024: Implemented min, max, min-string, max-string fields.
+* March 2024: Implemented longtext data field.
+* April 2024: Extended documentation on readthedocs.io. Release **version 2024.1**
 
 Present
 -------
@@ -114,18 +123,18 @@ Near Future
 ^^^^^^^^^^^
 
 * Implement search function
+* Implementing continuous text and html export (to use treetime as a meeting note-taking app where participants view an auto-updating html file with the notes)
 
 Mid Future
 ^^^^^^^^^^
 
+* Implement graphical UI for editing tree field and data field definitions
 * Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
-* Implement more tree field types (standard deviation, min, max, string concatenation),
 
 Far Future
 ^^^^^^^^^^
 
 * Implement safe usage by multiple simultaneous users
 * Implement a database backend instead of text file storage
-* Implement a web server
 * A whole lot of other fancy things that will probably never get done
 

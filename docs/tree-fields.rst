@@ -27,14 +27,56 @@ After this, the lines ``own-fields [...]``, ``child-fields [...]``, ``sibling-fi
   
 The tree field "Progress" is a ratio, defined as parameter1 / (parameter2 + parameter3 + ...). In the tree view it will be displayed as a percentage. It shows the ratio of the tree fields "Spent Hours" / "Planned Hours".
 
-concatenation
--------------
+string
+------
 
-Concatenates strings.
+The simple display of the content of one or multiple data fields or tree fields.
 Syntax::
 
         field "Name"
-            field-type "concatenation"
+            field-type "string"
+            own-fields ["field1"]
+            child-fields []
+            sibling-fields []
+            parent-fields []
+
+Result: The values or strings found in the fields *field1, field2, field3, ...*, put together, in the order they are mentioned.
+
+url
+---
+
+Same as "string", but in an html export the field is formated as url link (clickable).
+
+text
+----
+
+Same as "string", but the exported field has a larger width and can span several lines.
+
+sum
+---
+
+The sum of all input fields.
+Syntax::
+
+        field "Name"
+            field-type "sum"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields. Fields must be integer fields, the result for string fields is not defined.
+
+Result: The value *field1 + field2 + field3 + ...*.
+
+set
+---
+
+A list of unique occurrences of values of all input fields.
+Syntax::
+
+        field "Name"
+            field-type "set"
             own-fields ["field1", "field2", ...]
             child-fields ["field3", ...]
             sibling-fields [...]
@@ -42,7 +84,12 @@ Syntax::
 
 were "field1", "field2", "field3", ..., are the names of data or tree fields.
 
-Result: The strings found in *field1, field2, field3, ...*, put together, in the order they are mentioned.
+Result: A list like *value1, value2, value3, value4*, where each value is the value of at least on input field and each value is listed only once, sorted alphabetically.
+
+sum-time
+--------
+
+Same as "sum", but will show the result as hour format, e.g. the value *1.5* will be displayed and exported as *1:30:00*.
 
 difference
 ----------
@@ -88,6 +135,63 @@ mean-percent
 
 Same as "mean", but will show the result as a percentage, e.g. the value *0.75* will show as *75 %*.
 
+min
+---
+
+The minimum.
+Syntax::
+
+        field "Name"
+            field-type "min"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
+Result: The minimum value *min(field1, field2, field3, ...)*. This can only be for numbers. If you want to find the minimum of texts, use *min-string*.
+
+max
+---
+
+The Maximum.
+Same as *min*, but displays the maximum.
+
+min-string
+----------
+
+The smallest of a list of strings.
+Same as min, but can be used for text, e.g., names of branches collected by a *node-name* field (see below). Comparison is alphabetically, "aaaab" is smaller than "bc".
+
+max-string
+----------
+
+The largest of a list of strings.
+Same as *min-string*, but shows the maximum.
+
+ratio
+-----
+
+The ratio between the first and the sum of all following input fields.
+Syntax::
+
+        field "Name"
+            field-type "ratio"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
+Result: The value *field1 / (field2 + field3 + ...)*, where *N* is the number of fields.
+
+ratio-percent
+-------------
+
+Same as "ratio", but displayed as percentage (e.g., 0.75 is displayed as 75 %).
+
 node-name
 ---------
 
@@ -128,90 +232,5 @@ node-path
 
 Same as "node-name", but instead of the paren't name, the entire path is shown, using "\|" as delimiter (e.g. "Coding \| Open Source \| TreeTime").
 
-ratio
------
 
-The ratio between the first and the sum of all following input fields.
-Syntax::
 
-        field "Name"
-            field-type "ratio"
-            own-fields ["field1", "field2", ...]
-            child-fields ["field3", ...]
-            sibling-fields [...]
-            parent-fields [...]
-
-were "field1", "field2", "field3", ..., are the names of data or tree fields.
-
-Result: The value *field1 / (field2 + field3 + ...)*, where *N* is the number of fields.
-
-ratio-percent
--------------
-
-Same as "ratio", but displayed as percentage (e.g., 0.75 is displayed as 75 %).
-
-set
----
-
-A list of unique occurrences of values of all input fields.
-Syntax::
-
-        field "Name"
-            field-type "set"
-            own-fields ["field1", "field2", ...]
-            child-fields ["field3", ...]
-            sibling-fields [...]
-            parent-fields [...]
-
-were "field1", "field2", "field3", ..., are the names of data or tree fields.
-
-Result: A list like *value1, value2, value3, value4*, where each value is the value of at least on input field and each value is listed only once.
-
-string
-------
-
-The simple display of the content of a data field or another tree field.
-Syntax::
-
-        field "Name"
-            field-type "string"
-            own-fields ["field1"]
-            child-fields []
-            sibling-fields []
-            parent-fields []
-
-were "field1" is the name of a current data or tree field. The "string" function only takes one parameter.
-
-Result: The value of *field1*.
-
-sum
----
-
-The sum of all input fields.
-Syntax::
-
-        field "Name"
-            field-type "sum"
-            own-fields ["field1", "field2", ...]
-            child-fields ["field3", ...]
-            sibling-fields [...]
-            parent-fields [...]
-
-were "field1", "field2", "field3", ..., are the names of data or tree fields. Fields must be integer fields, the result for string fields is not defined.
-
-Result: The value *field1 + field2 + field3 + ...*.
-
-sum-time
---------
-
-Same as "sum", but will show the result as hour format, e.g. the value *1.5* will be displayed and exported as *1:30:00*.
-
-text
-----
-
-Same as "string", but the exported field has a larger width and can span several lines.
-
-url
----
-
-Same as "string", but in an html export the field is formated as url link (clickable).

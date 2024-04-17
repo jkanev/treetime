@@ -22,7 +22,7 @@ copyright = 'CC BY-SA 4.0,  Jacob Kanev'
 author = 'Jacob Kanev'
 
 # The full version, including alpha/beta/rc tags
-release = '2023.2'
+release = '2024.1'
 
 
 # -- General configuration ---------------------------------------------------

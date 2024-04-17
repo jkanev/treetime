@@ -98,11 +98,43 @@ More about how to define tree fields in the next chapter.
 Data Item Definition
 ^^^^^^^^^^^^^^^^^^^^
 
-Documentation still in progress.
+Each node in a tree is stored as a "data item". In the data file a "data item" is stored like this::
 
-More about how to define data fields in the next chapter.
+    item A
+        fields {"value": {"content": 1, "type": "integer"}}
+        trees [[], []]
+
+After four spaces indent, there's the keyword "item" and the name (in this case "A"). This is the name that's displayed in the heading of the data item pane in the GUI, and as the node name in the tree pane of the GUI.
+The next line, after an indent of 8 spaces, has the keyword "fields" followed by a json dictionary::
+
+            "field name 1": {"content": 1, "type": "integer"}, "field name 2": ...
+            
+In this dictionary, each data field has a sub-dictionary listing its default content, the field type, and possibly some other values (timers have a running/stopped flag and a last-started flag). When a new item/node is created, this default content will be in all data fields. In the example above, a new node will contain one single field called "value" with the content "1".
+
+For a description of all possible data field types, see the Data Fields chapter.
+
+The last line, "trees ...", must contain an array of *N* empty arrays, where *N* is the number of trees in your file. If you have four trees in your tree fiel, that line must read::
+
+        trees [[], [], [], []]
+
+This makes your field definition available in all trees (and creates an error otherwise).
 
 The Data Pool
 ^^^^^^^^^^^^^
 
-Documentation still in progress.
+The Data Pool is the last of the three sections of the tree file, and in most cases the largest. This is where the actual data is stored.
+It consists of a list of items in the tree, with a syntax like in the data item definition section::
+
+    item D
+        fields {"value": {"content": 4, "type": "integer"}}
+        trees [[0, 0, 0], [0]]
+
+    item E
+        fields {"value": {"content": 5, "type": "integer"}}
+        trees [[0, 0, 1], [0, 1]]
+
+The content here is the actual content in the field. The tree structure is stored in the last line: ::
+
+        trees [[0, 0, 1], [0, 1]]
+
+This is an array of arrays, each of which is a path in the tree. In the example above the node can be found following the path 0-0-1 in the first tree starting at the root node, and 0-1 in the second tree. Children are numbered using fixed indexes, starting at 0. A path of 0-0-1 means: My node is the second child (-1) of the first child (-0-1) of the first child (0-0-1) of the root node in the (first) tree. And in the second tree, the path 0-1 says the node is the second child of the first child of the root.

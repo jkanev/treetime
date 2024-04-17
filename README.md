@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2023.2](https://github.com/jkanev/treetime/releases/tag/2023.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2024.1](https://github.com/jkanev/treetime/releases/tag/2024.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -210,11 +210,16 @@ Past
 * Done June 2023: Created new default theme "Organic", a mix between Fusion and Breeze
 * Done June 2023: Implemented display of tree field definitions and of data field definitions
 * Done July 2023: Release **version 2023.2**
+* Done October 2023: Bugfix: crash when exporting text to clipboard.
+* Done January 2024: Changed node symbol to small circle in text eport (after asking users on social media).
+* Done February 2024: Implemented min, max, min-string, max-string fields.
+* Done March 2024: Implemented longtext data field.
+* Done April 2024: Extended documentation on readthedocs.io. Release **version 2024.1**
 
 Present
 - Running: Bugfixing
 - Running: Extend documentation on readthedocs.io
-- Running: Add more fields
+- Running: Implementing continuous text and html export (to use treetime as a meeting note-taking app where participants view an auto-updating html file with the notes)
 - Running: Add more examples and more template data files
 - Running: Implement tree field editing with graphical dialog (add, remove, change tree fields)
 - Running: Implement data item field editing with graphical dialog (add, remove, change data item fields)
@@ -222,7 +227,6 @@ Present
 Future
 - Near Future: Implement search function
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
-- Mid Future: Implement more tree field types (standard deviation, min, max),
 - Far Future: Implement safe usage by multiple simultaneous users
 - Far Future: Implement a database backend instead of text file storage
 - Far Future: Implement a web server
