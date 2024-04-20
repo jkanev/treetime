@@ -19,7 +19,6 @@ description: >- # this means to ignore newlines until "baseurl:"
   Take notes. Track tasks. Plan projects. Organize knowledge. Using trees:<br/>
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://tree-time.info" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: j_kanev
 github_username:  jkanev
 logo: https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png
 
