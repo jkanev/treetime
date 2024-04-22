@@ -759,7 +759,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     data = ("No branch selected, export is empty")
 
             # export entire tree
-            else:
+            elif self.radioButtonExportTree.isChecked():
 
                 # pick up the source
                 rootNode = self.forest.children[self.currentTree]
@@ -793,6 +793,26 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             background = next_background[background]
                             data += children[c].to_html(background=background, depth=depth,
                                                         fields=allFields, style=style)[1]
+
+            # export current node with context
+            else:
+                path = self.currentItem.trees[self.currentTree]
+                currentNode = self.forest.children[self.currentTree].findNode(path[:1])
+                if currentNode:
+
+                    # write to data string
+                    if exportFormat == "CSV":
+                        data = currentNode.to_csv(depth=depth, fields=allFields, context=path)
+                    elif exportFormat == "Text/Unicode":
+                        data = currentNode.to_txt(depth=depth, fields=allFields, context=path)
+                    elif exportFormat == "HTML (List)":
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
+                                                          fields=allFields,style='list')
+                    else:
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
+                                                          fields=allFields, style='tiles')
+                else:
+                    data = ("No branch selected, export is empty")
 
             # save to file or to clipboard
             if exportToFile:

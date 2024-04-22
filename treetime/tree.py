@@ -546,7 +546,7 @@ class Node:
         for i in range(len(self.children)):
             self.children[i].printForest(indent + 1)
 
-    def to_csv(self, fields=True, first=True, depth=-1):
+    def to_csv(self, fields=True, context=False, first=True, depth=-1):
         """
         Create a csv representation of the current branch.
         :fieldOrder: The order of fields in the tree
@@ -618,7 +618,7 @@ class Node:
         # return
         return csv
 
-    def to_txt(self, fields=True, lastitem=[], depth=-1):
+    def to_txt(self, fields=True, context=False, lastitem=[], depth=-1):
         """
         Create a text representation of the current branch.
         :param lastitem: A list of booleans showing whether the great-grandparent, grandparent, parent, is the
@@ -730,23 +730,37 @@ class Node:
             childprefix = lastitem.copy()
             childprefix.append(False)
             for i in range(len(sorted_children)-1):
-                text += sorted_children[i].to_txt(fields, childprefix, depth-1)
+                text += sorted_children[i].to_txt(fields=fields, context=context, lastitem=childprefix, deptch=depth-1)
         if len(sorted_children):
             childprefix = lastitem.copy()
             childprefix.append(True)
-            text += sorted_children[-1].to_txt(fields, childprefix, depth-1)
+            text += sorted_children[-1].to_txt(fields=fields, context=context, lastitem=childprefix, deptch=depth-1)
 
         # return
         return text
 
-    def to_html(self, header=False, footer=False, fields=True, style='tiles', context=False, background='blue', depth=-1,
-                current_depth=0):
+    def to_html(self, header=False, footer=False, fields=True, context=False, style='tiles', background='blue',
+                depth=-1, current_depth=0):
+
+        # evaluate context
+        children = True
+        if context:
+            fields = False
+            children = False
+
+            # display children if we're a direct ancestor
+            if len(self.path) <= len(context) and self.path == context[:len(self.path)]:
+                children = True
+
+                # display fields if we're the actual target node
+                if len(self.path) == len(context):
+                    fields = True
 
         # background colours
         next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
 
         # page header
-        if header and style=='tiles':
+        if header and style == 'tiles' and not context:
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
                    'em {color: #555;}' \
@@ -775,6 +789,37 @@ class Node:
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-path {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   '</style></head><body>'
+        elif header and style == 'tiles' and context:
+            html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em;} ' \
+                   'em {color: #555;}' \
+                   'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
+                   'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
+                   'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
+                   'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
+                   'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 12em;} ' \
+                   'div.name_current {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 48.5em;} ' \
+                   'div.fields {position: relative; float: left; clear: left; width: 74em; border-top: 1px solid; border-color: #808080;} ' \
+                   'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
+                   'div.string {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.min-string {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.max-string {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.set {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.text {position: relative; float: left; width: 40em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.difference-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.min {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.max {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.node-name {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.node-path {position: relative; float: left; width: 40em; margin: 0.3em; padding: 0.3em; }' \
                    '</style></head><body>'
         elif header and style == 'list':
             html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
@@ -811,18 +856,25 @@ class Node:
 
         # node header
         html += '<div class="node {}">'.format(background)
-        needed_columns = 1    # the amount of columns needed by this child
+        needed_columns = (context and fields and children and 5) or 1    # the amount of columns needed by this child
 
         # node name
-        font_size = 1.0 + 1.0 / (1.0 + current_depth)
+        if context:
+            if fields and children:
+                font_size = 1.5
+            else:
+                font_size = 0.5 + 1.0 / (2.0 + max((len(context) - len(self.path)), 0))  # 1 em for target, decay to 0.5
+        else:
+            font_size = 1.0 + 1.0 / (1.0 + current_depth)  # start with 2 em, exponentially decay to 0.5 em
         if style == 'tiles':
-            html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
+            if context and fields and children:
+                html += '<div class="name_current" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
+            else:
+                html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
         if style == 'list':
             html += '<div class="name" style="font-size: {:0.2f}em; ' \
                     'width: {:0.2f}em;">{}</div>'.format(font_size, (20.0 - (1.2*current_depth))/font_size, self.name)
 
-        # evaluate context
-        
         # node fields
         if fields:
             html += '<div class="fields">'
@@ -840,43 +892,45 @@ class Node:
         child_html = ""
 
         # children
-        child_count = 0
-        sorted_children = sorted(self.children, key=lambda c: c.name)
-        group_open = False
-        for i in range(len(sorted_children)):
+        if children:
 
-            # write next child
-            background = next_background[background]
-            child_columns = 1     # number of columns needed by child sub-branch
-            if depth:
-                child_columns, child_html = sorted_children[i].to_html(background=background, depth=depth-1,
-                                                                       fields=fields,
-                                                                       current_depth=current_depth+1, style=style)
+            child_count = 0
+            sorted_children = sorted(self.children, key=lambda c: c.name)
+            group_open = False
+            for i in range(len(sorted_children)):
 
-            # start new child group on first child in group of 5, or if child needs more columns than available
-            if child_columns > 5-child_count:
-                child_count = 0
-            if child_count == 0:
-                if group_open:
+                # write next child
+                background = next_background[background]
+                child_columns = 1     # number of columns needed by child sub-branch
+                if depth:
+                    child_columns, child_html = sorted_children[i].to_html(background=background, depth=depth-1,
+                                                                           fields=fields, context=context,
+                                                                           current_depth=current_depth+1, style=style)
+
+                # start new child group on first child in group of 5, or if child needs more columns than available
+                if child_columns > 5-child_count:
+                    child_count = 0
+                if child_count == 0:
+                    if group_open:
+                        html += '</div>'
+                    html += '<div class="children">'
+                    group_open = True
+
+                # add html to main html
+                html += child_html
+                child_count += child_columns
+                needed_columns = max(needed_columns, min(child_count, 5))
+
+                # close child group after fourth child of after node with children
+                if child_count >= 5:
+                    child_count = 0
+                if child_count == 0:
                     html += '</div>'
-                html += '<div class="children">'
-                group_open = True
+                    group_open = False
 
-            # add html to main html
-            html += child_html
-            child_count += child_columns
-            needed_columns = max(needed_columns, min(child_count, 5))
-
-            # close child group after fourth child of after node with children
-            if child_count >= 5:
-                child_count = 0
-            if child_count == 0:
+            # node footer
+            if group_open:
                 html += '</div>'
-                group_open = False
-
-        # node footer
-        if group_open:
-            html += '</div>'
         html += "</div>"
 
         # page footer
@@ -1159,7 +1213,7 @@ class Tree(Node):
 
     def findNode(self, path):
         """
-        Sort the item into the forest, creating existing nodes on the fly if missing.
+        Find the node at a given path. Calls the respective function of the Node class.
         """
 
         # per tree: loop over all nodes, creating if necessary
