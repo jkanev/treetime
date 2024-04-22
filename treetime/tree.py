@@ -546,7 +546,7 @@ class Node:
         for i in range(len(self.children)):
             self.children[i].printForest(indent + 1)
 
-    def to_csv(self, first=True, depth=-1):
+    def to_csv(self, fields=True, first=True, depth=-1):
         """
         Create a csv representation of the current branch.
         :fieldOrder: The order of fields in the tree
@@ -579,9 +579,10 @@ class Node:
         # add title line
         if first:
             csv = 'Tree,Name'
-            for f in tree.fieldOrder:
-                csv += ','
-                csv += clean_field(f)
+            if fields:
+                for f in tree.fieldOrder:
+                    csv += ','
+                    csv += clean_field(f)
             csv += '\n'
 
         # add node path
@@ -600,8 +601,9 @@ class Node:
         csv += self.name
 
         # add fields
-        for f in tree.fieldOrder:
-            csv += ',' + clean_field(self.fields[f].getString())
+        if fields:
+            for f in tree.fieldOrder:
+                csv += ',' + clean_field(self.fields[f].getString())
         csv += '\n'
 
         # add children
@@ -611,16 +613,17 @@ class Node:
             sorted_children = []
         if len(sorted_children):
             for i in range(len(sorted_children)):
-                csv += sorted_children[i].to_csv(first=False, depth=depth-1)
+                csv += sorted_children[i].to_csv(first=False, fields=fields, depth=depth-1)
 
         # return
         return csv
 
-    def to_txt(self, lastitem=[], depth=-1):
+    def to_txt(self, fields=True, lastitem=[], depth=-1):
         """
         Create a text representation of the current branch.
         :param lastitem: A list of booleans showing whether the great-grandparent, grandparent, parent, is the
                          last item of the list of siblings
+        :param fields: if true, all fields are included, if false, only node names are exported (no fields)
         :return: a string like this:
 
                     █ abc
@@ -695,27 +698,28 @@ class Node:
             else:
                 text += line_prefix + "    " + line
 
-        for name, field in self.fields.items():
+        if fields:
+            for name, field in self.fields.items():
 
-            # wrap field content, larger bits of text start with a newline
-            lines = Node._wrap_lines(field.getString())
+                # wrap field content, larger bits of text start with a newline
+                lines = Node._wrap_lines(field.getString())
 
-            # empty array if only whitespace content
-            if lines == ['\n']:
-                lines = []
+                # empty array if only whitespace content
+                if lines == ['\n']:
+                    lines = []
 
-            if len(lines) > 1:
-                lines = [''] + lines
+                if len(lines) > 1:
+                    lines = [''] + lines
 
-            # assemble final text with tree decorations
-            first = True
-            for line in lines:
-                line = line == '\n' and line or line + '\n'
-                if first:
-                    text += line_prefix + name + ": " + line
-                    first = False
-                else:
-                    text += line_prefix + "    " + line
+                # assemble final text with tree decorations
+                first = True
+                for line in lines:
+                    line = line == '\n' and line or line + '\n'
+                    if first:
+                        text += line_prefix + name + ": " + line
+                        first = False
+                    else:
+                        text += line_prefix + "    " + line
 
         # recurse
         if depth:
@@ -726,16 +730,17 @@ class Node:
             childprefix = lastitem.copy()
             childprefix.append(False)
             for i in range(len(sorted_children)-1):
-                text += sorted_children[i].to_txt(childprefix, depth-1)
+                text += sorted_children[i].to_txt(fields, childprefix, depth-1)
         if len(sorted_children):
             childprefix = lastitem.copy()
             childprefix.append(True)
-            text += sorted_children[-1].to_txt(childprefix, depth-1)
+            text += sorted_children[-1].to_txt(fields, childprefix, depth-1)
 
         # return
         return text
 
-    def to_html(self, header=False, footer=False, style='tiles', background='blue', depth=-1, current_depth=0):
+    def to_html(self, header=False, footer=False, fields=True, style='tiles', context=False, background='blue', depth=-1,
+                current_depth=0):
 
         # background colours
         next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
@@ -816,19 +821,23 @@ class Node:
             html += '<div class="name" style="font-size: {:0.2f}em; ' \
                     'width: {:0.2f}em;">{}</div>'.format(font_size, (20.0 - (1.2*current_depth))/font_size, self.name)
 
+        # evaluate context
+        
         # node fields
-        html += '<div class="fields">'
+        if fields:
+            html += '<div class="fields">'
+            for name, field in self.fields.items():
+                content = field.getString().strip()
+                if content or (style == 'list'):   # in tile mode empty fields are hidden, in list mode always displayed
+                    content = content.replace('\n', '<br/>')
+                    if field.fieldType == "url":
+                        html += '<div class="{}"><em>{}</em><br/><a href="{}">{}</a></div>'.format(
+                            field.fieldType, name, content, len(content) > 40 and content[:37]+"..." or content)
+                    else:
+                        html += '<div class="{}"><em>{}</em><br/>{}</div>'.format(field.fieldType, name, content)
+            html += '</div>'
 
-        for name, field in self.fields.items():
-            content = field.getString().strip()
-            if content or (style == 'list'):   # in tile mode empty fields are hidden, in list mode always displayed
-                content = content.replace('\n', '<br/>')
-                if field.fieldType == "url":
-                    html += '<div class="{}"><em>{}</em><br/><a href="{}">{}</a></div>'.format(
-                        field.fieldType, name, content, len(content) > 40 and content[:37]+"..." or content)
-                else:
-                    html += '<div class="{}"><em>{}</em><br/>{}</div>'.format(field.fieldType, name, content)
-        html += '</div>'
+        child_html = ""
 
         # children
         child_count = 0
@@ -841,6 +850,7 @@ class Node:
             child_columns = 1     # number of columns needed by child sub-branch
             if depth:
                 child_columns, child_html = sorted_children[i].to_html(background=background, depth=depth-1,
+                                                                       fields=fields,
                                                                        current_depth=current_depth+1, style=style)
 
             # start new child group on first child in group of 5, or if child needs more columns than available

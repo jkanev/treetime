@@ -716,6 +716,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # read file format
             exportFormat = self.comboBoxExportFormat.currentText()
+            allFields = self.radioButtonExportAllFields.isChecked()
 
             # Select target file or cancel
             exportToFile = self.radioButtonExportToFile.isChecked()
@@ -745,13 +746,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # write to data string
                     if exportFormat == "CSV":
-                        data = currentNode.to_csv(depth=depth)
+                        data = currentNode.to_csv(depth=depth, fields=allFields)
                     elif exportFormat == "Text/Unicode":
-                        data = currentNode.to_txt(depth=depth)
+                        data = currentNode.to_txt(depth=depth, fields=allFields)
                     elif exportFormat == "HTML (List)":
-                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, style='list')
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
+                                                          style='list')
                     else:
-                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, style='tiles')
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
+                                                          style='tiles')
                 else:
                     data = ("No branch selected, export is empty")
 
@@ -766,27 +769,30 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if exportFormat == "CSV":
                     first = True
                     for c in children:
-                        data += c.to_csv( first=first, depth=depth)
+                        data += c.to_csv(first=first, depth=depth, fields=allFields)
                         first = False
                 elif exportFormat == "Text/Unicode":
                     for c in children:
                         data += '\n'
-                        data += c.to_txt(depth=depth)
+                        data += c.to_txt(depth=depth, fields=allFields)
                         data += '\n'
                 else:
                     next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
                     background = 'blue'
-                    style = (exportFormat=="HTML (List)" and "list") or "tiles"
+                    style = (exportFormat == "HTML (List)" and "list") or "tiles"
                     for c in range(0, len(children)):
                         if c == 0:
                             background = next_background[background]
-                            data += children[c].to_html(header=True, background=background, depth=depth, style=style)[1]
+                            data += children[c].to_html(header=True, background=background, depth=depth,
+                                                        fields=allFields, style=style)[1]
                         elif c == len(children) - 1:
                             background = next_background[background]
-                            data += children[c].to_html(footer=True, background=background, depth=depth, style=style)[1]
+                            data += children[c].to_html(footer=True, background=background, depth=depth,
+                                                        fields=allFields, style=style)[1]
                         else:
                             background = next_background[background]
-                            data += children[c].to_html(background=background, depth=depth, style=style)[1]
+                            data += children[c].to_html(background=background, depth=depth,
+                                                        fields=allFields, style=style)[1]
 
             # save to file or to clipboard
             if exportToFile:
