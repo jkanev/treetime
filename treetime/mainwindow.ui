@@ -526,32 +526,8 @@
           </item>
          </widget>
         </item>
-        <item row="14" column="0" colspan="2">
-         <widget class="QComboBox" name="comboBoxExportFormat">
-          <item>
-           <property name="text">
-            <string>HTML (Tiles)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>HTML (List)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Text/Unicode</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>CSV</string>
-           </property>
-          </item>
-         </widget>
-        </item>
         <item row="15" column="0" colspan="2">
-         <widget class="QLabel" name="labelLastExportFile">
+         <widget class="QLabel" name="labelExportFileDescription">
           <property name="text">
            <string>Last exported file:</string>
           </property>
@@ -570,6 +546,12 @@
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="openExternalLinks">
+           <bool>true</bool>
           </property>
           <property name="textInteractionFlags">
            <set>Qt::NoTextInteraction</set>
@@ -598,6 +580,43 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="14" column="1">
+         <widget class="QComboBox" name="comboBoxExportFormat">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>HTML (Tiles)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>HTML (List)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Text/Unicode</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CSV</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="14" column="0">
+         <widget class="QLabel" name="label_15">
+          <property name="text">
+           <string>Format</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

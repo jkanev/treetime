@@ -437,6 +437,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         print("loading system settings...")
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
 
+        # show last exported file
+        self.labelCurrentExportFile.setText(self.settings.value('exportFile') or "[last exported file]")
+
         # load last file
         print("opening last file...")
         if filename:
@@ -728,7 +731,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     "Text/Unicode": "Text Files (*.txt)",
                     "CSV": "CSV (Comma-separated Values) Files (*.csv)"
                 }
-                fileDir = self.settings.value('fileDir') or ''
+                fileDir = os.path.dirname(self.settings.value('exportFile')) or ''
                 file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to " + exportFormat, fileDir,
                                                              extensions[exportFormat])[0]
                 if not file:
@@ -807,7 +810,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data = currentNode.to_txt(depth=depth, fields=allFields, context=path)
                     elif exportFormat == "HTML (List)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
-                                                          fields=allFields,style='list')
+                                                          fields=allFields, style='list')
                     else:
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='tiles')
@@ -818,6 +821,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if exportToFile:
                 with open(file, "w") as f:
                     f.write(data)
+                self.labelCurrentExportFile.setText(file)
+                self.settings.setValue("exportFile", file)
             else:
                 clipboard = QGuiApplication.clipboard()
                 clipboard.setText(data, QClipboard.Mode.Clipboard)
@@ -825,7 +830,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if clipboard.supportsSelection():
                     clipboard.setText(data, QClipboard.Mode.Selection)
                 time.sleep(0.001)
-
 
     def pushButtonNewFromTemplateClicked(self):
         """

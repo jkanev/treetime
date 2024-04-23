@@ -503,6 +503,35 @@ class Node:
             lines += wrap(line, 70) or '\n'
         return lines
 
+    def _evaluateContext(self, fields, context):
+        """
+        Helper function, calculates fieds, context, and whether we're in the current node, based on the context path.
+        :param fields: the initial "fields" variable. If the context is "False", that variable will be
+            returned in the "fields" return value unchanged. This is important in non-context display settings.
+        :param context: The path of the node that is to be displayed as "node with context".
+        :return: fields, children, context_current - three bools indicating whether the calling node should display
+            its children (yes, if it is a sibling in the ancestry path, otherwise no), its fields (yes, if it is the
+            target node and we have fields enabled in the gui, otherwise no), and whether it is the target
+            node (interesting for separate css things)
+        """
+        children = True
+        fields_local = fields
+        context_current = False
+        if context:
+            fields_local = False
+            children = False
+
+            # display children if we're a direct ancestor
+            if len(self.path) <= len(context) and self.path == context[:len(self.path)]:
+                children = True
+
+                # display fields if we're the actual target node
+                if len(self.path) == len(context):
+                    fields_local = fields
+                    context_current = True
+
+        return fields_local, children, context_current
+
     def map(self, function, parameter, depthFirst):
         ''' Applies the function to each node in the tree. The function must receive one parameter and return one
         parameter. The return value is used as parameter for the next function call. The value Parameter is used in the
@@ -569,6 +598,8 @@ class Node:
                 text = '"' + text + '"'
             return text
 
+        # evaluate context
+        fields_local, children, context_current = self._evaluateContext(fields, context)
         csv = ""
 
         # find root node
@@ -579,10 +610,9 @@ class Node:
         # add title line
         if first:
             csv = 'Tree,Name'
-            if fields:
-                for f in tree.fieldOrder:
-                    csv += ','
-                    csv += clean_field(f)
+            for f in tree.fieldOrder:
+                csv += ','
+                csv += clean_field(f)
             csv += '\n'
 
         # add node path
@@ -601,19 +631,15 @@ class Node:
         csv += self.name
 
         # add fields
-        if fields:
+        if fields_local:
             for f in tree.fieldOrder:
                 csv += ',' + clean_field(self.fields[f].getString())
         csv += '\n'
 
         # add children
-        if depth:
-            sorted_children = sorted(self.children, key=lambda c: c.name)
-        else:
-            sorted_children = []
-        if len(sorted_children):
-            for i in range(len(sorted_children)):
-                csv += sorted_children[i].to_csv(first=False, fields=fields, depth=depth-1)
+        if depth and children:
+            for c in sorted(self.children, key=lambda x: x.name):
+                csv += c.to_csv(first=False, fields=fields, context=context, depth=depth - 1)
 
         # return
         return csv
@@ -653,9 +679,12 @@ class Node:
 
         text = ""
 
+        # evaluate context
+        fields_local, children, context_current = self._evaluateContext(fields, context)
+
         # create leading tree graphics
         # please pay attention: The spaces in the graphic strings are special unicode figure spaces
-        if self.children and depth:
+        if children and self.children and depth:
             pre_node_prefix = ""
             first_line_prefix = "●  "
             line_prefix = "│  "
@@ -698,7 +727,7 @@ class Node:
             else:
                 text += line_prefix + "    " + line
 
-        if fields:
+        if fields_local:
             for name, field in self.fields.items():
 
                 # wrap field content, larger bits of text start with a newline
@@ -722,7 +751,7 @@ class Node:
                         text += line_prefix + "    " + line
 
         # recurse
-        if depth:
+        if children and depth:
             sorted_children = sorted(self.children, key=lambda c: c.name)
         else:
             sorted_children = []
@@ -730,11 +759,11 @@ class Node:
             childprefix = lastitem.copy()
             childprefix.append(False)
             for i in range(len(sorted_children)-1):
-                text += sorted_children[i].to_txt(fields=fields, context=context, lastitem=childprefix, deptch=depth-1)
+                text += sorted_children[i].to_txt(fields=fields, context=context, lastitem=childprefix, depth=depth-1)
         if len(sorted_children):
             childprefix = lastitem.copy()
             childprefix.append(True)
-            text += sorted_children[-1].to_txt(fields=fields, context=context, lastitem=childprefix, deptch=depth-1)
+            text += sorted_children[-1].to_txt(fields=fields, context=context, lastitem=childprefix, depth=depth-1)
 
         # return
         return text
@@ -743,18 +772,7 @@ class Node:
                 depth=-1, current_depth=0):
 
         # evaluate context
-        children = True
-        if context:
-            fields = False
-            children = False
-
-            # display children if we're a direct ancestor
-            if len(self.path) <= len(context) and self.path == context[:len(self.path)]:
-                children = True
-
-                # display fields if we're the actual target node
-                if len(self.path) == len(context):
-                    fields = True
+        fields_local, children, context_current = self._evaluateContext(fields, context)
 
         # background colours
         next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
@@ -856,18 +874,18 @@ class Node:
 
         # node header
         html += '<div class="node {}">'.format(background)
-        needed_columns = (context and fields and children and 5) or 1    # the amount of columns needed by this child
+        needed_columns = context_current and 5 or 1    # the amount of columns needed by this child
 
         # node name
         if context:
-            if fields and children:
+            if context_current:
                 font_size = 1.5
             else:
                 font_size = 0.5 + 1.0 / (2.0 + max((len(context) - len(self.path)), 0))  # 1 em for target, decay to 0.5
         else:
             font_size = 1.0 + 1.0 / (1.0 + current_depth)  # start with 2 em, exponentially decay to 0.5 em
         if style == 'tiles':
-            if context and fields and children:
+            if context_current:
                 html += '<div class="name_current" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
             else:
                 html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
@@ -876,7 +894,7 @@ class Node:
                     'width: {:0.2f}em;">{}</div>'.format(font_size, (20.0 - (1.2*current_depth))/font_size, self.name)
 
         # node fields
-        if fields:
+        if fields_local:
             html += '<div class="fields">'
             for name, field in self.fields.items():
                 content = field.getString().strip()
