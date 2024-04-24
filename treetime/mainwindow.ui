@@ -365,6 +365,9 @@
                <height>0</height>
               </size>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export the entire tree&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Export all branches to file or clipboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Whole tree</string>
              </property>
@@ -372,6 +375,9 @@
            </item>
            <item row="0" column="0">
             <widget class="QRadioButton" name="radioButtonExportBranch">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export selected branch&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The selected node and all its children will be exported to file or clipboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>This branch</string>
              </property>
@@ -382,6 +388,9 @@
            </item>
            <item row="1" column="0" colspan="2">
             <widget class="QRadioButton" name="radioButtonThisNodeWithContext">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export the current node&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The selected node will be exported to file or clipboard, inside a collapsed tree showing only direct parents and their siblings. The collapsed tree starts at the root node, or at the level set in the &lt;span style=&quot; font-style:italic;&quot;&gt;depth &lt;/span&gt;box.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>This node with context</string>
              </property>
@@ -398,6 +407,9 @@
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="0">
             <widget class="QRadioButton" name="radioButtonExportAllFields">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export all fields&lt;/span&gt;&lt;/p&gt;&lt;p&gt;All tree fields visible in the GUI will be exported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>All fields</string>
              </property>
@@ -408,6 +420,9 @@
            </item>
            <item row="0" column="1">
             <widget class="QRadioButton" name="radioButtonExportNamesOnly">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export only names&lt;/span&gt;&lt;/p&gt;&lt;p&gt;No fields, only node names, will be exported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Names only</string>
              </property>
@@ -424,6 +439,9 @@
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="0" column="0">
             <widget class="QRadioButton" name="radioButtonExportToFile">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export to file.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The export will be saved in a file. When clicking [Export], a file dialog opens to select a target file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>To file</string>
              </property>
@@ -434,6 +452,9 @@
            </item>
            <item row="0" column="1">
             <widget class="QRadioButton" name="radioButtonExportToClipboard">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export to clipboard.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When the [Export] button is clicked, the exported data will be in the clipboard and can be pasted (Menu/Paste or Ctrl+V) it into any document.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>To clipboard</string>
              </property>
@@ -467,7 +488,7 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>&lt;b&gt;Select a level down to which the current branch is copied&lt;/b&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select a level down to which the current branch is copied.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For the options &amp;quot;This branch&amp;quot; and &amp;quot;Whole tree&amp;quot; this will show the respective level of children.&lt;/p&gt;&lt;p&gt;For the option &amp;quot;This node with content&amp;quot; this will show the summary path starting at the respective level, counting from the top.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <item>
            <property name="text">
@@ -561,7 +582,7 @@
         <item row="17" column="0" colspan="2">
          <widget class="QPushButton" name="pushButtonExport">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export the current tree as text to the clipboard.&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;• The file will contain all tree fields.&lt;br/&gt;• Text graphics show the tree structure.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export.&lt;/span&gt;&lt;br/&gt;Starts the export to a file after showing a file selection dialog, or to the clipboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Export</string>
@@ -588,6 +609,9 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select export file format&lt;/span&gt;&lt;/p&gt;&lt;p&gt;• HTML (Tiles) — html file, nodes are tiles within tiles&lt;br/&gt;• HTML (List) — html file, nodes are list lines&lt;br/&gt;• Text/Unicode — pure text file with text graphics&lt;br/&gt;• CSV — csv file with heading, first column is the tree structure, next are name and fields&lt;p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <item>
            <property name="text">
