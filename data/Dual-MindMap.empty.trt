@@ -26,5 +26,45 @@ item New
 
 item New
     fields {"text": {"content": "", "type": "text"}}
-    trees [[0], [0]]
+    trees [[], [0]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[], [0, 0, 0]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[], [0, 0, 0, 0]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[], [0, 0, 0, 0, 0]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[], [0, 0, 0, 0, 1]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[], [0, 0, 0, 0, 2]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[], [0, 0, 0, 0, 2, 0]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[], [0, 0, 0, 0, 2, 0, 0]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[0], [0, 0]]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[0, 0], []]
+
+item New
+    fields {"text": {"content": "", "type": "text"}}
+    trees [[0, 0, 0], []]
 
