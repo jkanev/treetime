@@ -105,6 +105,8 @@ Past
 * February 2024: Implemented min, max, min-string, max-string fields.
 * March 2024: Implemented longtext data field.
 * April 2024: Extended documentation on readthedocs.io. Release **version 2024.1**
+* April 2024: Restructured export area, added name-only export. Made all export options (full tree / branch / node with contect) (all fields / names only) available for all file formats and for both file and clipboard export.
+* April 2024: Release **version 2024.2**
 
 Present
 -------

@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2024.1](https://github.com/jkanev/treetime/releases/tag/2024.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2024.2](https://github.com/jkanev/treetime/releases/tag/2024.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -215,6 +215,8 @@ Past
 * Done February 2024: Implemented min, max, min-string, max-string fields.
 * Done March 2024: Implemented longtext data field.
 * Done April 2024: Extended documentation on readthedocs.io. Release **version 2024.1**
+* Done April 2024: Restructured export area, added name-only export. Made all export options (full tree / branch / node with contect) (all fields / names only) available for all file formats and for both file and clipboard export.
+* Done April 2024: Release **version 2024.2**
 
 Present
 - Running: Bugfixing
