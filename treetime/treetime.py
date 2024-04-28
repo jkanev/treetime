@@ -432,6 +432,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.currentColumn = None
         self.gridInitialised = False
         self.editMode = 'content'     # one of 'content', 'tree', or 'data'
+        
+        self.zoomInButton.clicked.connect(self.zoomIn)
+        self.zoomOutButton.clicked.connect(self.zoomOut)
 
         # init application settings
         print("loading system settings...")
