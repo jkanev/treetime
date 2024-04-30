@@ -184,7 +184,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>228</width>
+         <width>250</width>
          <height>760</height>
         </rect>
        </property>
@@ -1038,8 +1038,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>127</width>
-         <height>164</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1174,8 +1174,17 @@
        <attribute name="label">
         <string>Settings</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
+       <layout class="QFormLayout" name="formLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::ExpandingFieldsGrow</enum>
+        </property>
+        <property name="horizontalSpacing">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
+        <item row="1" column="0" colspan="2">
          <spacer name="verticalSpacer_9">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -1188,7 +1197,7 @@
           </property>
          </spacer>
         </item>
-        <item>
+        <item row="2" column="0" colspan="2">
          <widget class="QLabel" name="label_9">
           <property name="font">
            <font>
@@ -1204,13 +1213,13 @@
           </property>
          </widget>
         </item>
-        <item>
+        <item row="3" column="0" colspan="2">
          <widget class="QComboBox" name="cboxTheme"/>
         </item>
-        <item>
+        <item row="4" column="0" colspan="2">
          <widget class="QComboBox" name="cboxColours"/>
         </item>
-        <item>
+        <item row="11" column="0" colspan="2">
          <spacer name="verticalSpacer_12">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -1223,7 +1232,7 @@
           </property>
          </spacer>
         </item>
-        <item>
+        <item row="12" column="0" colspan="2">
          <widget class="QLabel" name="label_10">
           <property name="font">
            <font>
@@ -1239,7 +1248,7 @@
           </property>
          </widget>
         </item>
-        <item>
+        <item row="13" column="0" colspan="2">
          <widget class="QLabel" name="label_7">
           <property name="text">
            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1253,7 +1262,7 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item>
+        <item row="14" column="0" colspan="2">
          <spacer name="verticalSpacer_11">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -1265,6 +1274,44 @@ p, li { white-space: pre-wrap; }
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="5" column="0">
+         <widget class="QPushButton" name="pushButtonScaleUpFont">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Zoom in</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QPushButton" name="pushButtonScaleDownFont">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Zoom out</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

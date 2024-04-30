@@ -409,6 +409,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonDeleteBranch.clicked.connect(self.pushButtonDeleteBranchClicked)
         self.pushButtonDataFields.clicked.connect(self.pushButtonDataFieldsClicked)
         self.pushButtonTreeFields.clicked.connect(self.pushButtonTreeFieldsClicked)
+        self.pushButtonScaleUpFont.clicked.connect(lambda: self.scaleFont(1))
+        self.pushButtonScaleDownFont.clicked.connect(lambda: self.scaleFont(-1))
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)     # column 0: fixed
@@ -432,9 +434,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.currentColumn = None
         self.gridInitialised = False
         self.editMode = 'content'     # one of 'content', 'tree', or 'data'
-        
-        self.zoomInButton.clicked.connect(self.zoomIn)
-        self.zoomOutButton.clicked.connect(self.zoomOut)
 
         # init application settings
         print("loading system settings...")
@@ -668,6 +667,27 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             palette = self.system_palette
         application.setPalette(palette)
         self.cboxThemeTextChanged()
+
+    def scaleFont(self, direction):
+        """
+        Scales the UI by a given parameter
+        :param direction: 1 if to enlarge, -1 if to shrink
+        """
+
+        # get ratio between toolbox width and font size
+        font = self.centralwidget.font()
+        minimumSize = self.toolBox.minimumSize()
+        ratio = minimumSize.width() / font.pointSize()
+
+        # set font size
+        font.setPointSize(int(font.pointSize() + direction))
+        self.centralwidget.setFont(font)
+
+        # scale the toolbox with fixed buttons, everything else is dynamic
+        newWidth = self.toolBox.minimumSize().width() + direction * ratio
+        self.toolBox.setMinimumSize(int(newWidth), 0)
+
+
 
     def pushButtonSaveToFileClicked(self):
         """

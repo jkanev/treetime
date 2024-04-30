@@ -69,7 +69,7 @@ class Ui_MainWindow(object):
         self.toolBox.setToolTip("")
         self.toolBox.setObjectName("toolBox")
         self.pageFile = QtWidgets.QWidget()
-        self.pageFile.setGeometry(QtCore.QRect(0, 0, 228, 760))
+        self.pageFile.setGeometry(QtCore.QRect(0, 0, 250, 760))
         self.pageFile.setObjectName("pageFile")
         self.formLayout = QtWidgets.QFormLayout(self.pageFile)
         self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -360,7 +360,7 @@ class Ui_MainWindow(object):
         self.formLayout1.setItem(26, QtWidgets.QFormLayout.ItemRole.SpanningRole, spacerItem9)
         self.toolBox.addItem(self.pageEdit, "")
         self.pageStructure = QtWidgets.QWidget()
-        self.pageStructure.setGeometry(QtCore.QRect(0, 0, 127, 164))
+        self.pageStructure.setGeometry(QtCore.QRect(0, 0, 250, 760))
         self.pageStructure.setObjectName("pageStructure")
         self.formLayout2 = QtWidgets.QFormLayout(self.pageStructure)
         self.formLayout2.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -401,10 +401,13 @@ class Ui_MainWindow(object):
         self.pageSettings = QtWidgets.QWidget()
         self.pageSettings.setGeometry(QtCore.QRect(0, 0, 250, 760))
         self.pageSettings.setObjectName("pageSettings")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.pageSettings)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.formLayout3 = QtWidgets.QFormLayout(self.pageSettings)
+        self.formLayout3.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        self.formLayout3.setContentsMargins(-1, -1, -1, 6)
+        self.formLayout3.setHorizontalSpacing(6)
+        self.formLayout3.setObjectName("formLayout3")
         spacerItem15 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayout_2.addItem(spacerItem15)
+        self.formLayout3.setItem(1, QtWidgets.QFormLayout.ItemRole.SpanningRole, spacerItem15)
         self.label_9 = QtWidgets.QLabel(parent=self.pageSettings)
         font = QtGui.QFont()
         font.setBold(True)
@@ -412,15 +415,15 @@ class Ui_MainWindow(object):
         self.label_9.setFont(font)
         self.label_9.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_9.setObjectName("label_9")
-        self.verticalLayout_2.addWidget(self.label_9)
+        self.formLayout3.setWidget(2, QtWidgets.QFormLayout.ItemRole.SpanningRole, self.label_9)
         self.cboxTheme = QtWidgets.QComboBox(parent=self.pageSettings)
         self.cboxTheme.setObjectName("cboxTheme")
-        self.verticalLayout_2.addWidget(self.cboxTheme)
+        self.formLayout3.setWidget(3, QtWidgets.QFormLayout.ItemRole.SpanningRole, self.cboxTheme)
         self.cboxColours = QtWidgets.QComboBox(parent=self.pageSettings)
         self.cboxColours.setObjectName("cboxColours")
-        self.verticalLayout_2.addWidget(self.cboxColours)
+        self.formLayout3.setWidget(4, QtWidgets.QFormLayout.ItemRole.SpanningRole, self.cboxColours)
         spacerItem16 = QtWidgets.QSpacerItem(20, 136, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayout_2.addItem(spacerItem16)
+        self.formLayout3.setItem(11, QtWidgets.QFormLayout.ItemRole.SpanningRole, spacerItem16)
         self.label_10 = QtWidgets.QLabel(parent=self.pageSettings)
         font = QtGui.QFont()
         font.setBold(True)
@@ -428,12 +431,30 @@ class Ui_MainWindow(object):
         self.label_10.setFont(font)
         self.label_10.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_10.setObjectName("label_10")
-        self.verticalLayout_2.addWidget(self.label_10)
+        self.formLayout3.setWidget(12, QtWidgets.QFormLayout.ItemRole.SpanningRole, self.label_10)
         self.label_7 = QtWidgets.QLabel(parent=self.pageSettings)
         self.label_7.setObjectName("label_7")
-        self.verticalLayout_2.addWidget(self.label_7)
+        self.formLayout3.setWidget(13, QtWidgets.QFormLayout.ItemRole.SpanningRole, self.label_7)
         spacerItem17 = QtWidgets.QSpacerItem(20, 136, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.verticalLayout_2.addItem(spacerItem17)
+        self.formLayout3.setItem(14, QtWidgets.QFormLayout.ItemRole.SpanningRole, spacerItem17)
+        self.pushButtonScaleUpFont = QtWidgets.QPushButton(parent=self.pageSettings)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButtonScaleUpFont.sizePolicy().hasHeightForWidth())
+        self.pushButtonScaleUpFont.setSizePolicy(sizePolicy)
+        self.pushButtonScaleUpFont.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButtonScaleUpFont.setObjectName("pushButtonScaleUpFont")
+        self.formLayout3.setWidget(5, QtWidgets.QFormLayout.ItemRole.LabelRole, self.pushButtonScaleUpFont)
+        self.pushButtonScaleDownFont = QtWidgets.QPushButton(parent=self.pageSettings)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButtonScaleDownFont.sizePolicy().hasHeightForWidth())
+        self.pushButtonScaleDownFont.setSizePolicy(sizePolicy)
+        self.pushButtonScaleDownFont.setMinimumSize(QtCore.QSize(0, 0))
+        self.pushButtonScaleDownFont.setObjectName("pushButtonScaleDownFont")
+        self.formLayout3.setWidget(5, QtWidgets.QFormLayout.ItemRole.FieldRole, self.pushButtonScaleDownFont)
         self.toolBox.addItem(self.pageSettings, "")
         self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.ItemRole.LabelRole, self.toolBox)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -557,34 +578,7 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Official website:<br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">tree-time.info</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Updates and source code:<br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">github.com/jkanev/treetime</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">    Documentation:<br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">treetime-data-manager.</span></a><br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">readthedocs.io</span></a></p></body></html>"))
+        self.pushButtonScaleUpFont.setText(_translate("MainWindow", "Zoom in"))
+        self.pushButtonScaleDownFont.setText(_translate("MainWindow", "Zoom out"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.pageSettings), _translate("MainWindow", "Settings"))
         self.actionQuit.setText(_translate("MainWindow", "Quit"))
-        
-        self.zoomInButton = QtWidgets.QPushButton("Zoom In")
-        self.verticalLayout_2.addWidget(self.zoomInButton)
-        self.zoomOutButton = QtWidgets.QPushButton("Zoom Out")
-        self.verticalLayout_2.addWidget(self.zoomOutButton)
-
-
-
-    def zoomIn(self): 
-        self.scaleUI(1.20)  # Scale the UI by 10%
-
-    def zoomOut(self):
-        self.scaleUI(5/6)  # Scale the UI by 10%
-
-    def scaleUI(self, factor):
-        delta = 2 if factor > 1 else -2
-        font = self.centralwidget.font()
-        font.setPointSize(font.pointSize() + delta)
-        self.centralwidget.setFont(font)
-
-        for child in self.centralwidget.findChildren(QtWidgets.QWidget):
-            geometry = child.geometry()
-            child.setGeometry(
-                int(geometry.x() * factor),
-                int(geometry.y() * factor),
-                int(geometry.width() * factor),
-                int(geometry.height() * factor)
-            )
- 
