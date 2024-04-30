@@ -559,3 +559,32 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">    Documentation:<br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">treetime-data-manager.</span></a><br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">readthedocs.io</span></a></p></body></html>"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.pageSettings), _translate("MainWindow", "Settings"))
         self.actionQuit.setText(_translate("MainWindow", "Quit"))
+        
+        self.zoomInButton = QtWidgets.QPushButton("Zoom In")
+        self.verticalLayout_2.addWidget(self.zoomInButton)
+        self.zoomOutButton = QtWidgets.QPushButton("Zoom Out")
+        self.verticalLayout_2.addWidget(self.zoomOutButton)
+
+
+
+    def zoomIn(self): 
+        self.scaleUI(1.20)  # Scale the UI by 10%
+
+    def zoomOut(self):
+        self.scaleUI(5/6)  # Scale the UI by 10%
+
+    def scaleUI(self, factor):
+        delta = 2 if factor > 1 else -2
+        font = self.centralwidget.font()
+        font.setPointSize(font.pointSize() + delta)
+        self.centralwidget.setFont(font)
+
+        for child in self.centralwidget.findChildren(QtWidgets.QWidget):
+            geometry = child.geometry()
+            child.setGeometry(
+                int(geometry.x() * factor),
+                int(geometry.y() * factor),
+                int(geometry.width() * factor),
+                int(geometry.height() * factor)
+            )
+ 
