@@ -123,7 +123,7 @@ class UrlWidget(QtWidgets.QWidget):
     Special custom widget class for URL fields
     """
 
-    def __init__(self, url, callback, parent=None):
+    def __init__(self, url, callback, font, parent=None):
         """
         Initialise
         """
@@ -135,8 +135,10 @@ class UrlWidget(QtWidgets.QWidget):
 
         # create line edit control and open button
         linewidget = QtWidgets.QLineEdit(url)
+        linewidget.setFont(font)
         linewidget.textChanged.connect(self.textChanged)
         openbutton = QtWidgets.QPushButton("Open")
+        openbutton.setFont(font)
         openbutton.clicked.connect(self.buttonClicked)
 
         # put them next to each other
@@ -212,7 +214,7 @@ class TimerWidget(QtWidgets.QWidget):
 
     timer = None
 
-    def __init__(self, partial, running_since, callback, parent=None):
+    def __init__(self, partial, running_since, callback, font, parent=None):
         """
         initialise the timer object
         """
@@ -232,8 +234,10 @@ class TimerWidget(QtWidgets.QWidget):
 
         # create line edit control and open button
         self.linewidget = QtWidgets.QLineEdit(linetext)
+        self.linewidget.setFont(font)
         self.linewidget.textEdited.connect(self.textEdited)
         self.startstopbutton = QtWidgets.QPushButton(buttontext)
+        self.startstopbutton.setFont(font)
         self.startstopbutton.clicked.connect(self.buttonClicked)
 
         # put them next to each other
@@ -409,8 +413,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonDeleteBranch.clicked.connect(self.pushButtonDeleteBranchClicked)
         self.pushButtonDataFields.clicked.connect(self.pushButtonDataFieldsClicked)
         self.pushButtonTreeFields.clicked.connect(self.pushButtonTreeFieldsClicked)
-        self.pushButtonScaleUpFont.clicked.connect(lambda: self.scaleFont(1))
-        self.pushButtonScaleDownFont.clicked.connect(lambda: self.scaleFont(-1))
+        self.sliderZoom.valueChanged.connect(self.sliderZoomChanged)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.Fixed)     # column 0: fixed
@@ -438,6 +441,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # init application settings
         print("loading system settings...")
         self.settings = QtCore.QSettings('FreeSoftware', 'TreeTime')
+
+        # store system font size
+        self._dataFontPointSize = int(self.centralwidget.font().pointSize())
 
         # show last exported file
         self.labelCurrentExportFile.setText(self.settings.value('exportFile') or "[last exported file]")
@@ -668,25 +674,28 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         application.setPalette(palette)
         self.cboxThemeTextChanged()
 
-    def scaleFont(self, direction):
+    def sliderZoomChanged(self):
         """
-        Scales the UI by a given parameter
-        :param direction: 1 if to enlarge, -1 if to shrink
+        Scales the font size of the data display part of the UI by the offide of the slider
         """
 
-        # get ratio between toolbox width and font size
+        # get current value of slider and store default font size
+        offset = self.sliderZoom.value()
         font = self.centralwidget.font()
-        minimumSize = self.toolBox.minimumSize()
-        ratio = minimumSize.width() / font.pointSize()
+        system_size = font.pointSize()
+        self._dataFontPointSize = int(system_size + offset)
+        font.setPointSize(self._dataFontPointSize)
 
-        # set font size
-        font.setPointSize(int(font.pointSize() + direction))
-        self.centralwidget.setFont(font)
+        # change font in data item view
+        self.tableWidget.setFont(font)
+        self.showContentInDataView(self.currentTree)    # redraw data pane
 
-        # scale the toolbox with fixed buttons, everything else is dynamic
-        newWidth = self.toolBox.minimumSize().width() + direction * ratio
-        self.toolBox.setMinimumSize(int(newWidth), 0)
+        # change font in all tree widgets
+        for tree in self.treeWidgets:
+            tree.setFont(font);
 
+        # change label
+        self.labelZoom.setText("Zoom {}{}".format(offset > 0 and '+' or '', offset))
 
 
     def pushButtonSaveToFileClicked(self):
@@ -1245,8 +1254,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 name.setFlags(nonEditFlags)
                 value = QtWidgets.QTableWidgetItem(self.currentItem.name)
                 font = name.font()
-                font.setPointSize(font.pointSize() + 3)
+                font.setPointSize(self._dataFontPointSize + 3)
                 value.setFont(font)
+                font.setPointSize(self._dataFontPointSize)
                 self.tableWidget.setItem(n, 1, name)
                 self.tableWidget.setItem(n, 3, value)
                 self._protectCells(n, [0, 2, 4])
@@ -1266,6 +1276,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     buttonbox = QtWidgets.QDialogButtonBox()
                     if not len(path):
                         button = QtWidgets.QToolButton()
+                        button.setFont(font)
                         button.setText("")
                         button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
                         button.setFixedWidth(button.sizeHint().height())
@@ -1277,6 +1288,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     elif len(path) == 1:
                         parent = tree.findNode(path).parent
                         button = QtWidgets.QToolButton()
+                        button.setFont(font)
                         button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
                         # get square buttons of same size as text buttons for > buttons
                         button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
@@ -1291,6 +1303,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         for p in range(1, len(path)):
                             parent = tree.findNode(path[0:p])
                             button = QtWidgets.QToolButton()
+                            button.setFont(font)
                             button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
                             button.setText(parent.name)
                             button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
@@ -1299,6 +1312,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             button.setMenu(self.createParentMenu(treeNumber, parent.parent))
                             buttonbox.addButton(button, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
                         button = QtWidgets.QToolButton()
+                        button.setFont(font)
                         button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
                         button.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)     # get square buttons of same size as text buttons for > buttons
                         button.setStyleSheet("::menu-indicator{ image: none; }")
@@ -1327,16 +1341,18 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         text = text and str(text) or ""     # display "None" values as empty string
                         height = self.currentItem.fields[key]['type'] == 'text' and 10 or 25
                         widget = TextEdit(text, lambda row=n: self.tableWidgetCellChanged(row, 3), height)
+                        widget.setFont(font)
                         self.tableWidget.setCellWidget(n, 3, widget)
                     elif self.currentItem.fields[key]['type'] == 'url':
                         value = self.currentItem.fields[key]["content"]
                         value = value and str(value) or ""  # display "None" values as empty string
-                        widget = UrlWidget(value, lambda row=n: self.tableWidgetCellChanged(row, 3))
+                        widget = UrlWidget(value, lambda row=n: self.tableWidgetCellChanged(row, 3), font)
                         self.tableWidget.setCellWidget(n, 3, widget)
                     elif self.currentItem.fields[key]['type'] == 'timer':
                         value = self.currentItem.fields[key]["content"]
                         running_since = self.currentItem.fields[key]["running_since"]
-                        widget = TimerWidget(value, running_since, lambda row=n: self.tableWidgetCellChanged(row, 3))
+                        widget = TimerWidget(value, running_since, lambda row=n: self.tableWidgetCellChanged(row, 3),
+                                             font)
                         self.tableWidget.setCellWidget(n, 3, widget)
                     else:
                         value = self.currentItem.fields[key]["content"]
@@ -1395,7 +1411,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 name.setFlags(nonEditFlags)
                 value = QtWidgets.QTableWidgetItem(fieldname)
                 font = name.font()
-                font.setPointSize(font.pointSize() + 3)
+                font.setPointSize(self._dataFontPointSize + 3)
                 value.setFont(font)
                 self.tableWidget.setItem(n, 1, name)
                 self.tableWidget.setItem(n, 3, value)
