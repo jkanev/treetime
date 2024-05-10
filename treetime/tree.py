@@ -768,7 +768,7 @@ class Node:
         # return
         return text
 
-    def to_html(self, header=False, footer=False, fields=True, context=False, style='tiles', background='blue',
+    def to_html(self, header=False, footer=False, fields=True, context=False, continuous=False, style='tiles', background='blue',
                 depth=-1, current_depth=0):
 
         # evaluate context
@@ -779,7 +779,9 @@ class Node:
 
         # page header
         if header and style == 'tiles' and not context:
-            html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
+            html = '<!DOCTYPE html><html lang="en">' \
+                   + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
+                   + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
@@ -809,7 +811,9 @@ class Node:
                    'div.node-path {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    '</style></head><body>'
         elif header and style == 'tiles' and context:
-            html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
+            html = '<!DOCTYPE html><html lang="en">' \
+                   + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
+                   + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em;} ' \
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
@@ -840,7 +844,9 @@ class Node:
                    'div.node-path {position: relative; float: left; width: 40em; margin: 0.3em; padding: 0.3em; }' \
                    '</style></head><body>'
         elif header and style == 'list':
-            html = '<!DOCTYPE html><html lang="en"><meta charset="utf-8"><title>TreeTime Export</title><style>' \
+            html = '<!DOCTYPE html><html lang="en">' \
+                   + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
+                   + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} ' \
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(80, 0, 0, 0.03);}' \

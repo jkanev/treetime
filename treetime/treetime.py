@@ -22,7 +22,6 @@
 
 import sys
 
-from .item import *
 from .tree import *
 from .mainwindow import *
 import base64
@@ -30,13 +29,11 @@ import datetime
 import time
 import os.path
 import platform
-from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtSvg
+from PyQt6 import QtCore, QtGui, QtWidgets
 from threading import Timer
 from PyQt6.QtGui import QPalette, QColor, QIcon, QClipboard, QGuiApplication
 from PyQt6.QtWidgets import QAbstractItemView
-from PyQt6.QtCore import QFile, QTextStream
 
-from pkg_resources import resource_filename
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
 # sys.setrecursionlimit(50)
@@ -426,6 +423,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.write_delay = 0
         self.write_timer = False
         self.locked = True
+        self.export_continuous = False
         self.auto_updates = []
         self.update_timer = QtCore.QTimer(self)
         self.update_timer.timeout.connect(self.updateTimers)
@@ -743,6 +741,67 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.changeEditMode('tree')
 
     def pushButtonExportClicked(self):
+
+        file = ""
+
+        # We're not in contiuous mode -- show file dialog
+        if not self.export_continuous:
+            if self.currentItem:
+
+                exportFormat = self.comboBoxExportFormat.currentText()
+                exportToFile = self.radioButtonExportToFile.isChecked()
+                if exportToFile:
+                    extensions = {
+                        "HTML (Tiles)": "HTML Files (*.html)",
+                        "HTML (List)": "HTML Files (*.html)",
+                        "Text/Unicode": "Text Files (*.txt)",
+                        "CSV": "CSV (Comma-separated Values) Files (*.csv)"
+                    }
+                    fileDir = os.path.dirname(self.settings.value('exportFile')) or ''
+                    file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to " + exportFormat, fileDir,
+                                                                 extensions[exportFormat])[0]
+                    if not file:
+                        return
+
+                # we're starting continous mode -- set the texts, set the flag, and call the timer function
+                if self.radioButtonExportContinuously.isChecked():
+                    self.pushButtonExport.setText("Stop Conticontinuous export")
+                    self.labelExportFileDescription.setText("Exporting continuously to:")
+                    self.radioButtonExportContinuously.setDisabled(True)
+                    self.radioButtonExportOnce.setDisabled(True)
+                    self.export_continuous = True
+                    self.delayedContinuousExport(file)
+
+                # we're doing a standard export
+                self.export(file)
+
+        # We're stopping continuous mode -- set the texts, set the flag
+        else:
+            self.pushButtonExport.setText("Export")
+            self.labelExportFileDescription.setText("Last exported file:")
+            self.radioButtonExportContinuously.setEnabled(True)
+            self.radioButtonExportOnce.setEnabled(True)
+            self.export_continuous = False
+
+
+    def delayedContinuousExport(self, file):
+        """
+        Writes to file using current settings, then checks current state (user may have stopped), then waits for three
+        seconds, then calls itself
+        Used to loop the continuous file writing.
+        """
+
+        # First writes to file
+        self.export(file, continuous=True)
+
+        # If mode active, either calls itself after two seconds
+        if self.export_continuous:
+            self.export_timer = Timer(3, lambda: self.delayedContinuousExport(file))
+            self.export_timer.start()
+
+        # If not, do nothing
+
+    def export(self, file, continuous=False):
         """
         Callback for the text/html/csv export. Asks for a file name, then writes branch text export into it.
         """
@@ -755,19 +814,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # Select target file or cancel
             exportToFile = self.radioButtonExportToFile.isChecked()
-            file = ""
-            if exportToFile:
-                extensions = {
-                    "HTML (Tiles)": "HTML Files (*.html)",
-                    "HTML (List)": "HTML Files (*.html)",
-                    "Text/Unicode": "Text Files (*.txt)",
-                    "CSV": "CSV (Comma-separated Values) Files (*.csv)"
-                }
-                fileDir = os.path.dirname(self.settings.value('exportFile')) or ''
-                file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to " + exportFormat, fileDir,
-                                                             extensions[exportFormat])[0]
-                if not file:
-                    return
 
             # The target string for file write / clipboard write
             data = ""
@@ -786,12 +832,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data = currentNode.to_txt(depth=depth, fields=allFields)
                     elif exportFormat == "HTML (List)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
-                                                          style='list')
+                                                          style='list', continuous=continuous)
                     else:
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
-                                                          style='tiles')
+                                                          style='tiles', continuous=continuous)
                 else:
-                    data = ("No branch selected, export is empty")
+                    if continuous:
+                        return
+                    else:
+                        data = ("No branch selected, export is empty")
 
             # export entire tree
             elif self.radioButtonExportTree.isChecked():
@@ -819,15 +868,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         if c == 0:
                             background = next_background[background]
                             data += children[c].to_html(header=True, background=background, depth=depth,
-                                                        fields=allFields, style=style)[1]
+                                                        fields=allFields, style=style, continuous=continuous)[1]
                         elif c == len(children) - 1:
                             background = next_background[background]
                             data += children[c].to_html(footer=True, background=background, depth=depth,
-                                                        fields=allFields, style=style)[1]
+                                                        fields=allFields, style=style, continuous=continuous)[1]
                         else:
                             background = next_background[background]
                             data += children[c].to_html(background=background, depth=depth,
-                                                        fields=allFields, style=style)[1]
+                                                        fields=allFields, style=style, continuous=continuous)[1]
 
             # export current node with context
             else:
@@ -842,10 +891,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data = currentNode.to_txt(depth=depth, fields=allFields, context=path)
                     elif exportFormat == "HTML (List)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
-                                                          fields=allFields, style='list')
+                                                          fields=allFields, style='list', continuous=continuous)
                     else:
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
-                                                          fields=allFields, style='tiles')
+                                                          fields=allFields, style='tiles', continuous=continuous)
                 else:
                     data = ("No branch selected, export is empty")
 

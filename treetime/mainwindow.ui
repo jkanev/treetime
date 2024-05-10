@@ -177,15 +177,15 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="pageFile">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>229</width>
+         <height>816</height>
         </rect>
        </property>
        <attribute name="label">
@@ -349,7 +349,7 @@
          </widget>
         </item>
         <item row="10" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBoxSource">
+         <widget class="QGroupBox" name="groupBoxExportSource">
           <property name="flat">
            <bool>true</bool>
           </property>
@@ -400,7 +400,7 @@
          </widget>
         </item>
         <item row="11" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBoxExport">
+         <widget class="QGroupBox" name="groupBoxExportContent">
           <property name="flat">
            <bool>true</bool>
           </property>
@@ -463,7 +463,7 @@
           </layout>
          </widget>
         </item>
-        <item row="13" column="0">
+        <item row="14" column="0">
          <widget class="QLabel" name="label_6">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -479,7 +479,7 @@
           </property>
          </widget>
         </item>
-        <item row="13" column="1">
+        <item row="14" column="1">
          <widget class="QComboBox" name="comboBoxExportDepth">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -547,62 +547,14 @@
           </item>
          </widget>
         </item>
-        <item row="15" column="0" colspan="2">
-         <widget class="QLabel" name="labelExportFileDescription">
+        <item row="15" column="0">
+         <widget class="QLabel" name="label_15">
           <property name="text">
-           <string>Last exported file:</string>
+           <string>Format</string>
           </property>
          </widget>
         </item>
-        <item row="16" column="0" colspan="2">
-         <widget class="QLabel" name="labelCurrentExportFile">
-          <property name="font">
-           <font>
-            <italic>true</italic>
-            <kerning>true</kerning>
-           </font>
-          </property>
-          <property name="text">
-           <string>[last exported file name]</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-          <property name="openExternalLinks">
-           <bool>true</bool>
-          </property>
-          <property name="textInteractionFlags">
-           <set>Qt::NoTextInteraction</set>
-          </property>
-         </widget>
-        </item>
-        <item row="17" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonExport">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export.&lt;/span&gt;&lt;br/&gt;Starts the export to a file after showing a file selection dialog, or to the clipboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Export</string>
-          </property>
-         </widget>
-        </item>
-        <item row="23" column="0" colspan="2">
-         <spacer name="verticalSpacer_18">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="14" column="1">
+        <item row="15" column="1">
          <widget class="QComboBox" name="comboBoxExportFormat">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -635,12 +587,86 @@
           </item>
          </widget>
         </item>
-        <item row="14" column="0">
-         <widget class="QLabel" name="label_15">
+        <item row="17" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBoxExportContinuous">
+          <property name="title">
+           <string/>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="5" column="1">
+            <widget class="QRadioButton" name="radioButtonExportContinuously">
+             <property name="text">
+              <string>Continuously</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QRadioButton" name="radioButtonExportOnce">
+             <property name="text">
+              <string>Once</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="18" column="0" colspan="2">
+         <widget class="QLabel" name="labelExportFileDescription">
           <property name="text">
-           <string>Format</string>
+           <string>Last exported file:</string>
           </property>
          </widget>
+        </item>
+        <item row="19" column="0" colspan="2">
+         <widget class="QLabel" name="labelCurrentExportFile">
+          <property name="font">
+           <font>
+            <italic>true</italic>
+            <kerning>true</kerning>
+           </font>
+          </property>
+          <property name="text">
+           <string>[last exported file name]</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="openExternalLinks">
+           <bool>true</bool>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::NoTextInteraction</set>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonExport">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export.&lt;/span&gt;&lt;br/&gt;Starts the export to a file after showing a file selection dialog, or to the clipboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Export</string>
+          </property>
+         </widget>
+        </item>
+        <item row="26" column="0" colspan="2">
+         <spacer name="verticalSpacer_18">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -1038,8 +1064,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>127</width>
-         <height>164</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
