@@ -107,6 +107,9 @@ Past
 * April 2024: Extended documentation on readthedocs.io. Release **version 2024.1**
 * April 2024: Restructured export area, added name-only export. Made all export options (full tree / branch / node with contect) (all fields / names only) available for all file formats and for both file and clipboard export.
 * April 2024: Release **version 2024.2**
+* Done March 2024: Implemented changeable font size (zoom) of data display
+* Done May 2024:  Implemented continuous text and html export
+* July 2024: Release **version 2024.3**
 
 Present
 -------
@@ -115,8 +118,7 @@ Present
 * Extend documentation on readthedocs.io
 * Add more fields
 * Add more examples and more template data files
-* Implement tree field editing with graphical dialog (add, remove, change tree fields)
-* Implement data item field editing with graphical dialog (add, remove, change data item fields)
+* Structure editing/viewing in extra tab (editing the structure, number and definitions and trees and tree fields and data fields)
 
 Future
 ------
@@ -125,12 +127,10 @@ Near Future
 ^^^^^^^^^^^
 
 * Implement search function
-* Implementing continuous text and html export (to use treetime as a meeting note-taking app where participants view an auto-updating html file with the notes)
 
 Mid Future
 ^^^^^^^^^^
 
-* Implement graphical UI for editing tree field and data field definitions
 * Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 
 Far Future

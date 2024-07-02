@@ -69,7 +69,7 @@ class Ui_MainWindow(object):
         self.toolBox.setToolTip("")
         self.toolBox.setObjectName("toolBox")
         self.pageFile = QtWidgets.QWidget()
-        self.pageFile.setGeometry(QtCore.QRect(0, 0, 229, 816))
+        self.pageFile.setGeometry(QtCore.QRect(0, -56, 229, 816))
         self.pageFile.setObjectName("pageFile")
         self.formLayout = QtWidgets.QFormLayout(self.pageFile)
         self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -472,7 +472,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(-1)
-        self.toolBox.setCurrentIndex(0)
+        self.toolBox.setCurrentIndex(1)
         self.actionQuit.triggered.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -585,7 +585,7 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Noto Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime 2024.2+ (Development)</p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime 2024.3</p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Official website:<br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">tree-time.info</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Updates and source code:<br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">github.com/jkanev/treetime</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">    Documentation:<br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">treetime-data-manager.</span></a><br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">readthedocs.io</span></a></p></body></html>"))

@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2024.2](https://github.com/jkanev/treetime/releases/tag/2024.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2024.3](https://github.com/jkanev/treetime/releases/tag/2024.3) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -217,14 +217,17 @@ Past
 * Done April 2024: Extended documentation on readthedocs.io. Release **version 2024.1**
 * Done April 2024: Restructured export area, added name-only export. Made all export options (full tree / branch / node with contect) (all fields / names only) available for all file formats and for both file and clipboard export.
 * Done April 2024: Release **version 2024.2**
+* Done March 2024: Implemented changeable font size (zoom) of data display
+* Done May 2024:  Implemented continuous text and html export
+* Done July 2024: Release **version 2024.3**
 
 Present
 - Running: Bugfixing
 - Running: Extend documentation on readthedocs.io
-- Running: Implementing continuous text and html export (to use treetime as a meeting note-taking app where participants view an auto-updating html file with the notes)
+- Running: 
 - Running: Add more examples and more template data files
-- Running: Implement tree field editing with graphical dialog (add, remove, change tree fields)
-- Running: Implement data item field editing with graphical dialog (add, remove, change data item fields)
+- Running: Structure editing/viewing in extra tab (editing the structure, number and definitions and trees and tree fields and data fields)
+
   
 Future
 - Near Future: Implement search function
