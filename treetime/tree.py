@@ -789,7 +789,7 @@ class Node:
                    'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
-                   'div.fields {position: relative; float: left; clear: left; width: min-content; border-top: 1px solid; border-color: #808080;} ' \
+                   'div.fields {position: relative; float: left; clear: left; width: auto; border-top: 1px solid; border-color: #808080;} ' \
                    'div.children {position: relative; float: left; clear: left; width: max-content;} ' \
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.min-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \

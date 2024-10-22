@@ -1274,7 +1274,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         pass
 
                 # select current item in all trees
-                self.currentItem = qnode.sourceNode.item
+                self.currentItem = qnode and (qnode.sourceNode and qnode.sourceNode.item or None) or None
                 if self.currentItem is None:
                     self.tableWidget.clear()
                     self.gridInitialised = False
