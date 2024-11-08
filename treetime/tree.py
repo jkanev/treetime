@@ -784,9 +784,9 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
                    'em {color: #555;}' \
-                   'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
-                   'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
-                   'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
+                   'div.red {background-color: rgba(250, 220, 220, 0.1);}' \
+                   'div.green {background-color: rgba(220, 250, 220, 0.1);}' \
+                   'div.blue {background-color: rgba(220, 220, 250, 0.1);}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
                    'div.fields {position: relative; float: left; clear: left; width: auto; border-top: 1px solid; border-color: #808080;} ' \
@@ -816,9 +816,9 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em;} ' \
                    'em {color: #555;}' \
-                   'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
-                   'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
-                   'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
+                   'div.red {background-color: rgba(250, 220, 220, 0.1);}' \
+                   'div.green {background-color: rgba(220, 250, 220, 0.1);}' \
+                   'div.blue {background-color: rgba(220, 220, 250, 0.1);}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 12em;} ' \
                    'div.name_current {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 48.5em;} ' \
@@ -849,9 +849,9 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} ' \
                    'em {color: #555;}' \
-                   'div.red {background-color: rgba(80, 0, 0, 0.03);}' \
-                   'div.green {background-color: rgba(0, 80, 0, 0.03);}' \
-                   'div.blue {background-color: rgba(0, 0, 80, 0.03);}' \
+                   'div.red {background-color: rgba(250, 220, 220, 0.1);}' \
+                   'div.green {background-color: rgba(220, 250, 220, 0.1);}' \
+                   'div.blue {background-color: rgba(220, 220, 250, 0.1);}' \
                    'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: max-content; border-color: #808080;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left;} ' \
                    'div.fields {position: relative; float: left; width: max-content; border-color: #808080;}' \
