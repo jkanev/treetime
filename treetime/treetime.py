@@ -166,8 +166,10 @@ class UrlWidget(QtWidgets.QWidget):
 
 class TextEdit(QtWidgets.QPlainTextEdit):
     """
-    Special custom widget class for URL fields
+    Special custom widget class for text fields
     """
+
+    update_timer = None
 
     def __init__(self, text, callback, height, parent=None):
         """
@@ -180,9 +182,22 @@ class TextEdit(QtWidgets.QPlainTextEdit):
         self.has_changed = False
         self.textChanged.connect(self.notifyChange)
         self.setFixedHeight(height * int(self.height()/25))
+        self.update_timer = QtCore.QTimer(self)
+        self.update_timer.timeout.connect(self.update)
 
     def notifyChange(self):
         self.has_changed = True
+
+    def update(self):
+        if self.has_changed:
+            self.has_changed = False
+            self.callback()
+
+    def focusInEvent(self, e: QtGui.QFocusEvent):
+        """
+        Callback, to start timer for periodic update. Doing this on focus-out is too slow during meetings.
+        """
+        self.update_timer.start(1000)
 
     def focusOutEvent(self, e: QtGui.QFocusEvent):
         """
@@ -191,15 +206,14 @@ class TextEdit(QtWidgets.QPlainTextEdit):
         if self.has_changed:
             self.has_changed = False
             self.callback()
+        self.update_timer.stop()
         super().focusOutEvent(e)
 
     def leaveEvent(self, e: QtCore.QEvent):
         """
         Callback, to save the new text and notify the parent that the text has changed
         """
-        if self.has_changed:
-            self.has_changed = False
-            self.callback()
+        self.update()
         super().leaveEvent(e)
 
 

@@ -916,7 +916,7 @@ class Node:
         child_html = ""
 
         # children
-        if children:
+        if children and depth:
 
             child_count = 0
             sorted_children = sorted(self.children, key=lambda c: c.name)
@@ -926,10 +926,9 @@ class Node:
                 # write next child
                 background = next_background[background]
                 child_columns = 1     # number of columns needed by child sub-branch
-                if depth:
-                    child_columns, child_html = sorted_children[i].to_html(background=background, depth=depth-1,
-                                                                           fields=fields, context=context,
-                                                                           current_depth=current_depth+1, style=style)
+                child_columns, child_html = sorted_children[i].to_html(background=background, depth=depth-1,
+                                                                       fields=fields, context=context,
+                                                                       current_depth=current_depth+1, style=style)
 
                 # start new child group on first child in group of 5, or if child needs more columns than available
                 if child_columns > 5-child_count:
