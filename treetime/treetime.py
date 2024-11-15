@@ -198,6 +198,7 @@ class TextEdit(QtWidgets.QPlainTextEdit):
         Callback, to start timer for periodic update. Doing this on focus-out is too slow during meetings.
         """
         self.update_timer.start(1000)
+        super().focusInEvent(e)
 
     def focusOutEvent(self, e: QtGui.QFocusEvent):
         """
