@@ -882,15 +882,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     for c in range(0, len(children)):
                         if c == 0:
                             background = next_background[background]
-                            data += children[c].to_html(header=True, background=background, depth=depth,
+                            data += children[c].to_html(header=True, depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
                         elif c == len(children) - 1:
                             background = next_background[background]
-                            data += children[c].to_html(footer=True, background=background, depth=depth,
+                            data += children[c].to_html(footer=True, depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
                         else:
                             background = next_background[background]
-                            data += children[c].to_html(background=background, depth=depth,
+                            data += children[c].to_html(depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
 
             # export current node with context
@@ -1240,12 +1240,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 parent = QNode(b, c.fieldOrder)
                 root.addChild(parent)
 
-            # expand name column so all names are readable
-            self.treeWidgets[n].resizeColumnToContents(0)
-
             # init sorting
             self.treeWidgets[n].setSortingEnabled(True)
             self.treeWidgets[n].sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
+
+            # expand name column so all names are readable
+            self.treeWidgets[n].resizeColumnToContents(0)
+
 
     def _protectCells(self, row, columns):
 
@@ -1913,6 +1914,7 @@ class TreeTime:
         # run
         main_window.show()
         sys.exit(app.exec())
+
 
 class ApplicationLogo:
 

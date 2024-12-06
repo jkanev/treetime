@@ -768,14 +768,14 @@ class Node:
         # return
         return text
 
-    def to_html(self, header=False, footer=False, fields=True, context=False, continuous=False, style='tiles', background='blue',
+    def to_html(self, header=False, footer=False, fields=True, context=False, continuous=False, style='tiles',
                 depth=-1, current_depth=0):
 
         # evaluate context
         fields_local, children, context_current = self._evaluateContext(fields, context)
 
         # background colours
-        next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
+        backgrounds = ['yellow', 'green', 'red', 'blue']
 
         # page header
         if header and style == 'tiles' and not context:
@@ -784,9 +784,10 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
                    'em {color: #555;}' \
-                   'div.red {background-color: rgba(250, 220, 220, 0.1);}' \
-                   'div.green {background-color: rgba(220, 250, 220, 0.1);}' \
-                   'div.blue {background-color: rgba(220, 220, 250, 0.1);}' \
+                   'div.red {background-color: rgba(255, 250, 250);}' \
+                   'div.yellow {background-color: rgba(255, 255, 230);}' \
+                   'div.green {background-color: rgba(250, 255, 230);}' \
+                   'div.blue {background-color: rgba(250, 250, 255);}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
                    'div.fields {position: relative; float: left; clear: left; width: auto; border-top: 1px solid; border-color: #808080;} ' \
@@ -816,9 +817,10 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em;} ' \
                    'em {color: #555;}' \
-                   'div.red {background-color: rgba(250, 220, 220, 0.1);}' \
-                   'div.green {background-color: rgba(220, 250, 220, 0.1);}' \
-                   'div.blue {background-color: rgba(220, 220, 250, 0.1);}' \
+                   'div.red {background-color: rgba(255, 250, 250);}' \
+                   'div.yellow {background-color: rgba(255, 255, 230);}' \
+                   'div.green {background-color: rgba(250, 255, 230);}' \
+                   'div.blue {background-color: rgba(250, 250, 255);}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 12em;} ' \
                    'div.name_current {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 48.5em;} ' \
@@ -849,9 +851,10 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} ' \
                    'em {color: #555;}' \
-                   'div.red {background-color: rgba(250, 220, 220, 0.1);}' \
-                   'div.green {background-color: rgba(220, 250, 220, 0.1);}' \
-                   'div.blue {background-color: rgba(220, 220, 250, 0.1);}' \
+                   'div.red {background-color: rgba(255, 250, 250);}' \
+                   'div.yellow {background-color: rgba(255, 255, 230);}' \
+                   'div.green {background-color: rgba(250, 255, 230);}' \
+                   'div.blue {background-color: rgba(250, 250, 255);}' \
                    'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: max-content; border-color: #808080;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left;} ' \
                    'div.fields {position: relative; float: left; width: max-content; border-color: #808080;}' \
@@ -879,7 +882,7 @@ class Node:
             html = ''
 
         # node header
-        html += '<div class="node {}">'.format(background)
+        html += '<div class="node {}">'.format(backgrounds[(depth+1) % len(backgrounds)])
         needed_columns = context_current and 5 or 1    # the amount of columns needed by this child
 
         # node name
@@ -924,9 +927,8 @@ class Node:
             for i in range(len(sorted_children)):
 
                 # write next child
-                background = next_background[background]
                 child_columns = 1     # number of columns needed by child sub-branch
-                child_columns, child_html = sorted_children[i].to_html(background=background, depth=depth-1,
+                child_columns, child_html = sorted_children[i].to_html(depth=depth-1,
                                                                        fields=fields, context=context,
                                                                        current_depth=current_depth+1, style=style)
 
