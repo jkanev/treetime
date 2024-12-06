@@ -782,7 +782,7 @@ class Node:
             html = '<!DOCTYPE html><html lang="en">' \
                    + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
-                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} '\
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} '\
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(255, 250, 250);}' \
                    'div.yellow {background-color: rgba(255, 255, 230);}' \
@@ -849,7 +849,7 @@ class Node:
             html = '<!DOCTYPE html><html lang="en">' \
                    + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
-                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.8em;} ' \
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} ' \
                    'em {color: #555;}' \
                    'div.red {background-color: rgba(255, 250, 250);}' \
                    'div.yellow {background-color: rgba(255, 255, 230);}' \
