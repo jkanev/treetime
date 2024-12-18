@@ -774,8 +774,8 @@ class Node:
         # evaluate context
         fields_local, children, context_current = self._evaluateContext(fields, context)
 
-        # background colours
-        backgrounds = ['yellow', 'green', 'red', 'blue']
+        # background colours, applied by depth: blue, red, yellow, green
+        backgrounds = ['blue', 'green', 'yellow', 'red']
 
         # page header
         if header and style == 'tiles' and not context:
