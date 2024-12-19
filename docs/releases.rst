@@ -99,7 +99,7 @@ Past
 * October 2023: Fixed crash when exporting text to clipboard.
 
 2024
-----
+^^^^
 
 * January 2024: Changed node symbol to small circle in text eport (after asking users on social media).
 * February 2024: Implemented min, max, min-string, max-string fields.
@@ -110,6 +110,10 @@ Past
 * Done March 2024: Implemented changeable font size (zoom) of data display
 * Done May 2024:  Implemented continuous text and html export
 * July 2024: Release **version 2024.3**
+* October 2024: Fixed crash bug and improved html output
+* November 2024: Improved colours in html output, implemented continuous change to export for textfields even if the focus stays in, fixed broken layout of html export
+* December 2024: Changed colours in html output (again?), increased font size
+* December 2024: Release **version 2024.4**
 
 Present
 -------
