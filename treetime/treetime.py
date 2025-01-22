@@ -876,20 +876,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data += c.to_txt(depth=depth, fields=allFields)
                         data += '\n'
                 else:
-                    next_background = {'blue': 'green', 'green': 'red', 'red': 'blue'}
-                    background = 'blue'
                     style = (exportFormat == "HTML (List)" and "list") or "tiles"
                     for c in range(0, len(children)):
                         if c == 0:
-                            background = next_background[background]
                             data += children[c].to_html(header=True, depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
                         elif c == len(children) - 1:
-                            background = next_background[background]
                             data += children[c].to_html(footer=True, depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
                         else:
-                            background = next_background[background]
                             data += children[c].to_html(depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
 
