@@ -784,13 +784,13 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} '\
                    'em {color: #555;}' \
-                   'div.red {background-color: #fff5f5;}' \
-                   'div.orange {background-color: #fffef5;}' \
-                   'div.yellow {background-color: #f8fff5;}' \
-                   'div.green {background-color: #f5fffb;}' \
-                   'div.turquoise {background-color: #f5fbff;}' \
-                   'div.blue {background-color: #f8f5ff;}' \
-                   'div.purple {background-color: #fff5fe;}' \
+                   'div.red {background-color: #fff9ff;}' \
+                   'div.orange {background-color: #fffdf7;}' \
+                   'div.yellow {background-color: #fdfff7;}' \
+                   'div.green {background-color: #fbfff0;}' \
+                   'div.turquoise {background-color: #f8fcff;}' \
+                   'div.blue {background-color: #f9f9ff;}' \
+                   'div.purple {background-color: #fbf7ff;}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 100%;} ' \
                    'div.fields {position: relative; float: left; clear: left; width: auto; border-top: 1px solid; border-color: #808080;} ' \
@@ -820,13 +820,13 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em;} ' \
                    'em {color: #555;}' \
-                   'div.red {background-color: #fff5f5;}' \
-                   'div.orange {background-color: #fffef5;}' \
-                   'div.yellow {background-color: #f8fff5;}' \
-                   'div.green {background-color: #f5fffb;}' \
-                   'div.turquoise {background-color: #f5fbff;}' \
-                   'div.blue {background-color: #f8f5ff;}' \
-                   'div.purple {background-color: #fff5fe;}' \
+                   'div.red {background-color: #fff9ff;}' \
+                   'div.orange {background-color: #fffdf7;}' \
+                   'div.yellow {background-color: #fdfff7;}' \
+                   'div.green {background-color: #fbfff0;}' \
+                   'div.turquoise {background-color: #f8fcff;}' \
+                   'div.blue {background-color: #f9f9ff;}' \
+                   'div.purple {background-color: #fbf7ff;}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left; width: 12em;} ' \
@@ -858,13 +858,13 @@ class Node:
                    + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} ' \
                    'em {color: #555;}' \
-                   'div.red {background-color: #fff5f5;}' \
-                   'div.orange {background-color: #fffef5;}' \
-                   'div.yellow {background-color: #f8fff5;}' \
-                   'div.green {background-color: #f5fffb;}' \
-                   'div.turquoise {background-color: #f5fbff;}' \
-                   'div.blue {background-color: #f8f5ff;}' \
-                   'div.purple {background-color: #fff5fe;}' \
+                   'div.red {background-color: #fff9ff;}' \
+                   'div.orange {background-color: #fffdf7;}' \
+                   'div.yellow {background-color: #fdfff7;}' \
+                   'div.green {background-color: #fbfff0;}' \
+                   'div.turquoise {background-color: #f8fcff;}' \
+                   'div.blue {background-color: #f9f9ff;}' \
+                   'div.purple {background-color: #fbf7ff;}' \
                    'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: max-content; border-color: #808080;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left;} ' \
