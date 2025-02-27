@@ -21,6 +21,8 @@ from .item import *
 from textwrap import wrap
 import datetime
 from math import floor, ceil, inf
+import graphviz as gv
+
 
 class Field:
     """
@@ -643,6 +645,56 @@ class Node:
 
         # return
         return csv
+
+    def to_image(self, fields=True, context=False, engine='dot', colour='blue', exclude_root=False, first=True):
+        """ Creates an image (png) using graphics with different style options
+        :param fields: Whether (True/False) to include fields in the output
+        :param context: For handing information down recursively
+        :param engine: The graphviz engine to use
+        :param colour: The colour of the first node
+        :param exclude_root: Whether to exclude the root node in plotting
+        :param first: Whether this is the final call (start/end of recursion)
+        :return: A bitmap
+        """
+
+        if not context:
+            context = {'parent_id': False}
+
+        # background colours, applied by depth: blue, red, yellow, green
+        colours = {'blue': '#f9f9ff', 'purple': '#fbf7ff', 'red': '#fff9ff', 'orange': '#fffdf7',
+                       'yellow': '#fdfff7', 'green': '#fbfff0', 'turquoise': '#f8fcff'}
+        next_colour = {'blue': 'purple', 'purple': 'red', 'red': 'orange', 'orange': 'yellow', 'yellow': 'green',
+                           'green': 'turquoise', 'turquoise': 'blue'}
+
+        # if top call, create graph object
+        if first:
+            graph = gv.Digraph(graph_attr={'overlap': 'prism'})
+            context['graph'] = graph
+        else:
+            graph = context['graph']
+
+        # add myself, using the path as ID
+        if not exclude_root:
+            node_id = "{}".format(self.path)
+            graph.node(node_id, self.name, shape="rectangle", color=colours[colour], style='filled')
+            if context['parent_id']:
+                graph.edge(context['parent_id'], node_id)
+
+        # recurse over children
+        for c in self.children:
+            if exclude_root:
+                context['parent_id'] = False
+            else:
+                context['parent_id'] = node_id
+            c.to_image(fields=fields, context=context, engine=engine, colour=next_colour[colour], first=False)
+
+        # end of recursion, create picture
+        image = None
+        if first:
+            image = graph.unflatten(stagger=5,
+                                    chain=3,
+                                    fanout=3).pipe(format='png', engine=engine)
+        return image
 
     def to_txt(self, fields=True, context=False, lastitem=[], depth=-1):
         """

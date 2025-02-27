@@ -770,6 +770,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         "HTML (Tiles)": "HTML Files (*.html)",
                         "HTML (List)": "HTML Files (*.html)",
                         "Text/Unicode": "Text Files (*.txt)",
+                        "Image/PNG (Top-down Graphics)": "Image Files (*.png)",
+                        "Image/PNG (Circular Graphics)": "Image Files (*.png)",
                         "CSV": "CSV (Comma-separated Values) Files (*.csv)"
                     }
                     fileDir = os.path.dirname(self.settings.value('exportFile')) or ''
@@ -832,6 +834,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # The target string for file write / clipboard write
             data = ""
+            wtype = 'w'     # type to write, either 'w' for writing string, or 'wb' for writing bytes
             depth = self.comboBoxExportDepth.currentIndex() - 1
 
             # export current branch
@@ -848,9 +851,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     elif exportFormat == "HTML (List)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
                                                           style='list', continuous=continuous)
-                    else:
+                    elif exportFormat == "HTML (Tiles)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
                                                           style='tiles', continuous=continuous)
+                    elif exportFormat == "Image/PNG (Top-down Graphics)":
+                        data = currentNode.to_image(fields=allFields, engine='dot')
+                        wtype = 'wb'
+                    elif exportFormat == "Image/PNG (Circular Graphics)":
+                        data = currentNode.to_image(fields=allFields, engine='neato')
+                        wtype = 'wb'
+                    else:
+                        data = None
                 else:
                     if continuous:
                         return
@@ -875,7 +886,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data += '\n'
                         data += c.to_txt(depth=depth, fields=allFields)
                         data += '\n'
-                else:
+                elif exportFormat == "HTML (List)" or exportFormat == "HTML (Tiles)":
                     style = (exportFormat == "HTML (List)" and "list") or "tiles"
                     for c in range(0, len(children)):
                         if c == 0:
@@ -887,6 +898,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         else:
                             data += children[c].to_html(depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
+                elif exportFormat == "Image/PNG (Top-down Graphics)":
+                    data = rootNode.to_image(fields=allFields, engine='dot', exclude_root=True)
+                    wtype = 'wb'
+                elif exportFormat == "Image/PNG (Circular Graphics)":
+                    data = rootNode.to_image(fields=allFields, engine='neato', exclude_root=True)
+                    wtype = 'wb'
+                else:
+                    data = None
 
             # export current node with context
             else:
@@ -902,15 +921,23 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     elif exportFormat == "HTML (List)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='list', continuous=continuous)
-                    else:
+                    elif exportFormat == "HTML (Tiles)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='tiles', continuous=continuous)
+                    elif exportFormat == "Image/PNG (Top-down Graphics)":
+                        data = currentNode.to_image(fields=allFields, engine='dot')
+                        wtype = 'wb'
+                    elif exportFormat == "Image/PNG (Circular Graphics)":
+                        data = currentNode.to_image(fields=allFields, engine='neato')
+                        wtype = 'wb'
+                    else:
+                        data = None
                 else:
                     data = ("No branch selected, export is empty")
 
             # save to file or to clipboard
             if exportToFile:
-                with open(file, "w") as f:
+                with open(file, wtype) as f:
                     f.write(data)
                 self.labelCurrentExportFile.setText(file)
                 self.settings.setValue("exportFile", file)
