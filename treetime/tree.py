@@ -646,7 +646,8 @@ class Node:
         # return
         return csv
 
-    def to_image(self, fields=True, context=False, engine='dot', colour='blue', exclude_root=False, first=True):
+    def to_image(self, fields=True, context=False, depth=-1, engine='dot',
+                 graph=False, parent_id=False, colour='blue', exclude_root=False, current_depth=0):
         """ Creates an image (png) using graphics with different style options
         :param fields: Whether (True/False) to include fields in the output
         :param context: For handing information down recursively
@@ -657,40 +658,73 @@ class Node:
         :return: A bitmap
         """
 
-        if not context:
-            context = {'parent_id': False}
-
         # background colours, applied by depth: blue, red, yellow, green
         colours = {'blue': '#f9f9ff', 'purple': '#fbf7ff', 'red': '#fff9ff', 'orange': '#fffdf7',
                        'yellow': '#fdfff7', 'green': '#fbfff0', 'turquoise': '#f8fcff'}
         next_colour = {'blue': 'purple', 'purple': 'red', 'red': 'orange', 'orange': 'yellow', 'yellow': 'green',
                            'green': 'turquoise', 'turquoise': 'blue'}
 
+        # evaluate context
+        fields_local, children, context_current = self._evaluateContext(fields, context)
+
         # if top call, create graph object
-        if first:
+        if not current_depth:
             graph = gv.Digraph(graph_attr={'overlap': 'prism'})
-            context['graph'] = graph
-        else:
-            graph = context['graph']
+
+        # create id
+        node_id = "{}".format(self.path)
 
         # add myself, using the path as ID
         if not exclude_root:
-            node_id = "{}".format(self.path)
-            graph.node(node_id, self.name, shape="rectangle", color=colours[colour], style='filled')
-            if context['parent_id']:
-                graph.edge(context['parent_id'], node_id)
+
+            # create child string
+            if fields_local:
+                field_string = ""
+                for name, field in self.fields.items():
+                    content = field.getString()
+                    if content:     # wrap field content, larger bits of text start with a newline
+                        lines = Node._wrap_lines(content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
+                        field_string += '<BR ALIGN="LEFT"/><I>' + name + ':</I> ' + ('<BR ALIGN="LEFT"/>'.join(lines))
+                        print("[{}]".format(content))
+                if field_string:
+                    field_string = '<BR ALIGN="CENTER"/><FONT FACE="Helvetica" POINT-SIZE="8">' \
+                                   + field_string \
+                                   + '<BR ALIGN="LEFT"/></FONT>'
+            else:
+                field_string = ""
+
+            # node title
+            if context:
+                if context_current:
+                    font_size = 1.5
+                else:
+                    font_size = 0.5 + 1.0 / (
+                                2.0 + max((len(context) - len(self.path)), 0))  # 1 em for target, decay to 0.5
+            else:
+                font_size = 1.0 + 1.0 / (1.0 + current_depth)  # start with 2 em, exponentially decay to 0.5 em
+
+            # assemble
+            name = self.name.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            label = '<<FONT FACE="Helvetica" POINT-SIZE="{}">{}</FONT>{}>'.format(int(font_size*16), name, field_string)
+            graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled')
+
+            # add connection to parent
+            if parent_id:
+                graph.edge(parent_id, node_id)
 
         # recurse over children
-        for c in self.children:
-            if exclude_root:
-                context['parent_id'] = False
-            else:
-                context['parent_id'] = node_id
-            c.to_image(fields=fields, context=context, engine=engine, colour=next_colour[colour], first=False)
+        if children and depth:
+            for c in self.children:
+                if exclude_root:
+                    parent_id = False
+                else:
+                    parent_id = node_id
+                c.to_image(fields=fields, context=context, depth=depth-1, engine=engine,
+                           graph=graph, parent_id=parent_id, colour=next_colour[colour], current_depth=current_depth+1)
 
         # end of recursion, create picture
         image = None
-        if first:
+        if not current_depth:
             image = graph.unflatten(stagger=5,
                                     chain=3,
                                     fanout=3).pipe(format='png', engine=engine)

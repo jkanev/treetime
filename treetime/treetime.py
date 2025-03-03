@@ -925,10 +925,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='tiles', continuous=continuous)
                     elif exportFormat == "Image/PNG (Top-down Graphics)":
-                        data = currentNode.to_image(fields=allFields, engine='dot')
+                        data = currentNode.to_image(fields=allFields, engine='dot', context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (Circular Graphics)":
-                        data = currentNode.to_image(fields=allFields, engine='neato')
+                        data = currentNode.to_image(fields=allFields, engine='neato', context=path)
                         wtype = 'wb'
                     else:
                         data = None
