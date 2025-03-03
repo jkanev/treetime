@@ -855,10 +855,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
                                                           style='tiles', continuous=continuous)
                     elif exportFormat == "Image/PNG (Top-down Graphics)":
-                        data = currentNode.to_image(fields=allFields, engine='dot')
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (Circular Graphics)":
-                        data = currentNode.to_image(fields=allFields, engine='neato')
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato')
                         wtype = 'wb'
                     else:
                         data = None
@@ -899,10 +899,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data += children[c].to_html(depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
                 elif exportFormat == "Image/PNG (Top-down Graphics)":
-                    data = rootNode.to_image(fields=allFields, engine='dot', exclude_root=True)
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='dot', exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (Circular Graphics)":
-                    data = rootNode.to_image(fields=allFields, engine='neato', exclude_root=True)
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='neato', exclude_root=True)
                     wtype = 'wb'
                 else:
                     data = None
@@ -925,10 +925,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='tiles', continuous=continuous)
                     elif exportFormat == "Image/PNG (Top-down Graphics)":
-                        data = currentNode.to_image(fields=allFields, engine='dot', context=path)
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (Circular Graphics)":
-                        data = currentNode.to_image(fields=allFields, engine='neato', context=path)
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', context=path)
                         wtype = 'wb'
                     else:
                         data = None

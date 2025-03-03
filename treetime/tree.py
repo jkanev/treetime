@@ -677,7 +677,7 @@ class Node:
         # add myself, using the path as ID
         if not exclude_root:
 
-            # create child string
+            # create fields string
             if fields_local:
                 field_string = ""
                 for name, field in self.fields.items():
@@ -685,7 +685,6 @@ class Node:
                     if content:     # wrap field content, larger bits of text start with a newline
                         lines = Node._wrap_lines(content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
                         field_string += '<BR ALIGN="LEFT"/><I>' + name + ':</I> ' + ('<BR ALIGN="LEFT"/>'.join(lines))
-                        print("[{}]".format(content))
                 if field_string:
                     field_string = '<BR ALIGN="CENTER"/><FONT FACE="Helvetica" POINT-SIZE="8">' \
                                    + field_string \
@@ -714,7 +713,7 @@ class Node:
 
         # recurse over children
         if children and depth:
-            for c in self.children:
+            for c in sorted(self.children, key=lambda c: c.name):
                 if exclude_root:
                     parent_id = False
                 else:
