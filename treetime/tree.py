@@ -658,6 +658,13 @@ class Node:
         :return: A bitmap
         """
 
+        def quote_string(str):
+            """
+            :param str: The string to quote
+            :return: String with characters "><& replaced by their html entities
+            """
+            return str.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+
         # background colours, applied by depth: blue, red, yellow, green
         colours = {'blue': '#f9f9ff', 'purple': '#fbf7ff', 'red': '#fff9ff', 'orange': '#fffdf7',
                        'yellow': '#fdfff7', 'green': '#fbfff0', 'turquoise': '#f8fcff'}
@@ -683,7 +690,7 @@ class Node:
                 for name, field in self.fields.items():
                     content = field.getString()
                     if content:     # wrap field content, larger bits of text start with a newline
-                        lines = Node._wrap_lines(content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
+                        lines = [quote_string(l) for l in Node._wrap_lines(content)]
                         field_string += '<BR ALIGN="LEFT"/><I>' + name + ':</I> ' + ('<BR ALIGN="LEFT"/>'.join(lines))
                 if field_string:
                     field_string = '<BR ALIGN="CENTER"/><FONT FACE="Helvetica" POINT-SIZE="8">' \
@@ -691,7 +698,7 @@ class Node:
                                    + '<BR ALIGN="LEFT"/></FONT>'
             else:
                 field_string = ""
-
+            print(field_string)
             # node title
             if context:
                 if context_current:
@@ -703,7 +710,7 @@ class Node:
                 font_size = 1.0 + 1.0 / (1.0 + current_depth)  # start with 2 em, exponentially decay to 0.5 em
 
             # assemble
-            name = self.name.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            name = quote_string(self.name)
             label = '<<FONT FACE="Helvetica" POINT-SIZE="{}">{}</FONT>{}>'.format(int(font_size*16), name, field_string)
             graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled')
 
