@@ -770,8 +770,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         "HTML (Tiles)": "HTML Files (*.html)",
                         "HTML (List)": "HTML Files (*.html)",
                         "Text/Unicode": "Text Files (*.txt)",
-                        "Image/PNG (Top-down Graphics)": "Image Files (*.png)",
-                        "Image/PNG (Circular Graphics)": "Image Files (*.png)",
+                        "Image/PNG (graphical, top-down)": "Image Files (*.png)",
+                        "Image/PNG (graphical, circular)": "Image Files (*.png)",
+                        "Image/PNG (graphical, spread-out)": "Image Files (*.png)",
                         "CSV": "CSV (Comma-separated Values) Files (*.csv)"
                     }
                     fileDir = os.path.dirname(self.settings.value('exportFile')) or ''
@@ -854,10 +855,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     elif exportFormat == "HTML (Tiles)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
                                                           style='tiles', continuous=continuous)
-                    elif exportFormat == "Image/PNG (Top-down Graphics)":
+                    elif exportFormat == "Image/PNG (graphical, top-down)":
                         data = currentNode.to_image(fields=allFields, depth=depth, engine='dot')
                         wtype = 'wb'
-                    elif exportFormat == "Image/PNG (Circular Graphics)":
+                    elif exportFormat == "Image/PNG (graphical, circular)":
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo')
+                        wtype = 'wb'
+                    elif exportFormat == "Image/PNG (graphical, spread-out)":
                         data = currentNode.to_image(fields=allFields, depth=depth, engine='neato')
                         wtype = 'wb'
                     else:
@@ -898,10 +902,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         else:
                             data += children[c].to_html(depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
-                elif exportFormat == "Image/PNG (Top-down Graphics)":
+                elif exportFormat == "Image/PNG (graphical, top-down)":
                     data = rootNode.to_image(fields=allFields, depth=depth, engine='dot', exclude_root=True)
                     wtype = 'wb'
-                elif exportFormat == "Image/PNG (Circular Graphics)":
+                elif exportFormat == "Image/PNG (graphical, circular)":
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='circo', exclude_root=True)
+                    wtype = 'wb'
+                elif exportFormat == "Image/PNG (graphical, spread-out)":
                     data = rootNode.to_image(fields=allFields, depth=depth, engine='neato', exclude_root=True)
                     wtype = 'wb'
                 else:
@@ -924,10 +931,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     elif exportFormat == "HTML (Tiles)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='tiles', continuous=continuous)
-                    elif exportFormat == "Image/PNG (Top-down Graphics)":
+                    elif exportFormat == "Image/PNG (graphical, top-down)":
                         data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', context=path)
                         wtype = 'wb'
-                    elif exportFormat == "Image/PNG (Circular Graphics)":
+                    elif exportFormat == "Image/PNG (graphical, circular)":
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', context=path)
+                        wtype = 'wb'
+                    elif exportFormat == "Image/PNG (graphical, spread-out)":
                         data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', context=path)
                         wtype = 'wb'
                     else:

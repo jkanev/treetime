@@ -184,7 +184,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>229</width>
+         <width>301</width>
          <height>816</height>
         </rect>
        </property>
@@ -575,12 +575,17 @@
           </item>
           <item>
            <property name="text">
-            <string>Image/PNG (Top-down Graphics)</string>
+            <string>Image/PNG (graphical, top-down)</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Image/PNG (Circular Graphics)</string>
+            <string>Image/PNG (graphical, circular)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Image/PNG (graphical, spread-out)</string>
            </property>
           </item>
           <item>
@@ -611,7 +616,7 @@
            <item row="5" column="0">
             <widget class="QRadioButton" name="radioButtonExportOnce">
              <property name="text">
-              <string>Once</string>
+              <string>O&amp;nce</string>
              </property>
              <property name="checked">
               <bool>true</bool>
