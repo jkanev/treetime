@@ -666,8 +666,8 @@ class Node:
             return str.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
 
         # background colours, applied by depth: blue, red, yellow, green
-        colours = {'blue': '#f9f9ff', 'purple': '#fbf7ff', 'red': '#fff9ff', 'orange': '#fffdf7',
-                       'yellow': '#fdfff7', 'green': '#fbfff0', 'turquoise': '#f8fcff'}
+        colours = {'blue': '#f4f4ff', 'purple': '#fbf4ff', 'red': '#fff4f4', 'orange': '#fffbf2',
+                       'yellow': '#fffff2', 'green': '#fafff3', 'turquoise': '#f4ffff'}
         next_colour = {'blue': 'purple', 'purple': 'red', 'red': 'orange', 'orange': 'yellow', 'yellow': 'green',
                            'green': 'turquoise', 'turquoise': 'blue'}
 
@@ -698,7 +698,7 @@ class Node:
                                    + '<BR ALIGN="LEFT"/></FONT>'
             else:
                 field_string = ""
-            print(field_string)
+
             # node title
             if context:
                 if context_current:
