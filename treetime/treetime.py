@@ -945,19 +945,34 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 else:
                     data = ("No branch selected, export is empty")
 
-            # save to file or to clipboard
+            # save to file
             if exportToFile:
                 with open(file, wtype) as f:
                     f.write(data)
                 self.labelCurrentExportFile.setText(file)
                 self.settings.setValue("exportFile", file)
+
+            # save to clipboard
             else:
+
+                # decide on clipboard function (setText/setImage) and data preparation (leave as string or QImage)
                 clipboard = QGuiApplication.clipboard()
-                clipboard.setText(data, QClipboard.Mode.Clipboard)
-                clipboard.setText(data, QClipboard.Mode.FindBuffer)
-                if clipboard.supportsSelection():
-                    clipboard.setText(data, QClipboard.Mode.Selection)
-                time.sleep(0.001)
+                if exportFormat in ("CSV", "Text/Unicode", "HTML (List)", "HTML (Tiles)"):
+                    toClipboard = clipboard.setText
+                elif exportFormat in ("Image/PNG (graphical, top-down)", "Image/PNG (graphical, circular)", "Image/PNG (graphical, spread-out)"):
+                    toClipboard = clipboard.setImage
+                    data = QtGui.QImage.fromData(data)
+                else:
+                    print(f"Clipboard doesn't understand export type of {exportFormat}.")
+                    toClipboard = None
+
+                # save to clipboard
+                if toClipboard:
+                    toClipboard(data, QClipboard.Mode.Clipboard)
+                    toClipboard(data, QClipboard.Mode.FindBuffer)
+                    if clipboard.supportsSelection():
+                        toClipboard(data, QClipboard.Mode.Selection)
+                    time.sleep(0.001)
 
     def pushButtonNewFromTemplateClicked(self):
         """
