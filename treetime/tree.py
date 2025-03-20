@@ -981,6 +981,43 @@ class Node:
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-path {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    '</style></head><body>'
+        elif header and style == 'document':
+            html = '<!DOCTYPE html><html lang="en">' \
+                   + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
+                   + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
+                   'body {font-family: sans-serif; color: black; background-color: white;} '\
+                   'em {color: #555;}' \
+                   'div.red {background-color: #fff;}' \
+                   'div.orange {background-color: #fff;}' \
+                   'div.yellow {background-color: #fff;}' \
+                   'div.green {background-color: #fff;}' \
+                   'div.turquoise {background-color: #fff;}' \
+                   'div.blue {background-color: #fff;}' \
+                   'div.purple {background-color: #fff;}' \
+                   'div.node {position: relative; float: left; border: none; padding: 1%; width: 97%;} ' \
+                   'div.name {padding: 1%; position: relative; float: left; width: 99%; color: #008} ' \
+                   'div.name_current {padding: 1%; position: relative; float: left; width: 99%; color: #008} ' \
+                   'div.fields {position: relative; float: left; clear: left; width: 99%; border-top: 1px solid; border-color: #00a;} ' \
+                   'div.children {position: relative; float: left; clear: left; width: 100%;} ' \
+                   'div.string {position: relative; float: left; width: 25%; padding: 1%; }' \
+                   'div.min-string {position: relative; float: left; width: 25%; padding: 1%; }' \
+                   'div.max-string {position: relative; float: left; width: 25%; padding: 1%; }' \
+                   'div.set {position: relative; float: left; width: 25%; padding: 1%; }' \
+                   'div.text {position: relative; float: left; width: 100%; padding: 1%; }' \
+                   'div.url {position: relative; float: left; width: 45%; padding: 1%; }' \
+                   'div.sum {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.sum-time {position: relative; float: left; width: 25%; padding: 1%; }' \
+                   'div.difference {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.difference-time {position: relative; float: left; width: 25%; padding: 1%; }' \
+                   'div.min {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.max {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.mean {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.mean-percent {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.ratio {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.ratio-percent {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.node-name {position: relative; float: left; width: 25%; padding: 1%; }' \
+                   'div.node-path {position: relative; float: left; width: 45%; padding: 1%; }' \
+                   '</style></head><body>'
         else:
             html = ''
 
@@ -996,7 +1033,7 @@ class Node:
                 font_size = 0.5 + 1.0 / (2.0 + max((len(context) - len(self.path)), 0))  # 1 em for target, decay to 0.5
         else:
             font_size = 1.0 + 1.0 / (1.0 + current_depth)  # start with 2 em, exponentially decay to 0.5 em
-        if style == 'tiles':
+        if style == 'tiles' or style == 'document':
             if context_current:
                 html += '<div class="name_current" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
             else:

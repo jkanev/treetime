@@ -184,7 +184,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>301</width>
+         <width>314</width>
          <height>816</height>
         </rect>
        </property>
@@ -565,6 +565,16 @@
           </property>
           <item>
            <property name="text">
+            <string>CSV</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>HTML (Document)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>HTML (Tiles)</string>
            </property>
           </item>
@@ -591,11 +601,6 @@
           <item>
            <property name="text">
             <string>Text/Unicode</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>CSV</string>
            </property>
           </item>
          </widget>
@@ -688,8 +693,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>200</width>
+         <height>716</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -1072,8 +1077,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>128</width>
+         <height>164</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1199,8 +1204,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>200</width>
+         <height>411</height>
         </rect>
        </property>
        <attribute name="label">

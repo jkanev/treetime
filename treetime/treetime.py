@@ -767,6 +767,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 exportToFile = self.radioButtonExportToFile.isChecked()
                 if exportToFile:
                     extensions = {
+                        "HTML (Document)": "HTML Files (*.html)",
                         "HTML (Tiles)": "HTML Files (*.html)",
                         "HTML (List)": "HTML Files (*.html)",
                         "Text/Unicode": "Text Files (*.txt)",
@@ -849,6 +850,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data = currentNode.to_csv(depth=depth, fields=allFields)
                     elif exportFormat == "Text/Unicode":
                         data = currentNode.to_txt(depth=depth, fields=allFields)
+                    elif exportFormat == "HTML (Document)":
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
+                                                          style='document', continuous=continuous)
                     elif exportFormat == "HTML (List)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
                                                           style='list', continuous=continuous)
@@ -890,8 +894,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data += '\n'
                         data += c.to_txt(depth=depth, fields=allFields)
                         data += '\n'
-                elif exportFormat == "HTML (List)" or exportFormat == "HTML (Tiles)":
-                    style = (exportFormat == "HTML (List)" and "list") or "tiles"
+                elif (exportFormat == "HTML (List)"
+                      or exportFormat == "HTML (Tiles)"
+                      or exportFormat == "HTML (Document)"):
+                    style = ((exportFormat == "HTML (List)" and "list")
+                             or (exportFormat == "HTML (Tiles)" and "tiles") or "document")
                     for c in range(0, len(children)):
                         if c == 0:
                             data += children[c].to_html(header=True, depth=depth,
@@ -925,6 +932,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data = currentNode.to_csv(depth=depth, fields=allFields, context=path)
                     elif exportFormat == "Text/Unicode":
                         data = currentNode.to_txt(depth=depth, fields=allFields, context=path)
+                    elif exportFormat == "HTML (Document)":
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
+                                                          fields=allFields, style='document', continuous=continuous)
                     elif exportFormat == "HTML (List)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='list', continuous=continuous)
@@ -957,7 +967,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # decide on clipboard function (setText/setImage) and data preparation (leave as string or QImage)
                 clipboard = QGuiApplication.clipboard()
-                if exportFormat in ("CSV", "Text/Unicode", "HTML (List)", "HTML (Tiles)"):
+                if exportFormat in ("CSV", "Text/Unicode", "HTML (List)", "HTML (Tiles)", "HTML (Document)"):
                     toClipboard = clipboard.setText
                 elif exportFormat in ("Image/PNG (graphical, top-down)", "Image/PNG (graphical, circular)", "Image/PNG (graphical, spread-out)"):
                     toClipboard = clipboard.setImage
