@@ -646,9 +646,9 @@ class Node:
         # return
         return csv
 
-    def to_image(self, fields=True, context=False, depth=-1, engine='dot',
+    def to_image(self, fields=True, context=False, depth=-1, engine='dot', format='png',
                  graph=False, parent_id=False, colour='blue', exclude_root=False, current_depth=0):
-        """ Creates an image (png) using graphics with different style options
+        """ Creates an image (png/svg) using graphics with different style options
         :param fields: Whether (True/False) to include fields in the output
         :param context: For handing information down recursively
         :param engine: The graphviz engine to use
@@ -693,7 +693,7 @@ class Node:
                         lines = [quote_string(l) for l in Node._wrap_lines(content)]
                         field_string += '<BR ALIGN="LEFT"/><I>' + name + ':</I> ' + ('<BR ALIGN="LEFT"/>'.join(lines))
                 if field_string:
-                    field_string = '<BR ALIGN="CENTER"/><FONT FACE="Helvetica" POINT-SIZE="8">' \
+                    field_string = '<BR ALIGN="CENTER"/><FONT FACE="Helvetica" POINT-SIZE="10">' \
                                    + field_string \
                                    + '<BR ALIGN="LEFT"/></FONT>'
             else:
@@ -704,14 +704,14 @@ class Node:
                 if context_current:
                     font_size = 1.5
                 else:
-                    font_size = 0.5 + 1.0 / (
-                                2.0 + max((len(context) - len(self.path)), 0))  # 1 em for target, decay to 0.5
+                    font_size = 1.0 + 1.0 / (
+                                1.0 + max((len(context) - len(self.path)), 0))  # 2 for target, decay to 1.0
             else:
-                font_size = 1.0 + 1.0 / (1.0 + current_depth)  # start with 2 em, exponentially decay to 0.5 em
+                font_size = 1.0 + 2.0 / (1.0 + current_depth)  # start with 3.0, exponentially decay to 1.0
 
             # assemble
             name = quote_string(self.name)
-            label = '<<FONT FACE="Helvetica" POINT-SIZE="{}">{}</FONT>{}>'.format(int(font_size*16), name, field_string)
+            label = f'<<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{name}</FONT>{field_string}>'
             graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled')
 
             # add connection to parent
@@ -733,7 +733,7 @@ class Node:
         if not current_depth:
             image = graph.unflatten(stagger=5,
                                     chain=3,
-                                    fanout=3).pipe(format='png', engine=engine)
+                                    fanout=3).pipe(format=format, engine=engine)
         return image
 
     def to_txt(self, fields=True, context=False, lastitem=[], depth=-1):
@@ -957,7 +957,6 @@ class Node:
                    'div.turquoise {background-color: #f8fcff;}' \
                    'div.blue {background-color: #f9f9ff;}' \
                    'div.purple {background-color: #fbf7ff;}' \
-                   'div.node {position: relative; float: left; border: 1px solid; margin: 0.6em; padding: 0.6em; width: min-content; border-radius: 1em; border-color: #CCC;}' \
                    'div.node {position: relative; float: left; clear: left; border-left: 2px solid; margin: 0.6em; padding: 0.6em; width: max-content; border-color: #808080;}' \
                    'div.name {padding: 0.2em; margin: 0.2em; position: relative; float: left;} ' \
                    'div.fields {position: relative; float: left; width: max-content; border-color: #808080;}' \

@@ -772,8 +772,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         "HTML (List)": "HTML Files (*.html)",
                         "Text/Unicode": "Text Files (*.txt)",
                         "Image/PNG (graphical, top-down)": "Image Files (*.png)",
+                        "Image/SVG (graphical, top-down)": "Image Files (*.svg)",
                         "Image/PNG (graphical, circular)": "Image Files (*.png)",
+                        "Image/SVG (graphical, circular)": "Image Files (*.svg)",
                         "Image/PNG (graphical, spread-out)": "Image Files (*.png)",
+                        "Image/SVG (graphical, spread-out)": "Image Files (*.svg)",
                         "CSV": "CSV (Comma-separated Values) Files (*.csv)"
                     }
                     fileDir = os.path.dirname(self.settings.value('exportFile')) or ''
@@ -860,13 +863,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
                                                           style='tiles', continuous=continuous)
                     elif exportFormat == "Image/PNG (graphical, top-down)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot')
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='png')
+                        wtype = 'wb'
+                    elif exportFormat == "Image/SVG (graphical, top-down)":
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='svg')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (graphical, circular)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo')
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', format='png')
+                        wtype = 'wb'
+                    elif exportFormat == "Image/SVG (graphical, circular)":
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', format='svg')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (graphical, spread-out)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato')
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='png')
+                        wtype = 'wb'
+                    elif exportFormat == "Image/SVG (graphical, spread-out)":
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='svg')
                         wtype = 'wb'
                     else:
                         data = None
@@ -910,13 +922,28 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data += children[c].to_html(depth=depth,
                                                         fields=allFields, style=style, continuous=continuous)[1]
                 elif exportFormat == "Image/PNG (graphical, top-down)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='dot', exclude_root=True)
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='dot', format='png',
+                                             exclude_root=True)
+                    wtype = 'wb'
+                elif exportFormat == "Image/SVG (graphical, top-down)":
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='dot', format='svg',
+                                             exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (graphical, circular)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='circo', exclude_root=True)
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='circo', format='png',
+                                             exclude_root=True)
+                    wtype = 'wb'
+                elif exportFormat == "Image/SVG (graphical, circular)":
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='circo', format='svg',
+                                             exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (graphical, spread-out)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='neato', exclude_root=True)
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='neato', format='png',
+                                             exclude_root=True)
+                    wtype = 'wb'
+                elif exportFormat == "Image/SVG (graphical, spread-out)":
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='neato', format='svg',
+                                             exclude_root=True)
                     wtype = 'wb'
                 else:
                     data = None
@@ -942,13 +969,28 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='tiles', continuous=continuous)
                     elif exportFormat == "Image/PNG (graphical, top-down)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', context=path)
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='png',
+                                                    context=path)
+                        wtype = 'wb'
+                    elif exportFormat == "Image/SVG (graphical, top-down)":
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='svg',
+                                                    context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (graphical, circular)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', context=path)
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', format='png',
+                                                    context=path)
+                        wtype = 'wb'
+                    elif exportFormat == "Image/SVG (graphical, circular)":
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', format='svg',
+                                                    context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (graphical, spread-out)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', context=path)
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='png',
+                                                    context=path)
+                        wtype = 'wb'
+                    elif exportFormat == "Image/SVG (graphical, spread-out)":
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='svg',
+                                                    context=path)
                         wtype = 'wb'
                     else:
                         data = None
@@ -969,7 +1011,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 clipboard = QGuiApplication.clipboard()
                 if exportFormat in ("CSV", "Text/Unicode", "HTML (List)", "HTML (Tiles)", "HTML (Document)"):
                     toClipboard = clipboard.setText
-                elif exportFormat in ("Image/PNG (graphical, top-down)", "Image/PNG (graphical, circular)", "Image/PNG (graphical, spread-out)"):
+                elif exportFormat in ("Image/PNG (graphical, top-down)", "Image/SVG (graphical, top-down)",
+                                      "Image/PNG (graphical, circular)", "Image/SVG (graphical, circular)",
+                                      "Image/PNG (graphical, spread-out)", "Image/SVG (graphical, spread-out)"):
                     toClipboard = clipboard.setImage
                     data = QtGui.QImage.fromData(data)
                 else:

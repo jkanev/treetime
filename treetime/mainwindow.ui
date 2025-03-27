@@ -183,7 +183,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-77</y>
          <width>314</width>
          <height>816</height>
         </rect>
@@ -565,16 +565,6 @@
           </property>
           <item>
            <property name="text">
-            <string>CSV</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>HTML (Document)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
             <string>HTML (Tiles)</string>
            </property>
           </item>
@@ -585,7 +575,22 @@
           </item>
           <item>
            <property name="text">
+            <string>HTML (Document)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Text/Unicode</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>Image/PNG (graphical, top-down)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Image/SVG (graphical, top-down)</string>
            </property>
           </item>
           <item>
@@ -595,12 +600,22 @@
           </item>
           <item>
            <property name="text">
+            <string>Image/SVG (graphical, circular)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>Image/PNG (graphical, spread-out)</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Text/Unicode</string>
+            <string>Image/SVG (graphical, spread-out)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CSV</string>
            </property>
           </item>
          </widget>
