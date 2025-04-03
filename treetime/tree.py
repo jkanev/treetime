@@ -676,7 +676,7 @@ class Node:
 
         # if top call, create graph object
         if not current_depth:
-            graph = gv.Digraph(graph_attr={'overlap': 'prism'})
+            graph = gv.Digraph(graph_attr={'overlap': 'prism', 'outputorder': 'nodesfirst'})
 
         # create id
         node_id = "{}".format(self.path)
@@ -688,21 +688,30 @@ class Node:
             if fields_local:
                 field_string = ""
                 for name, field in self.fields.items():
-                    content = field.getString()
+                    content = field.getString().strip()
                     if content:     # wrap field content, larger bits of text start with a newline
                         lines = [quote_string(l) for l in Node._wrap_lines(content)]
-                        field_string += '<BR ALIGN="LEFT"/><I>' + name + ':</I> ' + ('<BR ALIGN="LEFT"/>'.join(lines))
-                if field_string:
-                    field_string = '<BR ALIGN="CENTER"/><FONT FACE="Helvetica" POINT-SIZE="10">' \
-                                   + field_string \
-                                   + '<BR ALIGN="LEFT"/></FONT>'
+                        if field.fieldType == "url":
+                            link = len(content) > 50 and content[:50]+'...' or content
+                            field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
+                                             f'<FONT FACE="Helvetica" POINT-SIZE="10">{name}</FONT>'
+                                             f'</TD><TD ALIGN="LEFT" VALIGN="TOP" HREF="{content}">'
+                                             f'<FONT FACE="Helvetica" COLOR="#0000a0" POINT-SIZE="10">{link}</FONT>'
+                                             '</TD></TR>')
+                        else:
+                            field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
+                                             f'<FONT FACE="Helvetica" POINT-SIZE="10">{name}</FONT>'
+                                             '</TD><TD ALIGN="LEFT" VALIGN="TOP">'
+                                             '<FONT FACE="Helvetica" POINT-SIZE="10">'
+                                             + '<BR ALIGN="LEFT"/>'.join(lines)
+                                             + '</FONT></TD></TR>')
             else:
                 field_string = ""
 
             # node title
             if context:
                 if context_current:
-                    font_size = 1.5
+                    font_size = 2.5
                 else:
                     font_size = 1.0 + 1.0 / (
                                 1.0 + max((len(context) - len(self.path)), 0))  # 2 for target, decay to 1.0
@@ -711,7 +720,9 @@ class Node:
 
             # assemble
             name = quote_string(self.name)
-            label = f'<<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{name}</FONT>{field_string}>'
+            label = (f'<<TABLE><TR><TD COLSPAN="2">'
+                     f'<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{name}</FONT>'
+                     f'</TD></TR>{field_string}</TABLE>>')
             graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled')
 
             # add connection to parent

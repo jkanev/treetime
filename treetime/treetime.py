@@ -869,10 +869,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='svg')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (graphical, circular)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', format='png')
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='twopi', format='png')
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (graphical, circular)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', format='svg')
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='twopi', format='svg')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (graphical, spread-out)":
                         data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='png')
@@ -930,11 +930,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                              exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (graphical, circular)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='circo', format='png',
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='twopi', format='png',
                                              exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/SVG (graphical, circular)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='circo', format='svg',
+                    data = rootNode.to_image(fields=allFields, depth=depth, engine='twopi', format='svg',
                                              exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (graphical, spread-out)":
@@ -985,11 +985,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                     context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (graphical, spread-out)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='png',
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='fdp', format='png',
                                                     context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (graphical, spread-out)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='svg',
+                        data = currentNode.to_image(fields=allFields, depth=depth, engine='fdp', format='svg',
                                                     context=path)
                         wtype = 'wb'
                     else:
