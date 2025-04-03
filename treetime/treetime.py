@@ -931,11 +931,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (graphical, circular)":
                     data = rootNode.to_image(fields=allFields, depth=depth, engine='twopi', format='png',
-                                             exclude_root=True)
+                                             invisible_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/SVG (graphical, circular)":
                     data = rootNode.to_image(fields=allFields, depth=depth, engine='twopi', format='svg',
-                                             exclude_root=True)
+                                             invisible_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (graphical, spread-out)":
                     data = rootNode.to_image(fields=allFields, depth=depth, engine='neato', format='png',

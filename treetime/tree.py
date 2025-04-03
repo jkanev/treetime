@@ -646,8 +646,8 @@ class Node:
         # return
         return csv
 
-    def to_image(self, fields=True, context=False, depth=-1, engine='dot', format='png',
-                 graph=False, parent_id=False, colour='blue', exclude_root=False, current_depth=0):
+    def to_image(self, fields=True, context=False, depth=-1, engine='dot', format='png', graph=False, parent_id=False,
+                 colour='blue', exclude_root=False, invisible_root=False, current_depth=0):
         """ Creates an image (png/svg) using graphics with different style options
         :param fields: Whether (True/False) to include fields in the output
         :param context: For handing information down recursively
@@ -678,8 +678,18 @@ class Node:
         if not current_depth:
             graph = gv.Digraph(graph_attr={'overlap': 'prism', 'outputorder': 'nodesfirst'})
 
+        # add myself invisibly
+        if invisible_root:
+            # create id
+            node_id = "invis"
+            # add invisible parent for layout reasons
+            graph.node('invis', '', style='invis')
+
+        elif exclude_root:
+            node_id = False
+
         # add myself, using the path as ID
-        if not exclude_root:
+        else:
 
             # create id
             node_id = "{}".format(self.path)
@@ -731,13 +741,6 @@ class Node:
                     graph.edge(parent_id, node_id, style='invis')
                 else:
                     graph.edge(parent_id, node_id)
-
-        else:
-            # create id
-            node_id = "invis"
-
-            # add invisible parent for layout reasons
-            graph.node('invis', '', style='invis')
 
         # recurse over children
         if children and depth:
