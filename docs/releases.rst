@@ -115,6 +115,7 @@ Past
 * December 2024: Changed colours in html output (again?), increased font size
 * December 2024: Release **version 2024.4**
 
+
 Present
 -------
 
@@ -135,7 +136,7 @@ Near Future
 Mid Future
 ^^^^^^^^^^
 
-* Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
+* Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children)
 
 Far Future
 ^^^^^^^^^^

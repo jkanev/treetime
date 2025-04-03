@@ -673,17 +673,16 @@ class Node:
 
         # evaluate context
         fields_local, children, context_current = self._evaluateContext(fields, context)
-
         # if top call, create graph object
         if not current_depth:
-            graph = gv.Digraph(graph_attr={'overlap': 'prism', 'outputorder': 'nodesfirst'})
+            graph = gv.Digraph(graph_attr={'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst'})
 
         # add myself invisibly
         if invisible_root:
             # create id
             node_id = "invis"
             # add invisible parent for layout reasons
-            graph.node('invis', '', style='invis')
+            graph.node('invis', '', style='invis', root='true')
 
         elif exclude_root:
             node_id = False
@@ -733,14 +732,15 @@ class Node:
             label = (f'<<TABLE><TR><TD COLSPAN="2">'
                      f'<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{name}</FONT>'
                      f'</TD></TR>{field_string}</TABLE>>')
-            graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled')
+            graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled',
+                       root= ((not parent_id) and (engine=='twopi')) and 'true' or 'false')
 
             # add connection to parent
             if parent_id:
                 if parent_id == 'invis':
                     graph.edge(parent_id, node_id, style='invis')
                 else:
-                    graph.edge(parent_id, node_id)
+                    graph.edge(parent_id, node_id, color='gray')
 
         # recurse over children
         if children and depth:
