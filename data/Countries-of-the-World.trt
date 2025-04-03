@@ -1,0 +1,296 @@
+--trees--
+
+tree "Geographical"
+    field "Area (Million km^2)"
+        field-type "sum"
+        own-fields ["2 area"]
+        child-fields ["Area (Million km^2)"]
+        sibling-fields []
+        parent-fields []
+    field "Population (Million)"
+        field-type "sum"
+        own-fields ["1 population"]
+        child-fields ["Population (Million)"]
+        sibling-fields []
+        parent-fields []
+    field "Population Density (people per km^2)"
+        field-type "ratio"
+        own-fields ["Population (Million)", "Area (Million km^2)"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Personal Space (km^2 per person)"
+        field-type "ratio"
+        own-fields ["Area (Million km^2)", "Population (Million)"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Information"
+        field-type "text"
+        own-fields ["3 information"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+    field "Wikipedia"
+        field-type "url"
+        own-fields ["wikipedia"]
+        child-fields []
+        sibling-fields []
+        parent-fields []
+
+--item-types--
+
+item Country
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/", "type": "url"}}
+    trees [[]]
+
+--item-pool--
+
+item Europe
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Europe is a continent[t] located entirely in the Northern Hemisphere and mostly in the Eastern Hemisphere. It is bordered by the Arctic Ocean to the north, the Atlantic Ocean to the west, the Mediterranean Sea to the south, and Asia to the east. Europe shares the landmass of Eurasia with Asia, and of Afro-Eurasia with both Africa and Asia.[9][10] Europe is commonly considered to be separated from Asia by the watershed of the Ural Mountains, the Ural River, the Caspian Sea, the Greater Caucasus, the Black Sea, and the waterway of the Bosporus Strait.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Europe", "type": "url"}}
+    trees [[0]]
+
+item Northern Europe
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "The northern region of Europe has several definitions. A restrictive definition may describe northern Europe as being roughly north of the southern coast of the Baltic Sea, which is about 54\u00b0N, or may be based on other geographical factors such as climate and ecology. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Northern_Europe", "type": "url"}}
+    trees [[0, 0]]
+
+item Denmark
+    fields {"2 area": {"content": 0.043094, "type": "integer"}, "1 population": {"content": 5.982117, "type": "integer"}, "3 information": {"content": "Denmark[a] is a Nordic country in Northern Europe. It is the metropole and most populous constituent of the Kingdom of Denmark,[N 7] also known as the Danish Realm, a constitutionally unitary state that includes the autonomous territories of the Faroe Islands and Greenland in the north Atlantic Ocean.[11] Metropolitan Denmark,[N 8] also called \"continental Denmark\" or \"Denmark proper\",[12] consists of the northern Jutland peninsula and an archipelago of 406 islands.[13] It is the southernmost of the Scandinavian countries, lying southwest of Sweden, south of Norway, and north of Germany, with which it shares a short border. Denmark proper is situated between the North Sea to the west and the Baltic Sea to the east.", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Denmark", "type": "url"}}
+    trees [[0, 0, 0]]
+
+item Estonia
+    fields {"2 area": {"content": 0.045335, "type": "integer"}, "1 population": {"content": 1.373101, "type": "integer"}, "3 information": {"content": "Estonia,[b] officially the Republic of Estonia,[c] is a country by the Baltic Sea in Northern Europe.[d] It is bordered to the north by the Gulf of Finland across from Finland, to the west by the sea across from Sweden, to the south by Latvia, and to the east by Russia. The territory of Estonia consists of the mainland, the larger islands of Saaremaa and Hiiumaa, and over 2,300 other islands and islets on the east coast of the Baltic Sea,[12] covering a total area of 45,335 square kilometres (17,504 sq mi). Its capital Tallinn and Tartu are the two largest urban areas. The Estonian language is the official language and the first language of the majority of its population of c.\u20091.4 million.[14] Estonia is one of the least populous members of the European Union and NATO. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Estonia", "type": "url"}}
+    trees [[0, 0, 1]]
+
+item Finland
+    fields {"2 area": {"content": 0.338145, "type": "integer"}, "1 population": {"content": 5.603851, "type": "integer"}, "3 information": {"content": "Finland, officially the Republic of Finland, is a Nordic country in Northern Europe. It borders Sweden to the northwest, Norway to the north, and Russia to the east, with the Gulf of Bothnia to the west and the Gulf of Finland to the south, opposite Estonia. Finland has a population of 5.6 million. Its capital and largest city is Helsinki. The majority of the population are ethnic Finns. The official languages are Finnish and Swedish; 84.9 percent of the population speak the first as their mother tongue and 5.1 percent the latter. Finland's climate varies from humid continental in the south to boreal in the north. The land cover is predominantly boreal forest biome, with more than 180,000 recorded lakes.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Finland", "type": "url"}}
+    trees [[0, 0, 2]]
+
+item Iceland
+    fields {"2 area": {"content": 0.103125, "type": "integer"}, "1 population": {"content": 0.389444, "type": "integer"}, "3 information": {"content": "Iceland[e] is a Nordic island country between the North Atlantic and Arctic Oceans, on the Mid-Atlantic Ridge between North America and Europe. It is culturally and politically linked with Europe and is the region's westernmost and most sparsely populated country.[12] Its capital and largest city is Reykjav\u00edk, which is home to about 36% of the country's roughly 380,000 residents (excluding nearby towns/suburbs, which are separate municipalities). The official language of the country is Icelandic. Iceland is on a rift between tectonic plates, and its geologic activity includes geysers and frequent volcanic eruptions.[13][14] The interior consists of a volcanic plateau with sand and lava fields, mountains and glaciers, and many glacial rivers flow to the sea through the lowlands. Iceland is warmed by the Gulf Stream and has a temperate climate, despite being a latitude just south of the Arctic Circle. Its latitude and marine influence keep summers chilly, and most of its islands have a polar climate. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Iceland", "type": "url"}}
+    trees [[0, 0, 3]]
+
+item Latvia
+    fields {"2 area": {"content": 0.064589, "type": "integer"}, "1 population": {"content": 1.842226, "type": "integer"}, "3 information": {"content": "Latvia,[a] officially the Republic of Latvia,[b][14] is a country in the Baltic region of Northern Europe. It is one of the three Baltic states, along with Estonia to the north and Lithuania to the south. It borders Russia to the east and Belarus to the southeast, and shares a maritime border with Sweden to the west. Latvia covers an area of 64,589 km2 (24,938 sq mi), with a population of 1.9 million. The country has a temperate seasonal climate.[15] Its capital and largest city is Riga. Latvians, who are the titular nation and comprise 63.0% of the country's population, belong to the ethnolinguistic group of the Balts and speak Latvian. Russians are the most prominent minority in the country, at almost a quarter of the population; 37.7% of the population speak Russian as their native tongue.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Latvia", "type": "url"}}
+    trees [[0, 0, 4]]
+
+item Norway
+    fields {"2 area": {"content": 0.385207, "type": "integer"}, "1 population": {"content": 5.59434, "type": "integer"}, "3 information": {"content": "Norway,[a] officially the Kingdom of Norway,[b] is a Nordic country located on the Scandinavian Peninsula in Northern Europe. The remote Arctic island of Jan Mayen and the archipelago of Svalbard also form part of the Kingdom of Norway.[note 5] Bouvet Island, located in the Subantarctic, is a dependency, and not a part of the Kingdom; Norway also claims the Antarctic territories of Peter I Island and Queen Maud Land. Norway has a population of 5.6 million. Its capital and largest city is Oslo. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Norway", "type": "url"}}
+    trees [[0, 0, 5]]
+
+item Sweden
+    fields {"2 area": {"content": 0.450295, "type": "integer"}, "1 population": {"content": 10.58823, "type": "integer"}, "3 information": {"content": "Sweden,[f] formally the Kingdom of Sweden,[g][h] is a Nordic country located on the Scandinavian Peninsula in Northern Europe. It borders Norway to the west and north, and Finland to the east. At 450,295 square kilometres (173,860 sq mi),[4] Sweden is the largest Nordic country and the fifth-largest country in Europe. Its capital and largest city is Stockholm. Sweden has a population of 10.6 million, and a low population density of 25.5 inhabitants per square kilometre (66/sq mi); 88% of Swedes reside in urban areas.[10] They are mostly in the central and southern half of the country. Sweden's urban areas together cover 1.5% of its land area. Sweden has a diverse climate owing to the length of the country, which ranges from 55\u00b0N to 69\u00b0N. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Sweden", "type": "url"}}
+    trees [[0, 0, 6]]
+
+item Central Europe
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Central Europe is a geographical region of Europe between Eastern, Southern, Western and Northern Europe.[3][4] Central Europe is known for its cultural diversity;[5][6] however, countries in this region also share historical and cultural similarities.", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Central_Europe", "type": "url"}}
+    trees [[0, 1]]
+
+item Germany
+    fields {"2 area": {"content": 0.357596, "type": "integer"}, "1 population": {"content": 83.555478, "type": "integer"}, "3 information": {"content": "Germany,[e] officially the Federal Republic of Germany,[f] is a country in Central Europe. It lies between the Baltic Sea and the North Sea to the north and the Alps to the south. Its sixteen constituent states have a total 1 population of over 82 million in an area of 357,596 km2 (138,069 sq mi), making it the most populous member state of the European Union. It borders Denmark to the north, Poland and the Czech Republic to the east, Austria and Switzerland to the south, and France, Luxembourg, Belgium, and the Netherlands to the west. The nation's capital and most populous city is Berlin and its main financial centre is Frankfurt; the largest urban area is the Ruhr. ", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Germany", "type": "url"}}
+    trees [[0, 1, 0]]
+
+item Poland
+    fields {"2 area": {"content": 0.312696, "type": "integer"}, "1 population": {"content": 38.036118, "type": "integer"}, "3 information": {"content": "Poland,[d] officially the Republic of Poland,[e] is a country in Central Europe. It extends from the Baltic Sea in the north to the Sudetes and Carpathian Mountains in the south, bordered by Lithuania and Russia[f] to the northeast, Belarus and Ukraine to the east, Slovakia and the Czech Republic to the south, and Germany to the west. The territory is characterised by a varied landscape, diverse ecosystems, and temperate climate. Poland is composed of sixteen voivodeships and is the fifth most populous member state of the European Union (EU), with over 38 million people, and the fifth largest EU country by land area, covering a combined area of 312,696 km2 (120,733 sq mi). The capital and largest city is Warsaw; other major cities include Krak\u00f3w, Wroc\u0142aw, \u0141\u00f3d\u017a, Pozna\u0144, and Gda\u0144sk. ", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Poland", "type": "url"}}
+    trees [[0, 1, 1]]
+
+item Austria
+    fields {"2 area": {"content": 0.083879, "type": "integer"}, "1 population": {"content": 9.027999, "type": "integer"}, "3 information": {"content": "Austria, formally the Republic of Austria, is a landlocked country in Central Europe, lying in the Eastern Alps. It is a federation of nine states, of which the capital Vienna is the most populous city and state. Austria is bordered by Germany to the northwest, the Czech Republic to the north, Slovakia to the northeast, Hungary to the east, Slovenia and Italy to the south, and Switzerland and Liechtenstein to the west. The country occupies an area of 83,879 km2 (32,386 sq mi) and has a population of around 9 million", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Austria", "type": "url"}}
+    trees [[0, 1, 2]]
+
+item Croatia
+    fields {"2 area": {"content": 0.056561, "type": "integer"}, "1 population": {"content": 3.861967, "type": "integer"}, "3 information": {"content": "Croatia,[d] officially the Republic of Croatia,[e] is a country in Central and Southeast Europe, on the coast of the Adriatic Sea. It borders Slovenia to the northwest, Hungary to the northeast, Serbia to the east, Bosnia and Herzegovina and Montenegro to the southeast, and shares a maritime border with Italy to the west. Its capital and largest city, Zagreb, forms one of the country's primary subdivisions, with twenty counties. Other major urban centers include Split, Rijeka and Osijek. The country spans 56,594 square kilometres (21,851 square miles), and has a population of nearly 3.9 million. ", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Croatia", "type": "url"}}
+    trees [[0, 1, 3]]
+
+item Czeck Republic
+    fields {"2 area": {"content": 0.078871, "type": "integer"}, "1 population": {"content": 10.900555, "type": "integer"}, "3 information": {"content": "The Czech Republic,[c][12] also known as Czechia,[d][13] and historically known as Bohemia,[14] is a landlocked country in Central Europe. The country is bordered by Austria to the south, Germany to the west, Poland to the northeast, and Slovakia to the southeast.[15] The Czech Republic has a hilly landscape that covers an area of 78,871 square kilometers (30,452 sq mi) with a mostly temperate continental and oceanic climate. The capital and largest city is Prague; other major cities and urban areas include Brno, Ostrava, Plze\u0148 and Liberec. ", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Czech_Republic", "type": "url"}}
+    trees [[0, 1, 4]]
+
+item Hungary
+    fields {"2 area": {"content": 0.09303, "type": "integer"}, "1 population": {"content": 9.584627, "type": "integer"}, "3 information": {"content": "Hungary[a] is a landlocked country in Central Europe.[2] Spanning much of the Carpathian Basin, it is bordered by Slovakia to the north, Ukraine to the northeast, Romania to the east and southeast, Serbia to the south, Croatia and Slovenia to the southwest, and Austria to the west. Hungary lies within the drainage basin of the Danube River and is dominated by great lowland plains. It has a population of 9.6 million, consisting mostly of ethnic Hungarians and a significant Romani minority. Hungarian is the official language, and among the few in Europe outside the Indo-European family.[13] Budapest is the country's capital and largest city, and the dominant cultural and economic centre.", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Hungary", "type": "url"}}
+    trees [[0, 1, 5]]
+
+item Liechtenstein
+    fields {"2 area": {"content": 0.0001605, "type": "integer"}, "1 population": {"content": 0.041232, "type": "integer"}, "3 information": {"content": "Liechtenstein (/\u02c8l\u026akt\u0259nsta\u026an/ \u24d8, LIK-t\u0259n-styne;[13] German: [\u02c8l\u026a\u00e7tn\u0329\u0283ta\u026an] \u24d8), officially the Principality of Liechtenstein (German: F\u00fcrstentum Liechtenstein, [\u02c8f\u028f\u0281stn\u0329tu\u02d0m \u02c8l\u026a\u00e7tn\u0329\u02cc\u0283ta\u026a\u032fn] \u24d8),[14] is a doubly landlocked German-speaking microstate in the Central European Alps, between Austria in the east and north and Switzerland in the west and south.[15] Liechtenstein is a semi-constitutional monarchy headed by the prince of Liechtenstein of the House of Liechtenstein, currently led by Hans-Adam II. It is Europe's fourth-smallest country, with an area of just over 160 square kilometres (62 square miles) and a population of 40,023.[16] It is the world's smallest country to border two countries,[17] and is one of the few countries with no debt.", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Liechtenstein", "type": "url"}}
+    trees [[0, 1, 6]]
+
+item Lithuania
+    fields {"2 area": {"content": 0.0653, "type": "integer"}, "1 population": {"content": 2.89743, "type": "integer"}, "3 information": {"content": "Lithuania,[b] officially the Republic of Lithuania,[c] is a country in the Baltic region of Europe.[d] It is one of three Baltic states and lies on the eastern shore of the Baltic Sea, bordered by Latvia to the north, Belarus to the east and south, Poland to the south, and the Russian semi-exclave of Kaliningrad Oblast to the southwest, with a maritime border with Sweden to the west. Lithuania covers an area of 65,300 km2 (25,200 sq mi), with a population of 2.89 million. Its capital and largest city is Vilnius; other major cities include Kaunas, Klaip\u0117da, \u0160iauliai and Panev\u0117\u017eys. Lithuanians who are the titular nation and form the majority of the country's population, belong to the ethnolinguistic group of Balts and speak Lithuanian. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Lithuania", "type": "url"}}
+    trees [[0, 1, 7]]
+
+item Slovakia
+    fields {"2 area": {"content": 0.049035, "type": "integer"}, "1 population": {"content": 5.421272, "type": "integer"}, "3 information": {"content": "Slovakia,[a] officially the Slovak Republic,[b] is a landlocked country in Central Europe. It is bordered by Poland to the north, Ukraine to the east, Hungary to the south, Austria to the west, and the Czech Republic to the northwest. Slovakia's mostly mountainous territory spans about 49,000 km2 (19,000 sq mi), hosting a population exceeding 5.4 million. The capital and largest city is Bratislava, while the second largest city is Ko\u0161ice. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Slovakia", "type": "url"}}
+    trees [[0, 1, 8]]
+
+item Slovenia
+    fields {"2 area": {"content": 0.020271, "type": "integer"}, "1 population": {"content": 2.129052, "type": "integer"}, "3 information": {"content": "Slovenia,[a] officially the Republic of Slovenia,[b] is a country in Central Europe.[13][14] It borders Italy to the west, Austria to the north, Hungary to the northeast, Croatia to the south and southeast, and a short coastline within the Adriatic Sea to the southwest, which is part of the Mediterranean Sea.[15] Slovenia is mostly mountainous and forested,[16] covers 20,271 square kilometres (7,827 sq mi),[17] and has a population of approximately 2.1 million people.[18] Slovene is the official language.[19] Slovenia has a predominantly temperate continental climate,[20] with the exception of the Slovene Littoral and the Julian Alps. Ljubljana, the capital and largest city of Slovenia, is geographically situated near the centre of the country.[21] Other larger urban centers are Maribor, Kranj, Celje and Koper. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Slovenia", "type": "url"}}
+    trees [[0, 1, 9]]
+
+item Switzerland
+    fields {"2 area": {"content": 0.041285, "type": "integer"}, "1 population": {"content": 9.060598, "type": "integer"}, "3 information": {"content": "Switzerland,[d] officially the Swiss Confederation,[e] is a landlocked country located in west-central Europe.[f][13] It is bordered by Italy to the south, France to the west, Germany to the north, and Austria and Liechtenstein to the east. Switzerland is geographically divided among the Swiss Plateau, the Alps and the Jura; the Alps occupy the greater part of the territory, whereas most of the country's nearly 9 million people are concentrated on the plateau, which hosts its largest cities and economic centres, including Zurich, Geneva, and Lausanne.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Switzerland", "type": "url"}}
+    trees [[0, 1, 10]]
+
+item Eastern Europe
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Eastern Europe is a subregion of the European continent. As a largely ambiguous term, it has a wide range of geopolitical, geographical, ethnic, cultural, and socio-economic connotations. Its eastern boundary is marked by the Ural Mountains, whilst its western boundary is defined in various ways.[1] Narrow definitions, in which Central and Southeast Europe are counted as separate regions, include the countries of Belarus, Russia and Ukraine.[2] In contrast, broader definitions include Moldova and Romania, but also some or all of the Balkans, the Baltic states, the Caucasus, and the Visegr\u00e1d group.", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Eastern_Europe", "type": "url"}}
+    trees [[0, 2]]
+
+item Belarus
+    fields {"2 area": {"content": 0.207595, "type": "integer"}, "1 population": {"content": 9.155978, "type": "integer"}, "3 information": {"content": "Belarus,[b] officially the Republic of Belarus,[c] is a landlocked country in Eastern Europe. It is bordered by Russia to the east and northeast, Ukraine to the south, Poland to the west, and Lithuania and Latvia to the northwest. Belarus spans an area of 207,600 square kilometres (80,200 sq mi) with a population of 9.1 million. The country has a hemiboreal climate and is administratively divided into six regions. Minsk is the capital and largest city; it is administered separately as a city with special status. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Belarus", "type": "url"}}
+    trees [[0, 2, 0]]
+
+item Ukraine
+    fields {"2 area": {"content": 0.603628, "type": "integer"}, "1 population": {"content": 33.443, "type": "integer"}, "3 information": {"content": "Ukraine[a] is a country in Eastern Europe. It is the second-largest country in Europe after Russia, which borders it to the east and northeast.[b] Ukraine also borders Belarus to the north; Poland and Slovakia to the west; Hungary, Romania and Moldova[c] to the southwest; and the Black Sea and the Sea of Azov to the south and southeast.[d] Kyiv is the nation's capital and largest city, followed by Kharkiv, Dnipro, and Odesa. Ukraine's official language is Ukrainian. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Ukraine", "type": "url"}}
+    trees [[0, 2, 1]]
+
+item Southeastern Europe
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Southeast Europe or Southeastern Europe is a geographical sub-region of Europe, consisting primarily of the region of the Balkans, as well as adjacent regions and archipelagos. There are overlapping and conflicting definitions of the region, due to political, economic, historical, cultural, and geographical considerations. ", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Southeast_Europe", "type": "url"}}
+    trees [[0, 3]]
+
+item Albania
+    fields {"2 area": {"content": 0.028748, "type": "integer"}, "1 population": {"content": 2.402113, "type": "integer"}, "3 information": {"content": "Albania (/\u00e6l\u02c8be\u026ani\u0259, \u0254\u02d0l-/ \u24d8 a(w)l-BAY-nee-\u0259; Albanian: Shqip\u00ebri or Shqip\u00ebria),[a] officially the Republic of Albania (Albanian: Republika e Shqip\u00ebris\u00eb),[b] is a country in Southeast Europe. It is located in the Balkans, on the Adriatic and Ionian Seas within the Mediterranean Sea, and shares land borders with Montenegro to the northwest, Kosovo to the northeast, North Macedonia to the east and Greece to the south. With an area of 28,748 km2 (11,100 sq mi), it has a varied range of climatic, geological, hydrological and morphological conditions. Albania's landscapes range from rugged snow-capped mountains in the Albanian Alps and the Korab, Skanderbeg, Pindus and Ceraunian Mountains, to fertile lowland plains extending from the Adriatic and Ionian seacoasts. Tirana is the capital and largest city in the country, followed by Durr\u00ebs, Vlor\u00eb, and Shkod\u00ebr. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Albania", "type": "url"}}
+    trees [[0, 3, 0]]
+
+item Bosnia and Herzegovina
+    fields {"2 area": {"content": 0.051209, "type": "integer"}, "1 population": {"content": 3.434, "type": "integer"}, "3 information": {"content": "Bosnia and Herzegovina[a] (Bosnian: Bosna i Hercegovina, \u0411\u043e\u0441\u043d\u0430 \u0438 \u0425\u0435\u0440\u0446\u0435\u0433\u043e\u0432\u0438\u043d\u0430; Croatian: Bosna i Hercegovina; Serbian: Bosna i Hercegovina, \u0411\u043e\u0441\u043d\u0430 \u0438 \u0425\u0435\u0440\u0446\u0435\u0433\u043e\u0432\u0438\u043d\u0430), sometimes known as Bosnia-Herzegovina and informally as Bosnia, is a country in Southeast Europe. Situated on the Balkan Peninsula, it borders Serbia to the east, Montenegro to the southeast, and Croatia to the north and southwest. In the south it has a 20-kilometre-long (12-mile) coast on the Adriatic Sea. Bosnia has a moderate continental climate with hot summers and cold, snowy winters. In the central and eastern regions, the geography is mountainous, in the northwest it is moderately hilly, and in the northeast it is predominantly flat. Herzegovina, the smaller, southern region, has a Mediterranean climate and is mostly mountainous. Sarajevo is the capital and the largest city. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Bosnia_and_Herzegovina", "type": "url"}}
+    trees [[0, 3, 1]]
+
+item Bulgaria
+    fields {"2 area": {"content": 0.1109936, "type": "integer"}, "1 population": {"content": 6.445481, "type": "integer"}, "3 information": {"content": "Bulgaria,[a] officially the Republic of Bulgaria,[b] is a country in Southeast Europe. It is situated on the eastern portion of the Balkans directly south of the Danube river and west of the Black Sea. Bulgaria is bordered by Greece and Turkey to the south, Serbia and North Macedonia to the west, and Romania to the north. It covers a territory of 110,994 square kilometres (42,855 sq mi) and is the sixteenth-largest country in Europe. Sofia is the nation's capital and largest city; other major cities include Burgas, Plovdiv, and Varna. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Bulgaria", "type": "url"}}
+    trees [[0, 3, 2]]
+
+item Cyprus
+    fields {"2 area": {"content": 0.009251, "type": "integer"}, "1 population": {"content": 0.923272, "type": "integer"}, "3 information": {"content": "Cyprus[f] (/\u02c8sa\u026apr\u0259s/ \u24d8), officially the Republic of Cyprus,[g] is an island country in the eastern Mediterranean Sea. Although it is geographically located in West Asia, its cultural identity and geopolitical make-up are overwhelmingly Southeast European. It is the third largest and third most populous island in the Mediterranean.[9][10] It is located southeast of Greece, south of Turkey, west of Syria and Lebanon, northwest of Israel and Palestine, and north of Egypt. Its capital and largest city is Nicosia. Cyprus hosts the British-controlled military bases Akrotiri and Dhekelia, whilst the northeast portion of the island is de facto governed by the self-declared Turkish Republic of Northern Cyprus, which is separated from the Republic of Cyprus by the United Nations Buffer Zone. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Cyprus", "type": "url"}}
+    trees [[0, 3, 3]]
+
+item Greece
+    fields {"2 area": {"content": 0.131957, "type": "integer"}, "1 population": {"content": 10.40072, "type": "integer"}, "3 information": {"content": "Greece, officially the Hellenic Republic, is a country in Southeast Europe. Located on the southern tip of the Balkan peninsula, Greece shares land borders with Albania to the northwest, North Macedonia and Bulgaria to the north, and Turkey to the east. The Aegean Sea lies to the east of the mainland, the Ionian Sea to the west, and the Sea of Crete and the Mediterranean Sea to the south. Greece has the longest coastline on the Mediterranean Basin, featuring thousands of islands. The country comprises nine traditional geographic regions, and has a population of over 10 million. Athens is the nation's capital and its largest city, followed by Thessaloniki and Patras. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Greece", "type": "url"}}
+    trees [[0, 3, 4]]
+
+item Montenegro
+    fields {"2 area": {"content": 0.013883, "type": "integer"}, "1 population": {"content": 0.623633, "type": "integer"}, "3 information": {"content": "Montenegro[b] is a country in Southeastern Europe, on the Balkan Peninsula.[10] Its 25 municipalities have a total population of 633,158 people in an area of 13,883 km2 (5,360 sq mi). It is bordered by Bosnia and Herzegovina to the northwest, Serbia to the northeast, Kosovo to the east, Albania to the southeast, Croatia to the west, and has a coastline along the Adriatic Sea to the southwest.[11] The capital and largest city is Podgorica, while Cetinje is the Old Royal Capital and cultural centre.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Montenegro", "type": "url"}}
+    trees [[0, 3, 5]]
+
+item Moldova
+    fields {"2 area": {"content": 0.033843, "type": "integer"}, "1 population": {"content": 2.4233, "type": "integer"}, "3 information": {"content": "Moldova,[officially the Republic of Moldova, is a landlocked country in Eastern Europe, on the northeastern corner of the Balkans. The country spans a total of 33,483 km2 (12,928 sq mi) and has a population of approximately 2.42 million as of January 2024. Moldova is bordered by Romania to the west and Ukraine to the north, east, and south. The unrecognised breakaway state of Transnistria lies across the Dniester river on the country's eastern border with Ukraine. Moldova is a unitary parliamentary representative democratic republic with its capital in Chi\u0219in\u0103u, the country's largest city and main cultural and commercial centre. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Moldova", "type": "url"}}
+    trees [[0, 3, 6]]
+
+item North Macedonia
+    fields {"2 area": {"content": 0.025436, "type": "integer"}, "1 population": {"content": 1.836713, "type": "integer"}, "3 information": {"content": "North Macedonia (/\u02ccm\u00e6s\u026a\u02c8do\u028ani\u0259/ MASS-ih-DOH-nee-\u0259),[c] officially the Republic of North Macedonia,[d] is a landlocked country in Southeast Europe. It shares land borders with Greece to the south, Albania to the west, Bulgaria to the east, Kosovo[e] to the northwest and Serbia to the north.[8] It constitutes approximately the northern third of the larger geographical region of Macedonia. Skopje, the capital and largest city, is home to a quarter of the country's population of 1.83 million. The majority of the residents are ethnic Macedonians, a South Slavic people. Albanians form a significant minority at around 25%, followed by Turks, Roma, Serbs, Bosniaks, Aromanians and a few other minorities. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/North_Macedonia", "type": "url"}}
+    trees [[0, 3, 7]]
+
+item Romania
+    fields {"2 area": {"content": 0.238397, "type": "integer"}, "1 population": {"content": 19.064409, "type": "integer"}, "3 information": {"content": "Romania[a] is a country at the confluence of Central, Eastern and Southeast Europe. It borders Ukraine to the north and east, Hungary to the west, Serbia to the southwest, Bulgaria to the south, Moldova to the east, and the Black Sea to the southeast. It has a mainly continental climate, and an area of 238,397 km2 (92,046 sq mi) with a population of 19 million people. Romania is the twelfth-largest country in Europe and the sixth-most populous member state of the European Union. Europe's second-longest river, the Danube, empties into the Danube Delta in the southeast of the country. The Carpathian Mountains cross Romania from the north to the southwest and include Moldoveanu Peak, at an altitude of 2,544 m (8,346 ft). Bucharest is the country's largest urban area and financial centre. Other major urban areas include Cluj-Napoca, Timi\u0219oara, Ia\u0219i, Constan\u021ba and Bra\u0219ov. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/", "type": "url"}}
+    trees [[0, 3, 8]]
+
+item Serbia
+    fields {"2 area": {"content": 0.088499, "type": "integer"}, "1 population": {"content": 6.605168, "type": "integer"}, "3 information": {"content": "Serbia,[c] officially the Republic of Serbia,[d] is a landlocked country in Southeast and Central Europe.[9][10] Located in the Balkans, it borders Hungary to the north, Romania to the northeast, Bulgaria to the southeast, North Macedonia to the south, Croatia and Bosnia and Herzegovina to the west, and Montenegro to the southwest. Serbia claims a border with Albania through the disputed territory of Kosovo. Serbia has about 6.6 million inhabitants, excluding Kosovo. Its capital Belgrade is also the largest city. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Serbia", "type": "url"}}
+    trees [[0, 3, 9]]
+
+item Western Europe
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Western Europe is the western region of Europe. The region's extent varies depending on context. The concept of \"the West\" appeared in Europe in juxtaposition to \"the East\" and originally applied to the Western half of the ancient Mediterranean world, the Latin West of the Roman Empire, and \"Western Christendom\". Beginning with the Renaissance and the Age of Discovery, roughly from the 15th century, the concept of Europe as \"the West\" slowly became distinguished from and eventually replaced the dominant use of \"Christendom\" as the preferred endonym within the area.[1] By the Age of Enlightenment and the Industrial Revolution, the concepts of \"Eastern Europe\" and \"Western Europe\" were more regularly used.[2] The distinctiveness of Western Europe became most apparent during the Cold War, when Europe was divided for 40 years by the Iron Curtain into the Western Bloc and Eastern Bloc, each characterised by distinct political and economical systems.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Western_Europe", "type": "url"}}
+    trees [[0, 4]]
+
+item France
+    fields {"2 area": {"content": 0.6327023, "type": "integer"}, "1 population": {"content": 68.605616, "type": "integer"}, "3 information": {"content": "France, officially the French Republic, is a country located primarily in Western Europe. Its overseas regions and territories include French Guiana in South America, Saint Pierre and Miquelon in the North Atlantic, the French West Indies, and many islands in Oceania and the Indian Ocean, giving it one of the largest discontiguous exclusive economic zones in the world. Metropolitan France shares borders with Belgium and Luxembourg to the north, Germany to the northeast, Switzerland to the east, Italy and Monaco to the southeast, Andorra and Spain to the south, and a maritime border with the United Kingdom to the northwest. Its metropolitan area extends from the Rhine to the Atlantic Ocean and from the Mediterranean Sea to the English Channel and the North Sea. Its eighteen integral regions\u2014five of which are overseas\u2014span a combined area of 632,702 km2 (244,288 sq mi) and have an estimated total population of over 68.6 million as of January 2025. France is a semi-presidential republic and its capital, largest city and main cultural and economic centre is Paris. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/France", "type": "url"}}
+    trees [[0, 4, 0]]
+
+item United Kingdom
+    fields {"2 area": {"content": 0.244376, "type": "integer"}, "1 population": {"content": 68.265209, "type": "integer"}, "3 information": {"content": "The United Kingdom of Great Britain and Northern Ireland, commonly known as the United Kingdom (UK) or Britain, is a country in Northwestern Europe, off the coast of the continental mainland. It comprises England, Scotland, Wales, and Northern Ireland. The UK includes the island of Great Britain, the north-eastern part of the island of Ireland, and most of the smaller islands within the British Isles, covering 94,354 square miles (244,376 km2). Northern Ireland shares a land border with the Republic of Ireland; otherwise, the United Kingdom is surrounded by the Atlantic Ocean, the North Sea, the English Channel, the Celtic Sea, and the Irish Sea. The UK maintains sovereignty over the British Overseas Territories, which are located across various oceans and seas globally. The United Kingdom had an estimated population of over 68.2 million people in 2023. The capital and largest city of both England and the United Kingdom is London. The cities of Edinburgh, Cardiff, and Belfast are the national capitals of Scotland, Wales, and Northern Ireland, respectively. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/United_Kingdom", "type": "url"}}
+    trees [[0, 4, 1]]
+
+item Belgium
+    fields {"2 area": {"content": 0.030689, "type": "integer"}, "1 population": {"content": 11.812354, "type": "integer"}, "3 information": {"content": "Belgium, officially the Kingdom of Belgium, is a country in Northwestern Europe. Situated in a coastal lowland region known as the Low Countries, it is bordered by the Netherlands to the north, Germany to the east, Luxembourg to the southeast, France to the south, and the North Sea to the west. Belgium covers an area of 30,689 km2 (11,849 sq mi)[4] and has a population of more than 11.7 million; its population density of 383/km2 (990/sq mi) ranks 22nd in the world and sixth in Europe. The capital and largest metropolitan region is Brussels;[d] other major cities are Antwerp, Ghent, Charleroi, Li\u00e8ge, Bruges, Namur, and Leuven. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Belgium", "type": "url"}}
+    trees [[0, 4, 2]]
+
+item Luxembourg
+    fields {"2 area": {"content": 0.0025864, "type": "integer"}, "1 population": {"content": 0.67205, "type": "integer"}, "3 information": {"content": "Luxembourg, officially named the Grand Duchy of Luxembourg, is a landlocked country in Western Europe. It is bordered by Belgium to the west and north, Germany to the east, and France on the south. Its capital and most populous city, Luxembourg City, is one of the four institutional seats of the European Union and hosts several EU institutions, notably the Court of Justice of the European Union, the highest judicial authority in the EU.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Luxembourg", "type": "url"}}
+    trees [[0, 4, 3]]
+
+item Monaco
+    fields {"2 area": {"content": 2.08e-06, "type": "integer"}, "1 population": {"content": 3.8367e-05, "type": "integer"}, "3 information": {"content": "Monaco,[a] officially the Principality of Monaco, is a sovereign city-state and microstate on the French Riviera a few kilometres west of the Italian region of Liguria, in Western Europe, on the Mediterranean Sea. It is a semi-enclave bordered by France to the north, east and west. The principality is home to nearly 39,000 residents as of the 2020s, of whom about 9,500 are Mon\u00e9gasque nationals. It is recognised as one of the wealthiest and most expensive places in the world. The official language of Monaco is French. Mon\u00e9gasque, English and Italian are also spoken and understood by many residents.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Monaco", "type": "url"}}
+    trees [[0, 4, 4]]
+
+item Netherlands
+    fields {"2 area": {"content": 0.041865, "type": "integer"}, "1 population": {"content": 18.3093, "type": "integer"}, "3 information": {"content": "The Netherlands, informally Holland, is a country in Northwestern Europe, with overseas territories in the Caribbean. It is the largest of the four constituent countries of the Kingdom of the Netherlands. The Netherlands consists of twelve provinces; it borders Germany to the east and Belgium to the south, with a North Sea coastline to the north and west. It shares maritime borders with the United Kingdom, Germany, and Belgium. The official language is Dutch, with West Frisian as a secondary official language in the province of Friesland. Dutch, English, and Papiamento are official in the Caribbean territories.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Netherlands", "type": "url"}}
+    trees [[0, 4, 5]]
+
+item Ireland
+    fields {"2 area": {"content": 0.070273, "type": "integer"}, "1 population": {"content": 5.3803, "type": "integer"}, "3 information": {"content": "Ireland (Irish: \u00c9ire [\u02c8e\u02d0\u027e\u02b2\u0259] \u24d8), also known as the Republic of Ireland (Poblacht na h\u00c9ireann), is a country in Northwestern Europe consisting of 26 of the 32 counties of the island of Ireland, with a population of about 5.4 million.[4] Its capital and largest city is Dublin, on the eastern side of the island, with a population of over 1.5 million.[4] The sovereign state shares its only land border with Northern Ireland, which is part of the United Kingdom. It is otherwise surrounded by the Atlantic Ocean, with the Celtic Sea to the south, St George's Channel to the south-east and the Irish Sea to the east. It is a unitary, parliamentary republic.[9] The legislature, the Oireachtas, consists of a lower house, D\u00e1il \u00c9ireann; an upper house, Seanad \u00c9ireann; and an elected president (Uachtar\u00e1n) who serves as the largely ceremonial head of state, but with some important powers and duties. The head of government is the Taoiseach (prime minister, lit.\u2009'chief'), elected by the D\u00e1il and appointed by the president, who appoints other government ministers. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Ireland", "type": "url"}}
+    trees [[0, 4, 6]]
+
+item Southern Europe
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Southern Europe[1] is also known as Mediterranean Europe, as its geography is marked by the Mediterranean Sea. Definitions of southern Europe include some or all of these countries and regions: Albania, Andorra, Bosnia and Herzegovina, Bulgaria,[note 1] Croatia, Cyprus,[note 2] Gibraltar,[note 3] Greece,[note 4] Italy,[note 5] Malta,[note 6] Monaco,[note 7] Montenegro, North Macedonia, Portugal, San Marino, Serbia, Slovenia, southern France,[note 8] Spain, Turkey,[note 9] and Vatican City.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/", "type": "url"}}
+    trees [[0, 5]]
+
+item Andorra
+    fields {"2 area": {"content": 0.00046763, "type": "integer"}, "1 population": {"content": 0.080856, "type": "integer"}, "3 information": {"content": "Andorra, officially the Principality of Andorra, is a sovereign landlocked country on the Iberian Peninsula, in the eastern Pyrenees in Western Europe, bordered by France to the north and Spain to the south. Believed to have been created by Charlemagne, Andorra was ruled by the count of Urgell until 988, when it was transferred to the Roman Catholic Diocese of Urgell. The present principality was formed by a charter in 1278. It is currently headed by two co-princes: the Bishop of Urgell in Catalonia, Spain, and the president of France. Its capital and largest city is Andorra la Vella. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Andorra", "type": "url"}}
+    trees [[0, 5, 0]]
+
+item Gibraltar
+    fields {"2 area": {"content": 6.8e-06, "type": "integer"}, "1 population": {"content": 0.034003, "type": "integer"}, "3 information": {"content": "Gibraltar (/d\u0292\u026a\u02c8br\u0254\u02d0lt\u0259r/ \u24d8 jib-RAWL-t\u0259r, Spanish: [xi\u03b2\u027eal\u02c8ta\u027e]) is a British Overseas Territory[a] and city[6] located at the southern tip of the Iberian Peninsula, on the Bay of Gibraltar, near the exit of the Mediterranean Sea into the Atlantic Ocean (Strait of Gibraltar). It has an area of 6.8 km2 (2.6 sq mi)[3] and is bordered to the north by Spain (Campo de Gibraltar). The landscape is dominated by the Rock of Gibraltar, at the foot of which is a densely populated town area. Gibraltar is home to some 34,003 people, primarily Gibraltarians.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Gibraltar", "type": "url"}}
+    trees [[0, 5, 1]]
+
+item Italy
+    fields {"2 area": {"content": 0.30134, "type": "integer"}, "1 population": {"content": 58.947905, "type": "integer"}, "3 information": {"content": "Italy, officially the Italian Republic, is a country in Southern and Western Europe. It consists of a peninsula that extends into the Mediterranean Sea, with the Alps on its northern land border, as well as nearly 800 islands, notably Sicily and Sardinia.[15] Italy shares land borders with France to the west; Switzerland and Austria to the north; Slovenia to the east; and the two enclaves of Vatican City and San Marino. It is the tenth-largest country in Europe by area, covering 301,340 km2 (116,350 sq mi), and the third-most populous member state of the European Union, with nearly 60 million inhabitants. Italy's capital and largest city is Rome; other major urban areas include Milan, Naples, Turin, Palermo, Bologna, Florence, Genoa, and Venice. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Italy", "type": "url"}}
+    trees [[0, 5, 2]]
+
+item Portugal
+    fields {"2 area": {"content": 0.09223, "type": "integer"}, "1 population": {"content": 10.639726, "type": "integer"}, "3 information": {"content": "Portugal, officially the Portuguese Republic, is a country in the Iberian Peninsula in Southwestern Europe. Featuring the westernmost point in continental Europe, Portugal borders Spain to its north and east, with which it shares the longest uninterrupted border in the European Union; to the south and the west is the North Atlantic Ocean; and to the west and southwest lie the Macaronesian archipelagos of the Azores and Madeira, which are the two autonomous regions of Portugal. Lisbon is the capital and largest city, followed by Porto, which is the only other metropolitan area. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Portugal", "type": "url"}}
+    trees [[0, 5, 3]]
+
+item Malta
+    fields {"2 area": {"content": 0.000316, "type": "integer"}, "1 population": {"content": 0.519562, "type": "integer"}, "3 information": {"content": "Malta (/\u02c8m\u0252lt\u0259/ \u24d8 MOL-t\u0259, /\u02c8m\u0254\u02d0lt\u0259/ MAWL-t\u0259, Maltese: [\u02c8m\u0250\u02d0lt\u0250]), officially the Republic of Malta,[14] is an island country in Southern Europe located in the Mediterranean Sea, between Sicily and North Africa. It consists of an archipelago 80 km (50 mi) south of Italy, 284 km (176 mi) east of Tunisia, and 333 km (207 mi) north of Libya. The two official languages are Maltese and English. The country's capital is Valletta, which is the smallest capital city in the EU by both area and population. It was also the first World Heritage City in Europe to become a European Capital of Culture in 2018.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Malta", "type": "url"}}
+    trees [[0, 5, 4]]
+
+item San Marino
+    fields {"2 area": {"content": 6.1e-05, "type": "integer"}, "1 population": {"content": 0.034042, "type": "integer"}, "3 information": {"content": "San Marino (/\u02ccs\u00e6n m\u0259\u02c8ri\u02d0no\u028a/ \u24d8 SAN m\u0259-REE-noh, Italian: [sam ma\u02c8ri\u02d0no]; Romagnol: San Mar\u00e9in or San Maroin), officially the Republic of San Marino (Italian: Repubblica di San Marino), is the oldest existing representative republic and the European state with the smallest population, excluding Vatican City. It is the larger of the two microstates surrounded by Italy.[9] Located on the northeastern side of the Apennine Mountains, it is the fifth-smallest country in the world,[10] with a land area of just over 61 km2 (23+1\u20442 sq mi) and a population of 34,042, as of 2025. It is a member of the Council of Europe, uses the euro as its official currency, but is not a member of the European Union. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/San_Marino", "type": "url"}}
+    trees [[0, 5, 5]]
+
+item Spain
+    fields {"2 area": {"content": 0.50599, "type": "integer"}, "1 population": {"content": 49.077984, "type": "integer"}, "3 information": {"content": "Spain, also the Kingdom of Spain, is a country in southwestern Europe with territories in North Africa.[h] Featuring the southernmost point of continental Europe, it is the largest country in Southern Europe and the fourth-most populous European Union member state. Spanning across the majority of the Iberian Peninsula, its territory also includes the Canary Islands, in the Eastern Atlantic Ocean, the Balearic Islands, in the Western Mediterranean Sea, and the autonomous cities of Ceuta and Melilla, in Africa. Peninsular Spain is bordered to the north by France, Andorra, and the Bay of Biscay; to the east and south by the Mediterranean Sea and Gibraltar; and to the west by Portugal and the Atlantic Ocean. Spain's capital and largest city is Madrid, and other major urban areas include Barcelona, Valencia, Seville, Zaragoza, M\u00e1laga, Murcia, and Palma de Mallorca. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Spain", "type": "url"}}
+    trees [[0, 5, 6]]
+
+item Vatican City
+    fields {"2 area": {"content": 5e-07, "type": "integer"}, "1 population": {"content": 0.000882, "type": "integer"}, "3 information": {"content": "Vatican City, officially the Vatican City State (Italian: Stato della Citt\u00e0 del Vaticano; Latin: Status Civitatis Vaticanae), is a landlocked country,[18][19] city-state, microstate, and enclave surrounded by, and historically a part of, Rome, Italy. It became independent from Italy in 1929 with the Lateran Treaty, and is a distinct territory under \"full ownership, exclusive dominion, and sovereign authority and jurisdiction\" of the Holy See, which is itself a sovereign entity under international law, maintaining the city-state's temporal power, governance, diplomatic, and spiritual independence. The Vatican is also a metonym for the pope, the Holy See, and the Roman Curia.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Vatican_City", "type": "url"}}
+    trees [[0, 5, 7]]
+
+item Asia
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Asia (/\u02c8e\u026a\u0292\u0259/ \u24d8 AY-zh\u0259, UK also /\u02c8e\u026a\u0283\u0259/ AY-sh\u0259) is the largest continent in the world by both land area and population. It covers an area of more than 44 million square kilometres, about 30% of Earth's total land area and 8% of Earth's total surface area. The continent, which has long been home to the majority of the human population, was the site of many of the first civilisations. Its 4.7 billion people constitute roughly 60% of the world's population. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/asia", "type": "url"}}
+    trees [[1]]
+
+item Central Asia
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/central_asia", "type": "url"}}
+    trees [[1, 0]]
+
+item East Asia
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/east_asia", "type": "url"}}
+    trees [[1, 1]]
+
+item North Asia
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/north_asia", "type": "url"}}
+    trees [[1, 2]]
+
+item Russia
+    fields {"2 area": {"content": 17.098246, "type": "integer"}, "1 population": {"content": 143.569049, "type": "integer"}, "3 information": {"content": "Russia, or the Russian Federation, is a country spanning Eastern Europe and North Asia. It is the largest country in the world, and extends across eleven time zones; sharing land borders with fourteen countries. Russia is the most populous country in Europe and the ninth-most populous country in the world. It is a highly urbanised country, with sixteen of its urban areas having more than 1 million inhabitants. Moscow, the most populous metropolitan area in Europe, is the capital and largest city of Russia, while Saint Petersburg is its second-largest city and cultural centre. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/russia", "type": "url"}}
+    trees [[1, 2, 0]]
+
+item South Asia
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/south_asia", "type": "url"}}
+    trees [[1, 3]]
+
+item Souteast Asia
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/southeast_asia", "type": "url"}}
+    trees [[1, 4]]
+
+item West Asia
+    fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/west_asia", "type": "url"}}
+    trees [[1, 5]]
+
+item Israel
+    fields {"2 area": {"content": 0.022072, "type": "integer"}, "1 population": {"content": 10.0098, "type": "integer"}, "3 information": {"content": "Israel, officially the State of Israel, is a country in West Asia. Situated in the Southern Levant of the Middle East, it shares borders with Lebanon and Syria to the north, Jordan to the east, Egypt to the southwest, and the Mediterranean Sea to the west. It occupies the Palestinian territories of the West Bank in the east and the Gaza Strip in the southwest. Israel also has a small coastline on the Red Sea at its southernmost point, and part of the Dead Sea lies along its eastern border. Its proclaimed capital is Jerusalem, while Tel Aviv is the country's largest urban area and economic center. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/israel", "type": "url"}}
+    trees [[1, 5, 0]]
+
+item Turkey
+    fields {"2 area": {"content": 0.783562, "type": "integer"}, "1 population": {"content": 85.664944, "type": "integer"}, "3 information": {"content": "Turkey, officially the Republic of T\u00fcrkiye, is a country mainly located in Anatolia in West Asia, with a relatively small part called East Thrace in Southeast Europe. It borders the Black Sea to the north; Georgia, Armenia, Azerbaijan, and Iran to the east; Iraq, Syria, and the Mediterranean Sea to the south; and the Aegean Sea, Greece, and Bulgaria to the west. Turkey is home to over 85 million people; most are ethnic Turks, while ethnic Kurds are the largest ethnic minority. Officially a secular state, Turkey has a Muslim-majority population. Ankara is Turkey's capital and second-largest city. Istanbul is its largest city and economic center. Other major cities include \u0130zmir, Bursa, and Antalya. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/turkey", "type": "url"}}
+    trees [[1, 5, 1]]
+
