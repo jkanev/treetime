@@ -678,11 +678,11 @@ class Node:
         if not current_depth:
             graph = gv.Digraph(graph_attr={'overlap': 'prism', 'outputorder': 'nodesfirst'})
 
-        # create id
-        node_id = "{}".format(self.path)
-
         # add myself, using the path as ID
         if not exclude_root:
+
+            # create id
+            node_id = "{}".format(self.path)
 
             # create fields string
             if fields_local:
@@ -727,15 +727,22 @@ class Node:
 
             # add connection to parent
             if parent_id:
-                graph.edge(parent_id, node_id)
+                if parent_id == 'invis':
+                    graph.edge(parent_id, node_id, style='invis')
+                else:
+                    graph.edge(parent_id, node_id)
+
+        else:
+            # create id
+            node_id = "invis"
+
+            # add invisible parent for layout reasons
+            graph.node('invis', '', style='invis')
 
         # recurse over children
         if children and depth:
             for c in sorted(self.children, key=lambda c: c.name):
-                if exclude_root:
-                    parent_id = False
-                else:
-                    parent_id = node_id
+                parent_id = node_id
                 c.to_image(fields=fields, context=context, depth=depth-1, engine=engine,
                            graph=graph, parent_id=parent_id, colour=next_colour[colour], current_depth=current_depth+1)
 
