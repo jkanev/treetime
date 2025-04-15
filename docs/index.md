@@ -9,8 +9,8 @@ A tree arranges data into units and sub-units instead of using flat lists. Mathe
 
 Linked trees are distinct trees that share data between them. In _TreeTime_, any data object may be part of several trees at the same time. 
 
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" style="display: block; position: relative; float: left; max-width: 400px;">
-    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png"/>
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" style="width: 300px;"/>
 </a>
 
 ## What is a Tree? ##
@@ -81,17 +81,16 @@ A mean priority can be shown per work package and project.
 ## TreeTime Images ##
 
 Click to see screen shots in full size.
-
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="display: block; position: relative; float: left; max-width: 400px;">
-    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png"/>
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="width: 300px;"/>
 </a>
 
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="display: block; position: relative; float: left; max-width: 400px;">
-    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png"/>
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="width: 300px;"/>
 </a>
 
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="display: block; position: relative; float: left; max-width: 400px;">
-    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png"/>
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="width: 300px;"/>
 </a>
 
 ## Bugs and Problems ##
