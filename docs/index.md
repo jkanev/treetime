@@ -45,12 +45,11 @@ A mean priority can be shown per work package and project.
     <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="width: 300px;"/>
 </a>
 
+* Data analyis: Measure time using node timers in nodes / Add total time up branches / Calculate sums, differences, ratios and percentages between branches, siblings or children / Concatenate text of children or siblings / Auto-update of all functions up the tree on node change
 
 <a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
     <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="width: 300px;"/>
 </a>
-
-* Data analyis: Measure time using node timers in nodes / Add total time up branches / Calculate sums, differences, ratios and percentages between branches, siblings or children / Concatenate text of children or siblings / Auto-update of all functions up the tree on node change
 
 ## Documentation ##
 
