@@ -9,7 +9,9 @@ A tree arranges data into units and sub-units instead of using flat lists. Mathe
 
 Linked trees are distinct trees that share data between them. In _TreeTime_, any data object may be part of several trees at the same time. 
 
-<img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" width="100%">
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" style="display: block; position: relative; float: left; max-width: 400px;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png"/>
+</a>
 
 ## What is a Tree? ##
 
@@ -78,15 +80,19 @@ A mean priority can be shown per work package and project.
 
 ## TreeTime Images ##
 
-Right-click and select _Open in new tab_ to see full-scale screenshots  
+Click to see screen shots in full size.
 
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="display: block; position: relative; float: left; max-width: 600px;">
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="display: block; position: relative; float: left; max-width: 400px;">
     <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png"/>
 </a>
 
-<img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" width="32%">
-<img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" width="32%">
-<img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" width="32%">
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="display: block; position: relative; float: left; max-width: 400px;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png"/>
+</a>
+
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="display: block; position: relative; float: left; max-width: 400px;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png"/>
+</a>
 
 ## Bugs and Problems ##
 
