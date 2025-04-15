@@ -80,7 +80,6 @@ A mean priority can be shown per work package and project.
 
 Right-click and select _Open in new tab_ to see full-scale screenshots  
 
-
 <p style="position: relative; float: left; width: 30%">
     <a href="src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" ">
         <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png"/>
