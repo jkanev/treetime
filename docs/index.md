@@ -10,7 +10,7 @@ A tree arranges data into units and sub-units instead of using flat lists. Mathe
 Linked trees are distinct trees that share data between them. In _TreeTime_, any data object may be part of several trees at the same time. 
 
 <a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
-    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" style="width: 300px;"/>
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot03.png" style="width: 500px;"/>
 </a>
 
 ## What is a Tree? ##
@@ -33,8 +33,23 @@ A mean priority can be shown per work package and project.
   
 ## Features ##
 
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="width: 300px;"/>
+</a>
+
 * Files and Saving: Start new files from templates / Load files / Save files / Text export / CSV export / Html export / Export single branches or entire trees
+
 * Editing trees: Create parents, siblings, children / Edit text, dates, values in nodes / Copy nodes to siblings, children, parents / Copy branches to siblings down to a pre-defined level / Remove nodes from single trees / Remove nodes from all trees / Remove branches from single trees / Remove branches recursively from all trees
+
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="display: block; position: relative; float: right; max-width: content; margin: 2em;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="width: 300px;"/>
+</a>
+
+
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
+    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="width: 300px;"/>
+</a>
+
 * Data analyis: Measure time using node timers in nodes / Add total time up branches / Calculate sums, differences, ratios and percentages between branches, siblings or children / Concatenate text of children or siblings / Auto-update of all functions up the tree on node change
 
 ## Documentation ##
@@ -77,21 +92,6 @@ A mean priority can be shown per work package and project.
 
 - Windows: Hit the Windows key and type "TreeTime", then click the "run command treetime" that comes up.
 - Linux, Mac: On the command line, type "TreeTime". You can also start this any other way your operating system supports. Plus, there's a .desktop file (for KDE and Gnome) in the data directory to create desktop or menu link.
-
-## TreeTime Images ##
-
-Click to see screen shots in full size.
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
-    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot01.png" style="width: 300px;"/>
-</a>
-
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
-    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="width: 300px;"/>
-</a>
-
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
-    <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="width: 300px;"/>
-</a>
 
 ## Bugs and Problems ##
 
