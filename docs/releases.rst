@@ -115,6 +115,15 @@ Past
 * December 2024: Changed colours in html output (again?), increased font size
 * December 2024: Release **version 2024.4**
 
+2025
+^^^^
+
+* January 2025: Changed colours on html export to a seven-colour rainbow palette.
+* February 2025: Implemented PNG export
+* March 2025: Implemented SVG export
+* March 2025: Implemented HTML/Document export
+* April 2025: Improvements to image export.
+* April 2025: Release **version 2025.1**
 
 Present
 -------

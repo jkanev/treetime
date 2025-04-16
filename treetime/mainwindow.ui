@@ -177,15 +177,15 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="pageFile">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-77</y>
-         <width>314</width>
-         <height>816</height>
+         <y>0</y>
+         <width>251</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
@@ -203,7 +203,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>40</height>
+            <height>20</height>
            </size>
           </property>
          </spacer>
@@ -265,7 +265,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>40</height>
+            <height>20</height>
            </size>
           </property>
          </spacer>
@@ -326,7 +326,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>40</height>
+            <height>20</height>
            </size>
           </property>
          </spacer>
@@ -585,32 +585,32 @@
           </item>
           <item>
            <property name="text">
-            <string>Image/PNG (graphical, top-down)</string>
+            <string>Image/PNG (top-down)</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Image/SVG (graphical, top-down)</string>
+            <string>Image/SVG (top-down)</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Image/PNG (graphical, circular)</string>
+            <string>Image/PNG (circular)</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Image/SVG (graphical, circular)</string>
+            <string>Image/SVG (circular)</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Image/PNG (graphical, spread-out)</string>
+            <string>Image/PNG (spread-out)</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Image/SVG (graphical, spread-out)</string>
+            <string>Image/SVG (spread-out)</string>
            </property>
           </item>
           <item>
@@ -688,7 +688,7 @@
           </property>
          </widget>
         </item>
-        <item row="26" column="0" colspan="2">
+        <item row="21" column="0" colspan="2">
          <spacer name="verticalSpacer_18">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
@@ -696,7 +696,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>40</height>
+            <height>20</height>
            </size>
           </property>
          </spacer>
@@ -708,8 +708,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>200</width>
-         <height>716</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -1092,8 +1092,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>128</width>
-         <height>164</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1219,8 +1219,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>200</width>
-         <height>411</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1308,7 +1308,7 @@ hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: &quot;\2610&quot;; }
 li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     TreeTime 2024.4+ (Development)&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     TreeTime 2025.1&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     Official website:&lt;br /&gt;     &lt;a href=&quot;https://github.com/jkanev/treetime&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;tree-time.info&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     Updates and source code:&lt;br /&gt;     &lt;a href=&quot;https://github.com/jkanev/treetime&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;github.com/jkanev/treetime&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;    Documentation:&lt;br /&gt;     &lt;a href=&quot;https://treetime-data-manager.readthedocs.io&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;treetime-data-manager.&lt;/span&gt;&lt;/a&gt;&lt;br /&gt;     &lt;a href=&quot;https://treetime-data-manager.readthedocs.io&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;readthedocs.io&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

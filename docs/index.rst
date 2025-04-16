@@ -1,5 +1,5 @@
 
-.. image:: ../data/treetime-logo.png
+.. image:: ../../treetime/data/treetime-logo.png
    :align: left
    :scale: 50%
    

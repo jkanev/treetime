@@ -41,11 +41,11 @@ A mean priority can be shown per work package and project.
 
 * Editing trees: Create parents, siblings, children / Edit text, dates, values in nodes / Copy nodes to siblings, children, parents / Copy branches to siblings down to a pre-defined level / Remove nodes from single trees / Remove nodes from all trees / Remove branches from single trees / Remove branches recursively from all trees
 
-<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="display: block; position: relative; float: right; max-width: content; margin: 2em;">
+* Data analyis: Measure time using node timers in nodes / Add total time up branches / Calculate sums, differences, ratios and percentages between branches, siblings or children / Concatenate text of children or siblings / Auto-update of all functions up the tree on node change
+
+<a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
     <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot02.png" style="width: 300px;"/>
 </a>
-
-* Data analyis: Measure time using node timers in nodes / Add total time up branches / Calculate sums, differences, ratios and percentages between branches, siblings or children / Concatenate text of children or siblings / Auto-update of all functions up the tree on node change
 
 <a href="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="display: block; position: relative; float: left; max-width: content; margin: 2em;">
     <img src="https://raw.githubusercontent.com/jkanev/treetime/master/docs/screenshot04.png" style="width: 300px;"/>
@@ -59,7 +59,7 @@ A mean priority can be shown per work package and project.
 
 #### Unpack-and-run Zip Files ####
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2024.4](https://github.com/jkanev/treetime/releases/tag/2024.4) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2025.1](https://github.com/jkanev/treetime/releases/tag/2025.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
