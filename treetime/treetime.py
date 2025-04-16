@@ -779,7 +779,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         "Image/SVG (spread-out)": "Image Files (*.svg)",
                         "CSV": "CSV (Comma-separated Values) Files (*.csv)"
                     }
-                    fileDir = os.path.dirname(self.settings.value('exportFile')) or ''
+                    fileDir = self.settings.value('exportFile') and os.path.dirname(self.settings.value('exportFile')) or ''
                     file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to " + exportFormat, fileDir,
                                                                  extensions[exportFormat])[0]
                     if not file:
