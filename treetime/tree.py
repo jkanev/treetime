@@ -494,7 +494,7 @@ class Node:
         self.moveCallback = None
 
     @staticmethod
-    def _wrap_lines(raw_lines):
+    def _wrap_lines(raw_lines, chars=70):
         """
         Helper function to wrap long text
         :param string: Input string, in one single line
@@ -502,7 +502,7 @@ class Node:
         """
         lines = []
         for line in [s.strip() for s in raw_lines.split('\n')]:
-            lines += wrap(line, 70) or '\n'
+            lines += wrap(line, chars) or '\n'
         return lines
 
     def _evaluateContext(self, fields, context):
@@ -675,7 +675,11 @@ class Node:
         fields_local, children, context_current = self._evaluateContext(fields, context)
         # if top call, create graph object
         if not current_depth:
-            graph = gv.Digraph(graph_attr={'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst'})
+            if engine=='twopi':
+                graph_attr = {'overlap': 'scalexy', 'sep': '-0', 'outputorder': 'nodesfirst'}
+            else:
+                graph_attr = {'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst'}
+            graph = gv.Digraph(graph_attr=graph_attr)
 
         # add myself invisibly
         if invisible_root:
@@ -699,7 +703,7 @@ class Node:
                 for name, field in self.fields.items():
                     content = field.getString().strip()
                     if content:     # wrap field content, larger bits of text start with a newline
-                        lines = [quote_string(l) for l in Node._wrap_lines(content)]
+                        lines = [quote_string(l) for l in Node._wrap_lines(content, chars=50)]
                         if field.fieldType == "url":
                             link = len(content) > 50 and content[:50]+'...' or content
                             field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
@@ -729,8 +733,9 @@ class Node:
 
             # assemble
             name = quote_string(self.name)
+            title = '<BR ALIGN="LEFT"/>'.join(Node._wrap_lines(name, chars=30))
             label = (f'<<TABLE><TR><TD COLSPAN="2">'
-                     f'<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{name}</FONT>'
+                     f'<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{title}</FONT>'
                      f'</TD></TR>{field_string}</TABLE>>')
             graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled',
                        root= ((not parent_id) and (engine=='twopi')) and 'true' or 'false')
@@ -752,9 +757,12 @@ class Node:
         # end of recursion, create picture
         image = None
         if not current_depth:
-            image = graph.unflatten(stagger=5,
-                                    chain=3,
-                                    fanout=3).pipe(format=format, engine=engine)
+            if engine == 'twopi':
+                image = graph.pipe(format=format, engine=engine)
+            else:
+                image = graph.unflatten(stagger=5,
+                                        chain=3,
+                                        fanout=3).pipe(format=format, engine=engine)
         return image
 
     def to_txt(self, fields=True, context=False, lastitem=[], depth=-1):
