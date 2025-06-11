@@ -770,7 +770,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         "HTML (Document)": "HTML Files (*.html)",
                         "HTML (Tiles)": "HTML Files (*.html)",
                         "HTML (List)": "HTML Files (*.html)",
-                        "Text/Unicode": "Text Files (*.txt)",
+                        "Text/Unicode (Letter Graphics)": "Text Files (*.txt)",
+                        "Text/Unicode (Markdown)": "Markdown Files (*.md)",
                         "Image/PNG (top-down)": "Image Files (*.png)",
                         "Image/SVG (top-down)": "Image Files (*.svg)",
                         "Image/PNG (circular)": "Image Files (*.png)",
@@ -851,8 +852,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # write to data string
                     if exportFormat == "CSV":
                         data = currentNode.to_csv(depth=depth, fields=allFields)
-                    elif exportFormat == "Text/Unicode":
+                    elif exportFormat == "Text/Unicode (Letter Graphics)":
                         data = currentNode.to_txt(depth=depth, fields=allFields)
+                    elif exportFormat == "Text/Unicode (Markdown)":
+                        data = currentNode.to_md(depth=depth, fields=allFields)
                     elif exportFormat == "HTML (Document)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
                                                           style='document', continuous=continuous)
@@ -901,10 +904,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     for c in children:
                         data += c.to_csv(first=first, depth=depth, fields=allFields)
                         first = False
-                elif exportFormat == "Text/Unicode":
+                elif exportFormat == "Text/Unicode (Letter Graphics)":
                     for c in children:
                         data += '\n'
                         data += c.to_txt(depth=depth, fields=allFields)
+                        data += '\n'
+                elif exportFormat == "Text/Unicode (Markdown)":
+                    for c in children:
+                        data += '\n'
+                        data += c.to_md(depth=depth, fields=allFields)
                         data += '\n'
                 elif (exportFormat == "HTML (List)"
                       or exportFormat == "HTML (Tiles)"
@@ -957,8 +965,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # write to data string
                     if exportFormat == "CSV":
                         data = currentNode.to_csv(depth=depth, fields=allFields, context=path)
-                    elif exportFormat == "Text/Unicode":
+                    elif exportFormat == "Text/Unicode (Letter Graphics":
                         data = currentNode.to_txt(depth=depth, fields=allFields, context=path)
+                    elif exportFormat == "Text/Unicode (Markdown)":
+                        data = currentNode.to_md(depth=depth, fields=allFields, context=path)
                     elif exportFormat == "HTML (Document)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           fields=allFields, style='document', continuous=continuous)
@@ -1009,7 +1019,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # decide on clipboard function (setText/setImage) and data preparation (leave as string or QImage)
                 clipboard = QGuiApplication.clipboard()
-                if exportFormat in ("CSV", "Text/Unicode", "HTML (List)", "HTML (Tiles)", "HTML (Document)"):
+                if exportFormat in ("CSV", "Text/Unicode (Letter Graphics)", "Text/Unicode (Markdown)", "HTML (List)",
+                                    "HTML (Tiles)", "HTML (Document)"):
                     toClipboard = clipboard.setText
                 elif exportFormat in ("Image/PNG (top-down)", "Image/SVG (top-down)",
                                       "Image/PNG (circular)", "Image/SVG (circular)",

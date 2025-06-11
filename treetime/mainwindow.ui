@@ -580,7 +580,12 @@
           </item>
           <item>
            <property name="text">
-            <string>Text/Unicode</string>
+            <string>Text/Unicode (Letter Graphics)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Text/Unicode (Markdown)</string>
            </property>
           </item>
           <item>
@@ -1092,8 +1097,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>128</width>
+         <height>164</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1219,8 +1224,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>230</width>
+         <height>411</height>
         </rect>
        </property>
        <attribute name="label">

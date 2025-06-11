@@ -889,6 +889,50 @@ class Node:
         # return
         return text
 
+    def to_md(self, fields=True, context=False, depth=-1, current_depth=0):
+        """
+        Create a markdown representation of the current branch.
+        """
+
+        text = ""
+
+        # evaluate context
+        fields_local, children, context_current = self._evaluateContext(fields, context)
+
+        # add node name
+        text += '\n' + (current_depth + 1) * '#' + ' ' + self.name.strip() + '\n\n'
+
+        if fields_local:
+            for name, field in self.fields.items():
+
+                # wrap field content, larger bits of text start with a newline
+                lines = Node._wrap_lines(field.getString(), chars=120)
+
+                # empty array if only whitespace content
+                if lines == ['\n']:
+                    lines = []
+
+                # assemble final text only if field is used
+                first = True
+                for line in lines:
+                    if first:
+                        text += '*  *' + name.strip() + ':* ' + line + '\n'
+                        first = False
+                    else:
+                        text += '    ' + line + '\n'
+
+        # recurse
+        if children and depth:
+            sorted_children = sorted(self.children, key=lambda c: c.name)
+        else:
+            sorted_children = []
+
+        for child in sorted_children:
+            text += child.to_md(fields=fields, context=context, depth=depth-1, current_depth=current_depth+1)
+
+        # return
+        return text
+
     def to_html(self, header=False, footer=False, fields=True, context=False, continuous=False, style='tiles',
                 depth=-1, current_depth=0):
 
