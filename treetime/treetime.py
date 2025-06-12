@@ -990,7 +990,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     if exportFormat == "CSV":
                         data = currentNode.to_csv(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                                   fieldContent=fieldContent, context=path)
-                    elif exportFormat == "Text/Unicode (Letter Graphics":
+                    elif exportFormat == "Text (Line Art)":
                         data = currentNode.to_txt(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                                   fieldContent=fieldContent, context=path)
                     elif exportFormat == "Text (Markdown)":

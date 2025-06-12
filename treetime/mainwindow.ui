@@ -177,14 +177,14 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="pageFile">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>286</width>
+         <width>251</width>
          <height>760</height>
         </rect>
        </property>
@@ -397,61 +397,23 @@
           </layout>
          </widget>
         </item>
-        <item row="11" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBoxExportContent">
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="0">
-            <widget class="QGroupBox" name="groupBox">
-             <property name="title">
-              <string/>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_5">
-              <item row="1" column="3">
-               <widget class="QCheckBox" name="checkBoxExportFieldContent">
-                <property name="text">
-                 <string>Field content</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QCheckBox" name="checkBoxExportFieldNames">
-                <property name="text">
-                 <string>Field names</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QCheckBox" name="checkBoxExportNodeNames">
-                <property name="text">
-                 <string>Node names</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item row="12" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBoxExportTarget">
           <property name="flat">
            <bool>true</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
+           <item row="1" column="1">
+            <widget class="QRadioButton" name="radioButtonExportToClipboard">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export to clipboard.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When the [Export] button is clicked, the exported data will be in the clipboard and can be pasted (Menu/Paste or Ctrl+V) it into any document.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>To clipboard</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
             <widget class="QRadioButton" name="radioButtonExportToFile">
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export to file.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The export will be saved in a file. When clicking [Export], a file dialog opens to select a target file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -461,16 +423,6 @@
              </property>
              <property name="checked">
               <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QRadioButton" name="radioButtonExportToClipboard">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export to clipboard.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When the [Export] button is clicked, the exported data will be in the clipboard and can be pasted (Menu/Paste or Ctrl+V) it into any document.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>To clipboard</string>
              </property>
             </widget>
            </item>
@@ -646,6 +598,9 @@
           <property name="title">
            <string/>
           </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="5" column="1">
             <widget class="QRadioButton" name="radioButtonExportContinuously">
@@ -721,6 +676,45 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="11" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBoxExportContent">
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="checkBoxExportNodeNames">
+             <property name="text">
+              <string>Node names</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QCheckBox" name="checkBoxExportFieldContent">
+             <property name="text">
+              <string>Field content</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QCheckBox" name="checkBoxExportFieldNames">
+             <property name="text">
+              <string>Field names</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -1113,8 +1107,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>128</width>
+         <height>164</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1240,8 +1234,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>230</width>
+         <height>411</height>
         </rect>
        </property>
        <attribute name="label">

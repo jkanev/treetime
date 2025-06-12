@@ -706,24 +706,28 @@ class Node:
             if fields_local:
                 field_string = ""
                 for name, field in self.fields.items():
-                    content = fieldContent and field.getString().strip() or ""
-                    name = fieldNames and name or ""
+                    content = field.getString().strip()
+                    name_string = fieldNames and f'<FONT FACE="Helvetica" POINT-SIZE="10">{name}</FONT>' or ''
                     if content:     # wrap field content, larger bits of text start with a newline
                         lines = [quote_string(l) for l in Node._wrap_lines(content, chars=50)]
                         if field.fieldType == "url":
                             link = len(content) > 50 and content[:50]+'...' or content
+                            if fieldContent:
+                                content_string = (f'<TD ALIGN="LEFT" VALIGN="TOP" HREF="{content}">'
+                                                  f'<FONT FACE="Helvetica" COLOR="#0000a0" POINT-SIZE="10">'
+                                                  f'{link}</FONT></TD>')
+                            else:
+                                content_string = ''
                             field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
-                                             f'<FONT FACE="Helvetica" POINT-SIZE="10">{name}</FONT>'
-                                             f'</TD><TD ALIGN="LEFT" VALIGN="TOP" HREF="{content}">'
-                                             f'<FONT FACE="Helvetica" COLOR="#0000a0" POINT-SIZE="10">{link}</FONT>'
-                                             '</TD></TR>')
+                                             f'{name_string}</TD>{content_string}</TR>')
                         else:
+                            content_string = fieldContent and ('<FONT FACE="Helvetica" POINT-SIZE="10">'
+                                                               + '<BR ALIGN="LEFT"/>'.join(lines)
+                                                               + '</FONT>') \
+                                                          or ''
                             field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
-                                             f'<FONT FACE="Helvetica" POINT-SIZE="10">{name}</FONT>'
-                                             '</TD><TD ALIGN="LEFT" VALIGN="TOP">'
-                                             '<FONT FACE="Helvetica" POINT-SIZE="10">'
-                                             + '<BR ALIGN="LEFT"/>'.join(lines)
-                                             + '</FONT></TD></TR>')
+                                             f'{name_string}</TD>'
+                                             f'<TD ALIGN="LEFT" VALIGN="TOP">{content_string}</TD></TR>')
             else:
                 field_string = ""
 
@@ -738,14 +742,17 @@ class Node:
                 font_size = 1.0 + 2.0 / (1.0 + current_depth)  # start with 3.0, exponentially decay to 1.0
 
             # assemble
-            name = nodeNames and quote_string(self.name) or ''
-            title = '<BR ALIGN="LEFT"/>'.join(Node._wrap_lines(name, chars=30))
+            title = '<BR ALIGN="LEFT"/>'.join(Node._wrap_lines(quote_string(self.name), chars=30))
             if nodeNames:
                 label = (f'<<TABLE><TR><TD COLSPAN="2">'
                          f'<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{title}</FONT>'
                          f'</TD></TR>{field_string}</TABLE>>')
             else:
-                label = (f'<<TABLE>{field_string}</TABLE>>')
+                if field_string:
+                    label = (f'<<TABLE>{field_string}</TABLE>>')
+                else:
+                    label = ' '
+
             graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled',
                        root= ((not parent_id) and (engine=='twopi')) and 'true' or 'false')
 
@@ -853,16 +860,16 @@ class Node:
 
         # add node name (possibly multi-line)
         first = True
-        if nodeNames:
-            for line in Node._wrap_lines(self.name):
-                line = line == '\n' and line or line + '\n'
-                if first:
-                    text += first_line_prefix + line
-                    first = False
-                else:
-                    text += line_prefix + "    " + line
-        else:
-            text += line_prefix + '—'*70
+        name_lines = (nodeNames and Node._wrap_lines(self.name)) \
+                     or (fieldNames and ['—' * 74]) \
+                     or ['    ' + '—'*70]
+        for line in name_lines:
+            line = line == '\n' and line or line + '\n'
+            if first:
+                text += first_line_prefix + line
+                first = False
+            else:
+                text += first_line_prefix + "    " + line
 
         if fields_local:
             for name, field in self.fields.items():
@@ -874,8 +881,10 @@ class Node:
                 if lines == ['\n']:
                     lines = []
 
-                if len(lines) > 1:
-                    lines = [''] + lines
+                # start on new line if field content spans multiple lines
+                if fieldNames:
+                    if len(lines) > 1:
+                        lines = [''] + lines
 
                 # assemble final text with tree decorations
                 first = True
@@ -939,7 +948,7 @@ class Node:
                             text += '*  *' + name.strip() + ':* ' + line + '\n'
                             first = False
                         else:
-                            text += '    ' + line.replace('#', '\#') + '\n'
+                            text += '    ' + line.replace('#', '\\#') + '\n'
 
         # recurse
         if children and depth:
@@ -1118,7 +1127,7 @@ class Node:
         html += '<div class="node {}">'.format(backgrounds[(depth+1) % len(backgrounds)])
         needed_columns = context_current and 5 or 1    # the amount of columns needed by this child
 
-        # node name
+        # font size for title
         if context:
             if context_current:
                 font_size = 1.5
@@ -1126,14 +1135,19 @@ class Node:
                 font_size = 0.5 + 1.0 / (2.0 + max((len(context) - len(self.path)), 0))  # 1 em for target, decay to 0.5
         else:
             font_size = 1.0 + 1.0 / (1.0 + current_depth)  # start with 2 em, exponentially decay to 0.5 em
-        if style == 'tiles' or style == 'document':
-            if context_current:
-                html += '<div class="name_current" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
-            else:
-                html += '<div class="name" style="font-size: {:0.2f}em">{}</div>'.format(font_size, self.name)
-        if style == 'list':
-            html += '<div class="name" style="font-size: {:0.2f}em; ' \
-                    'width: {:0.2f}em;">{}</div>'.format(font_size, (20.0 - (1.2*current_depth))/font_size, self.name)
+
+        # write title
+        if nodeNames:
+            if style == 'tiles' or style == 'document':
+                if context_current:
+                    html += f'<div class="name_current" style="font-size: {font_size:0.2f}em">{self.name}</div>'
+                else:
+                    html += f'<div class="name" style="font-size: {font_size:0.2f}em">{self.name}</div>'
+            if style == 'list':
+                html += f'<div class="name" style="font-size: {font_size:0.2f}em; ' \
+                        f'width: {(20.0 - (1.2*current_depth))/font_size:0.2f}em;">{self.name}</div>'
+        elif style == 'list':
+            html += f'<div class="name" style="width: {(10.0 - (1.2 * current_depth)):0.2f}em;"></div>'
 
         # node fields
         if fields_local:
