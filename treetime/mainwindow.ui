@@ -177,14 +177,14 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="pageFile">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>251</width>
+         <width>286</width>
          <height>760</height>
         </rect>
        </property>
@@ -404,26 +404,42 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="0">
-            <widget class="QRadioButton" name="radioButtonExportAllFields">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export all fields&lt;/span&gt;&lt;/p&gt;&lt;p&gt;All tree fields visible in the GUI will be exported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string/>
              </property>
-             <property name="text">
-              <string>A&amp;ll fields</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QRadioButton" name="radioButtonExportNamesOnly">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export only names&lt;/span&gt;&lt;/p&gt;&lt;p&gt;No fields, only node names, will be exported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Names onl&amp;y</string>
-             </property>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="1" column="3">
+               <widget class="QCheckBox" name="checkBoxExportFieldContent">
+                <property name="text">
+                 <string>Field content</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="checkBoxExportFieldNames">
+                <property name="text">
+                 <string>Field names</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QCheckBox" name="checkBoxExportNodeNames">
+                <property name="text">
+                 <string>Node names</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
@@ -580,12 +596,12 @@
           </item>
           <item>
            <property name="text">
-            <string>Text/Unicode (Letter Graphics)</string>
+            <string>Text (Line Art)</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Text/Unicode (Markdown)</string>
+            <string>Text (Markdown)</string>
            </property>
           </item>
           <item>
@@ -1097,8 +1113,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>128</width>
-         <height>164</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1224,8 +1240,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>230</width>
-         <height>411</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">

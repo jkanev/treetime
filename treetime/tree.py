@@ -577,7 +577,7 @@ class Node:
         for i in range(len(self.children)):
             self.children[i].printForest(indent + 1)
 
-    def to_csv(self, fields=True, context=False, first=True, depth=-1):
+    def to_csv(self, nodeNames=True, fieldNames=True, fieldContent=True , context=False, first=True, depth=-1):
         """
         Create a csv representation of the current branch.
         :fieldOrder: The order of fields in the tree
@@ -601,7 +601,7 @@ class Node:
             return text
 
         # evaluate context
-        fields_local, children, context_current = self._evaluateContext(fields, context)
+        fields_local, children, context_current = self._evaluateContext(fieldNames or fieldContent, context)
         csv = ""
 
         # find root node
@@ -614,7 +614,8 @@ class Node:
             csv = 'Tree,Name'
             for f in tree.fieldOrder:
                 csv += ','
-                csv += clean_field(f)
+                if fieldNames:
+                    csv += clean_field(f)
             csv += '\n'
 
         # add node path
@@ -633,7 +634,7 @@ class Node:
         csv += self.name
 
         # add fields
-        if fields_local:
+        if fields_local and fieldContent:
             for f in tree.fieldOrder:
                 csv += ',' + clean_field(self.fields[f].getString())
         csv += '\n'
@@ -641,15 +642,19 @@ class Node:
         # add children
         if depth and children:
             for c in sorted(self.children, key=lambda x: x.name):
-                csv += c.to_csv(first=False, fields=fields, context=context, depth=depth - 1)
+                csv += c.to_csv(first=False, nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                context=context, depth=depth - 1)
 
         # return
         return csv
 
-    def to_image(self, fields=True, context=False, depth=-1, engine='dot', format='png', graph=False, parent_id=False,
-                 colour='blue', exclude_root=False, invisible_root=False, current_depth=0):
+    def to_image(self, nodeNames=True, fieldNames=True, fieldContent=True , context=False, depth=-1, engine='dot',
+                 format='png', graph=False, parent_id=False, colour='blue', exclude_root=False, invisible_root=False,
+                 current_depth=0):
         """ Creates an image (png/svg) using graphics with different style options
-        :param fields: Whether (True/False) to include fields in the output
+        :param nodeNames: Whether (True/False) to include node names in the output
+        :param fieldNames: Whether (True/False) to include field names in the output
+        :param fieldContent: Whether (True/False) to include field content in the output
         :param context: For handing information down recursively
         :param engine: The graphviz engine to use
         :param colour: The colour of the first node
@@ -672,7 +677,7 @@ class Node:
                            'green': 'turquoise', 'turquoise': 'blue'}
 
         # evaluate context
-        fields_local, children, context_current = self._evaluateContext(fields, context)
+        fields_local, children, context_current = self._evaluateContext(fieldNames or fieldContent, context)
         # if top call, create graph object
         if not current_depth:
             if engine=='twopi':
@@ -701,7 +706,8 @@ class Node:
             if fields_local:
                 field_string = ""
                 for name, field in self.fields.items():
-                    content = field.getString().strip()
+                    content = fieldContent and field.getString().strip() or ""
+                    name = fieldNames and name or ""
                     if content:     # wrap field content, larger bits of text start with a newline
                         lines = [quote_string(l) for l in Node._wrap_lines(content, chars=50)]
                         if field.fieldType == "url":
@@ -732,11 +738,14 @@ class Node:
                 font_size = 1.0 + 2.0 / (1.0 + current_depth)  # start with 3.0, exponentially decay to 1.0
 
             # assemble
-            name = quote_string(self.name)
+            name = nodeNames and quote_string(self.name) or ''
             title = '<BR ALIGN="LEFT"/>'.join(Node._wrap_lines(name, chars=30))
-            label = (f'<<TABLE><TR><TD COLSPAN="2">'
-                     f'<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{title}</FONT>'
-                     f'</TD></TR>{field_string}</TABLE>>')
+            if nodeNames:
+                label = (f'<<TABLE><TR><TD COLSPAN="2">'
+                         f'<FONT FACE="Helvetica" POINT-SIZE="{int(font_size*10)}">{title}</FONT>'
+                         f'</TD></TR>{field_string}</TABLE>>')
+            else:
+                label = (f'<<TABLE>{field_string}</TABLE>>')
             graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled',
                        root= ((not parent_id) and (engine=='twopi')) and 'true' or 'false')
 
@@ -751,8 +760,9 @@ class Node:
         if children and depth:
             for c in sorted(self.children, key=lambda c: c.name):
                 parent_id = node_id
-                c.to_image(fields=fields, context=context, depth=depth-1, engine=engine,
-                           graph=graph, parent_id=parent_id, colour=next_colour[colour], current_depth=current_depth+1)
+                c.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent, context=context,
+                           depth=depth-1, engine=engine, graph=graph, parent_id=parent_id, colour=next_colour[colour],
+                           current_depth=current_depth+1)
 
         # end of recursion, create picture
         image = None
@@ -765,12 +775,15 @@ class Node:
                                         fanout=3).pipe(format=format, engine=engine)
         return image
 
-    def to_txt(self, fields=True, context=False, lastitem=[], depth=-1):
+    def to_txt(self, nodeNames=True, fieldNames=True, fieldContent=True , context=False, lastitem=[], depth=-1):
         """
         Create a text representation of the current branch.
         :param lastitem: A list of booleans showing whether the great-grandparent, grandparent, parent, is the
                          last item of the list of siblings
-        :param fields: if true, all fields are included, if false, only node names are exported (no fields)
+        :param nodeNames: if true, all node titles are included, if false, only fields exported
+        :param fieldNames: if true, all fieldNames are written in front of the field, if false, field content only
+        :param fieldContent: if true, field content is shown, if false, no field content is shown
+                             (mostly fieldNames will be False too i that case)
         :return: a string like this:
 
                     █ abc
@@ -801,7 +814,7 @@ class Node:
         text = ""
 
         # evaluate context
-        fields_local, children, context_current = self._evaluateContext(fields, context)
+        fields_local, children, context_current = self._evaluateContext(fieldNames or fieldContent, context)
 
         # create leading tree graphics
         # please pay attention: The spaces in the graphic strings are special unicode figure spaces
@@ -840,19 +853,22 @@ class Node:
 
         # add node name (possibly multi-line)
         first = True
-        for line in Node._wrap_lines(self.name):
-            line = line == '\n' and line or line + '\n'
-            if first:
-                text += first_line_prefix + line
-                first = False
-            else:
-                text += line_prefix + "    " + line
+        if nodeNames:
+            for line in Node._wrap_lines(self.name):
+                line = line == '\n' and line or line + '\n'
+                if first:
+                    text += first_line_prefix + line
+                    first = False
+                else:
+                    text += line_prefix + "    " + line
+        else:
+            text += line_prefix + '—'*70
 
         if fields_local:
             for name, field in self.fields.items():
 
                 # wrap field content, larger bits of text start with a newline
-                lines = Node._wrap_lines(field.getString())
+                lines = fieldContent and Node._wrap_lines(field.getString()) or []
 
                 # empty array if only whitespace content
                 if lines == ['\n']:
@@ -865,7 +881,7 @@ class Node:
                 first = True
                 for line in lines:
                     line = line == '\n' and line or line + '\n'
-                    if first:
+                    if first and fieldNames:
                         text += line_prefix + name + ": " + line
                         first = False
                     else:
@@ -880,16 +896,18 @@ class Node:
             childprefix = lastitem.copy()
             childprefix.append(False)
             for i in range(len(sorted_children)-1):
-                text += sorted_children[i].to_txt(fields=fields, context=context, lastitem=childprefix, depth=depth-1)
+                text += sorted_children[i].to_txt(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  context=context, lastitem=childprefix, depth=depth-1)
         if len(sorted_children):
             childprefix = lastitem.copy()
             childprefix.append(True)
-            text += sorted_children[-1].to_txt(fields=fields, context=context, lastitem=childprefix, depth=depth-1)
+            text += sorted_children[-1].to_txt(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                               context=context, lastitem=childprefix, depth=depth-1)
 
         # return
         return text
 
-    def to_md(self, fields=True, context=False, depth=-1, current_depth=0):
+    def to_md(self, nodeNames=True, fieldNames=True, fieldContent=True , context=False, depth=-1, current_depth=1):
         """
         Create a markdown representation of the current branch.
         """
@@ -897,29 +915,31 @@ class Node:
         text = ""
 
         # evaluate context
-        fields_local, children, context_current = self._evaluateContext(fields, context)
+        fields_local, children, context_current = self._evaluateContext(fieldNames or fieldContent, context)
 
         # add node name
-        text += '\n' + (current_depth + 1) * '#' + ' ' + self.name.strip() + '\n\n'
+        if nodeNames:
+            text += '\n' + (min(current_depth, 6)) * '#' + ' ' + self.name.strip() + '\n\n'
 
         if fields_local:
             for name, field in self.fields.items():
 
-                # wrap field content, larger bits of text start with a newline
-                lines = Node._wrap_lines(field.getString(), chars=120)
+                if field.sourceNode:
+                    # wrap field content, larger bits of text start with a newline
+                    lines = fieldContent and Node._wrap_lines(field.getString().replace('\n', '\n'), chars=120) or []
 
-                # empty array if only whitespace content
-                if lines == ['\n']:
-                    lines = []
+                    # empty array if only whitespace content
+                    if lines == ['\n']:
+                        lines = []
 
-                # assemble final text only if field is used
-                first = True
-                for line in lines:
-                    if first:
-                        text += '*  *' + name.strip() + ':* ' + line + '\n'
-                        first = False
-                    else:
-                        text += '    ' + line + '\n'
+                    # assemble final text only if field is used
+                    first = True
+                    for line in lines:
+                        if first and fieldNames:
+                            text += '*  *' + name.strip() + ':* ' + line + '\n'
+                            first = False
+                        else:
+                            text += '    ' + line.replace('#', '\#') + '\n'
 
         # recurse
         if children and depth:
@@ -928,16 +948,17 @@ class Node:
             sorted_children = []
 
         for child in sorted_children:
-            text += child.to_md(fields=fields, context=context, depth=depth-1, current_depth=current_depth+1)
+            text += child.to_md(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent, context=context,
+                                depth=depth-1, current_depth=current_depth+1)
 
         # return
         return text
 
-    def to_html(self, header=False, footer=False, fields=True, context=False, continuous=False, style='tiles',
-                depth=-1, current_depth=0):
+    def to_html(self, header=False, footer=False, nodeNames=True, fieldNames=True, fieldContent=True , context=False,
+                continuous=False, style='tiles', depth=-1, current_depth=0):
 
         # evaluate context
-        fields_local, children, context_current = self._evaluateContext(fields, context)
+        fields_local, children, context_current = self._evaluateContext(fieldNames or fieldContent, context)
 
         # background colours, applied by depth: blue, red, yellow, green
         backgrounds = ['blue', 'purple', 'red', 'orange', 'yellow', 'green', 'turquoise']
@@ -1120,12 +1141,13 @@ class Node:
             for name, field in self.fields.items():
                 content = field.getString().strip()
                 if content or (style == 'list'):   # in tile mode empty fields are hidden, in list mode always displayed
-                    content = content.replace('\n', '<br/>')
+                    content = fieldContent and content.replace('\n', '<br/>') or ''
+                    name_string = fieldNames and f'<em>{name}</em><br/>' or ''
                     if field.fieldType == "url":
-                        html += '<div class="{}"><em>{}</em><br/><a href="{}">{}</a></div>'.format(
-                            field.fieldType, name, content, len(content) > 40 and content[:37]+"..." or content)
+                        html += (f'<div class="{field.fieldType}">{name_string}<a href="{content}">'
+                                 f'{len(content) > 40 and content[:37]+"..." or content}</a></div>')
                     else:
-                        html += '<div class="{}"><em>{}</em><br/>{}</div>'.format(field.fieldType, name, content)
+                        html += f'<div class="{field.fieldType}">{name_string}{content}</div>'
             html += '</div>'
 
         child_html = ""
@@ -1141,7 +1163,8 @@ class Node:
                 # write next child
                 child_columns = 1     # number of columns needed by child sub-branch
                 child_columns, child_html = sorted_children[i].to_html(depth=depth-1,
-                                                                       fields=fields, context=context,
+                                                                       nodeNames=nodeNames, fieldNames=fieldNames,
+                                                                       fieldContent=fieldContent, context=context,
                                                                        current_depth=current_depth+1, style=style)
 
                 # start new child group on first child in group of 5, or if child needs more columns than available

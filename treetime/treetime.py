@@ -770,8 +770,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         "HTML (Document)": "HTML Files (*.html)",
                         "HTML (Tiles)": "HTML Files (*.html)",
                         "HTML (List)": "HTML Files (*.html)",
-                        "Text/Unicode (Letter Graphics)": "Text Files (*.txt)",
-                        "Text/Unicode (Markdown)": "Markdown Files (*.md)",
+                        "Text (Line Art)": "Text Files (*.txt)",
+                        "Text (Markdown)": "Markdown Files (*.md)",
                         "Image/PNG (top-down)": "Image Files (*.png)",
                         "Image/SVG (top-down)": "Image Files (*.svg)",
                         "Image/PNG (circular)": "Image Files (*.png)",
@@ -833,7 +833,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # read file format
             exportFormat = self.comboBoxExportFormat.currentText()
-            allFields = self.radioButtonExportAllFields.isChecked()
+            nodeNames = self.checkBoxExportNodeNames.isChecked()
+            fieldNames = self.checkBoxExportFieldNames.isChecked()
+            fieldContent = self.checkBoxExportFieldContent.isChecked()
 
             # Select target file or cancel
             exportToFile = self.radioButtonExportToFile.isChecked()
@@ -851,37 +853,53 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # write to data string
                     if exportFormat == "CSV":
-                        data = currentNode.to_csv(depth=depth, fields=allFields)
-                    elif exportFormat == "Text/Unicode (Letter Graphics)":
-                        data = currentNode.to_txt(depth=depth, fields=allFields)
-                    elif exportFormat == "Text/Unicode (Markdown)":
-                        data = currentNode.to_md(depth=depth, fields=allFields)
+                        data = currentNode.to_csv(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent)
+                    elif exportFormat == "Text (Line Art)":
+                        data = currentNode.to_txt(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent)
+                    elif exportFormat == "Text (Markdown)":
+                        data = currentNode.to_md(depth=depth,
+                                                 nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent)
                     elif exportFormat == "HTML (Document)":
-                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
+                                                          fieldNames=fieldNames, fieldContent=fieldContent,
                                                           style='document', continuous=continuous)
                     elif exportFormat == "HTML (List)":
-                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
+                                                          fieldNames=fieldNames, fieldContent=fieldContent,
                                                           style='list', continuous=continuous)
                     elif exportFormat == "HTML (Tiles)":
-                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, fields=allFields,
+                        dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
+                                                          fieldNames=fieldNames, fieldContent=fieldContent,
                                                           style='tiles', continuous=continuous)
                     elif exportFormat == "Image/PNG (top-down)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='png')
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='dot', format='png')
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (top-down)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='svg')
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='dot', format='svg')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (circular)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='twopi', format='png')
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='twopi',
+                                                    format='png')
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (circular)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='twopi', format='svg')
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='twopi',
+                                                    format='svg')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (spread-out)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='png')
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='neato',
+                                                    format='png')
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (spread-out)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='neato', format='svg')
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='neato',
+                                                    format='svg')
                         wtype = 'wb'
                     else:
                         data = None
@@ -902,18 +920,18 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if exportFormat == "CSV":
                     first = True
                     for c in children:
-                        data += c.to_csv(first=first, depth=depth, fields=allFields)
+                        data += c.to_csv(first=first, depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                         fieldContent=fieldContent)
                         first = False
-                elif exportFormat == "Text/Unicode (Letter Graphics)":
+                elif exportFormat == "Text (Line Art)":
                     for c in children:
                         data += '\n'
-                        data += c.to_txt(depth=depth, fields=allFields)
+                        data += c.to_txt(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                         fieldContent=fieldContent)
                         data += '\n'
-                elif exportFormat == "Text/Unicode (Markdown)":
-                    for c in children:
-                        data += '\n'
-                        data += c.to_md(depth=depth, fields=allFields)
-                        data += '\n'
+                elif exportFormat == "Text (Markdown)":
+                    data += rootNode.to_md(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                           fieldContent=fieldContent)
                 elif (exportFormat == "HTML (List)"
                       or exportFormat == "HTML (Tiles)"
                       or exportFormat == "HTML (Document)"):
@@ -922,36 +940,42 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     for c in range(0, len(children)):
                         if c == 0:
                             data += children[c].to_html(header=True, depth=depth,
-                                                        fields=allFields, style=style, continuous=continuous)[1]
+                                                        nodeNames=nodeNames, fieldNames=fieldNames,
+                                                        fieldContent=fieldContent, style=style,
+                                                        continuous=continuous)[1]
                         elif c == len(children) - 1:
                             data += children[c].to_html(footer=True, depth=depth,
-                                                        fields=allFields, style=style, continuous=continuous)[1]
+                                                        nodeNames=nodeNames, fieldNames=fieldNames,
+                                                        fieldContent=fieldContent, style=style,
+                                                        continuous=continuous)[1]
                         else:
                             data += children[c].to_html(depth=depth,
-                                                        fields=allFields, style=style, continuous=continuous)[1]
+                                                        nodeNames=nodeNames, fieldNames=fieldNames,
+                                                        fieldContent=fieldContent, style=style,
+                                                        continuous=continuous)[1]
                 elif exportFormat == "Image/PNG (top-down)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='dot', format='png',
-                                             exclude_root=True)
+                    data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                             depth=depth, engine='dot', format='png', exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/SVG (top-down)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='dot', format='svg',
-                                             exclude_root=True)
+                    data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                             depth=depth, engine='dot', format='svg', exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (circular)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='twopi', format='png',
-                                             invisible_root=True)
+                    data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                             depth=depth, engine='twopi', format='png', invisible_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/SVG (circular)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='twopi', format='svg',
-                                             invisible_root=True)
+                    data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                             depth=depth, engine='twopi', format='svg', invisible_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (spread-out)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='sfdp', format='png',
-                                             exclude_root=True)
+                    data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                             depth=depth, engine='sfdp', format='png', exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/SVG (spread-out)":
-                    data = rootNode.to_image(fields=allFields, depth=depth, engine='sfdp', format='svg',
-                                             exclude_root=True)
+                    data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                             depth=depth, engine='sfdp', format='svg', exclude_root=True)
                     wtype = 'wb'
                 else:
                     data = None
@@ -964,42 +988,57 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # write to data string
                     if exportFormat == "CSV":
-                        data = currentNode.to_csv(depth=depth, fields=allFields, context=path)
+                        data = currentNode.to_csv(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                                  fieldContent=fieldContent, context=path)
                     elif exportFormat == "Text/Unicode (Letter Graphics":
-                        data = currentNode.to_txt(depth=depth, fields=allFields, context=path)
-                    elif exportFormat == "Text/Unicode (Markdown)":
-                        data = currentNode.to_md(depth=depth, fields=allFields, context=path)
+                        data = currentNode.to_txt(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                                  fieldContent=fieldContent, context=path)
+                    elif exportFormat == "Text (Markdown)":
+                        data = currentNode.to_md(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                                 fieldContent=fieldContent, context=path)
                     elif exportFormat == "HTML (Document)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
-                                                          fields=allFields, style='document', continuous=continuous)
+                                                          nodeNames=nodeNames, fieldNames=fieldNames,
+                                                          fieldContent=fieldContent, style='document',
+                                                          continuous=continuous)
                     elif exportFormat == "HTML (List)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
-                                                          fields=allFields, style='list', continuous=continuous)
+                                                          nodeNames=nodeNames, fieldNames=fieldNames,
+                                                          fieldContent=fieldContent, style='list',
+                                                          continuous=continuous)
                     elif exportFormat == "HTML (Tiles)":
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
-                                                          fields=allFields, style='tiles', continuous=continuous)
+                                                          nodeNames=nodeNames, fieldNames=fieldNames,
+                                                          fieldContent=fieldContent, style='tiles',
+                                                          continuous=continuous)
                     elif exportFormat == "Image/PNG (top-down)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='png',
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='dot', format='png',
                                                     context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (top-down)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='dot', format='svg',
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='dot', format='svg',
                                                     context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (circular)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', format='png',
-                                                    context=path)
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='circo',
+                                                    format='png', context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (circular)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='circo', format='svg',
-                                                    context=path)
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='circo',
+                                                    format='svg', context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (spread-out)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='sfdp', format='png',
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='sfdp', format='png',
                                                     context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (spread-out)":
-                        data = currentNode.to_image(fields=allFields, depth=depth, engine='sfdp', format='svg',
+                        data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
+                                                    fieldContent=fieldContent, depth=depth, engine='sfdp', format='svg',
                                                     context=path)
                         wtype = 'wb'
                     else:
@@ -1019,7 +1058,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # decide on clipboard function (setText/setImage) and data preparation (leave as string or QImage)
                 clipboard = QGuiApplication.clipboard()
-                if exportFormat in ("CSV", "Text/Unicode (Letter Graphics)", "Text/Unicode (Markdown)", "HTML (List)",
+                if exportFormat in ("CSV", "Text (Line Art)", "Text (Markdown)", "HTML (List)",
                                     "HTML (Tiles)", "HTML (Document)"):
                     toClipboard = clipboard.setText
                 elif exportFormat in ("Image/PNG (top-down)", "Image/SVG (top-down)",
