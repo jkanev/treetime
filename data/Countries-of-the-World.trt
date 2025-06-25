@@ -39,28 +39,10 @@ tree "Geographical"
         parent-fields []
 
 tree "First Language"
-    field "Area (thousand km^2)"
-        field-type "sum"
-        own-fields ["2 area"]
-        child-fields ["Area (thousand km^2)"]
-        sibling-fields []
-        parent-fields []
-    field "Population (million people)"
+    field "First language for (million people)"
         field-type "sum"
         own-fields ["1 population"]
-        child-fields ["Population (million people)"]
-        sibling-fields []
-        parent-fields []
-    field "Population Density (thousand people per km^2)"
-        field-type "ratio"
-        own-fields ["Population (million people)", "Area (thousand km^2)"]
-        child-fields []
-        sibling-fields []
-        parent-fields []
-    field "Personal Space (thousand m^2 per person)"
-        field-type "ratio"
-        own-fields ["Area (thousand km^2)", "Population (million people)"]
-        child-fields []
+        child-fields ["First language for (million people)"]
         sibling-fields []
         parent-fields []
     field "Information"

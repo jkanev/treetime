@@ -30,9 +30,12 @@ import time
 import os.path
 import platform
 from PyQt6 import QtCore, QtGui, QtWidgets
-from threading import Timer
+from threading import Timer, Thread
+from multiprocessing import Process as MpProcess
 from PyQt6.QtGui import QPalette, QColor, QIcon, QClipboard, QGuiApplication
 from PyQt6.QtWidgets import QAbstractItemView
+from werkzeug.wrappers import Request as WzRequest, Response as WzResponse
+from werkzeug.serving import run_simple as wz_run_simple
 
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
@@ -505,6 +508,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         print("showing main window...")
         self.showMaximized()
 
+        # start web server
+        self._web_string = "TreeTime export"
+        address = '0.0.0.0'
+        self._web_service = Thread(target=lambda: wz_run_simple(address, 2020, self.serve_web))
+        self._web_service.start()
+
     def endisableButtons(self, state):
         """
         Enables all buttons if state==True, disables them otherwise
@@ -765,6 +774,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 exportFormat = self.comboBoxExportFormat.currentText()
                 exportToFile = self.radioButtonExportToFile.isChecked()
+                exportToWebServer = self.radioButtonExportToWebServer.isChecked()
                 if exportToFile:
                     extensions = {
                         "HTML (Document)": "HTML Files (*.html)",
@@ -786,9 +796,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     if not file:
                         return
 
+                if exportToWebServer:
+                    file = 'http://0.0.0.0:2020'
+
                 # we're starting continous mode -- set the texts, set the flag, and call the timer function
                 if self.radioButtonExportContinuously.isChecked():
-                    self.pushButtonExport.setText("Stop Conticontinuous export")
+                    self.pushButtonExport.setText("Stop continuous export")
                     self.labelExportFileDescription.setText("Exporting continuously to:")
                     self.radioButtonExportContinuously.setDisabled(True)
                     self.radioButtonExportOnce.setDisabled(True)
@@ -806,6 +819,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.radioButtonExportOnce.setEnabled(True)
             self.export_continuous = False
 
+    def serve_web(self, environ, start_response):
+        """
+        :param start_response:
+        :return:
+        """
+        request = WzRequest(environ)
+        response = WzResponse(self._web_string, content_type="text/html")
+        return response(environ, start_response)
 
     def delayedContinuousExport(self, file):
         """
@@ -839,6 +860,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # Select target file or cancel
             exportToFile = self.radioButtonExportToFile.isChecked()
+            exportToWebServer = self.radioButtonExportToWebServer.isChecked()
 
             # The target string for file write / clipboard write
             data = ""
@@ -1050,6 +1072,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if exportToFile:
                 with open(file, wtype) as f:
                     f.write(data)
+                self.labelCurrentExportFile.setText(file)
+                self.settings.setValue("exportFile", file)
+
+            # save to web server
+            elif exportToWebServer:
+
+                # save string
+                self._web_string = data    # where it will be picked up by the server
+
+                # set gui
                 self.labelCurrentExportFile.setText(file)
                 self.settings.setValue("exportFile", file)
 

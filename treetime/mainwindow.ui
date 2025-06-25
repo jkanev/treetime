@@ -185,7 +185,7 @@
          <x>0</x>
          <y>0</y>
          <width>251</width>
-         <height>760</height>
+         <height>762</height>
         </rect>
        </property>
        <attribute name="label">
@@ -423,6 +423,13 @@
              </property>
              <property name="checked">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="QRadioButton" name="radioButtonExportToWebServer">
+             <property name="text">
+              <string>Web server</string>
              </property>
             </widget>
            </item>
