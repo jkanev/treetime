@@ -680,11 +680,14 @@ class Node:
         fields_local, children, context_current = self._evaluateContext(fieldNames or fieldContent, context)
         # if top call, create graph object
         if not current_depth:
-            if engine=='twopi':
-                graph_attr = {'overlap': 'scalexy', 'sep': '-0', 'outputorder': 'nodesfirst'}
-            else:
-                graph_attr = {'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst'}
-            graph = gv.Digraph(graph_attr=graph_attr)
+            graph_attrs = {'twopi': {'overlap': 'scalexy', 'sep': '-0', 'outputorder': 'nodesfirst'},
+                           'neato': {'overlap': 'prism', 'sep': '+20', 'maxiter': '500', 'epsilon': '0.00001',
+                                     'outputorder': 'nodesfirst'},
+                           'sfdp': {'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst',
+                                    'rotation': '90.0', 'smoothing': 'spring'},
+                           'dot': {'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst'},
+                           'circo': {'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst'}}
+            graph = gv.Digraph(graph_attr=graph_attrs[engine])
 
         # add myself invisibly
         if invisible_root:
@@ -741,7 +744,7 @@ class Node:
             else:
                 font_size = 1.0 + 2.0 / (1.0 + current_depth)  # start with 3.0, exponentially decay to 1.0
 
-            # assemble
+            # assemble label
             title = '<BR ALIGN="LEFT"/>'.join(Node._wrap_lines(quote_string(self.name), chars=30))
             if nodeNames:
                 label = (f'<<TABLE><TR><TD COLSPAN="2">'
@@ -753,15 +756,26 @@ class Node:
                 else:
                     label = ' '
 
-            graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled',
-                       root= ((not parent_id) and (engine=='twopi')) and 'true' or 'false')
+            # are we the root node?
+            if context:
+                if context_current:
+                    root_node = 'true'
+                else:
+                    root_node = 'false'
+            elif not parent_id:
+                    root_node = 'true'
+            else:
+                root_node = 'false'
+
+            # add node
+            graph.node(node_id, label, shape="rectangle", color=colours[colour], style='filled', root=root_node)
 
             # add connection to parent
             if parent_id:
                 if parent_id == 'invis':
-                    graph.edge(parent_id, node_id, style='invis')
+                    graph.edge(parent_id, node_id, style='invis', len='0.2')
                 else:
-                    graph.edge(parent_id, node_id, color='gray')
+                    graph.edge(parent_id, node_id, color='gray', len='0.2')
 
         # recurse over children
         if children and depth:
@@ -774,12 +788,16 @@ class Node:
         # end of recursion, create picture
         image = None
         if not current_depth:
+            # pre-layout to avoid edge
             if engine == 'twopi':
                 image = graph.pipe(format=format, engine=engine)
-            else:
+            elif engine == 'dot':
                 image = graph.unflatten(stagger=5,
                                         chain=3,
                                         fanout=3).pipe(format=format, engine=engine)
+            else:    # sfdp/neato
+                image = graph.pipe(format=format, engine=engine)
+                #image = gv.pipe(engine, format, graph.pipe(format='dot', engine='twopi'))
         return image
 
     def to_txt(self, nodeNames=True, fieldNames=True, fieldContent=True , context=False, lastitem=[], depth=-1):

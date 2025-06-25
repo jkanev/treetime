@@ -893,12 +893,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (spread-out)":
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
-                                                    fieldContent=fieldContent, depth=depth, engine='neato',
+                                                    fieldContent=fieldContent, depth=depth, engine='sfdp',
                                                     format='png')
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (spread-out)":
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
-                                                    fieldContent=fieldContent, depth=depth, engine='neato',
+                                                    fieldContent=fieldContent, depth=depth, engine='sfdp',
                                                     format='svg')
                         wtype = 'wb'
                     else:
@@ -1023,12 +1023,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (circular)":
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
-                                                    fieldContent=fieldContent, depth=depth, engine='circo',
+                                                    fieldContent=fieldContent, depth=depth, engine='twopi',
                                                     format='png', context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (circular)":
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
-                                                    fieldContent=fieldContent, depth=depth, engine='circo',
+                                                    fieldContent=fieldContent, depth=depth, engine='twopi',
                                                     format='svg', context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (spread-out)":
