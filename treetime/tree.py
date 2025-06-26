@@ -684,7 +684,7 @@ class Node:
                            'neato': {'overlap': 'prism', 'sep': '+20', 'maxiter': '500', 'epsilon': '0.00001',
                                      'outputorder': 'nodesfirst'},
                            'sfdp': {'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst',
-                                    'rotation': '90.0', 'smoothing': 'spring'},
+                                    'smoothing': 'spring'},
                            'dot': {'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst'},
                            'circo': {'overlap': 'prism', 'sep': '+10', 'outputorder': 'nodesfirst'}}
             graph = gv.Digraph(graph_attr=graph_attrs[engine])
@@ -757,13 +757,8 @@ class Node:
                     label = ' '
 
             # are we the root node?
-            if context:
-                if context_current:
-                    root_node = 'true'
-                else:
-                    root_node = 'false'
-            elif not parent_id:
-                    root_node = 'true'
+            if not parent_id:
+                root_node = 'true'
             else:
                 root_node = 'false'
 
@@ -796,8 +791,11 @@ class Node:
                                         chain=3,
                                         fanout=3).pipe(format=format, engine=engine)
             else:    # sfdp/neato
-                image = graph.pipe(format=format, engine=engine)
-                #image = gv.pipe(engine, format, graph.pipe(format='dot', engine='twopi'))
+                try:     # sometimes sfdp dies with a strange error: "SpringSmoother_new: Assertion `nz > 0' failed"
+                    image = graph.pipe(format=format, engine=engine)
+                except:
+                    image = graph.pipe(format=format, engine='neato')
+
         return image
 
     def to_txt(self, nodeNames=True, fieldNames=True, fieldContent=True , context=False, lastitem=[], depth=-1):
@@ -994,7 +992,7 @@ class Node:
         if header and style == 'tiles' and not context:
             html = '<!DOCTYPE html><html lang="en">' \
                    + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
-                   + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
+                   + f'<meta charset="utf-8"><title>{self.name} — TreeTime</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} '\
                    'em {color: #555;}' \
                    'div.red {background-color: #fff9ff;}' \
@@ -1030,7 +1028,7 @@ class Node:
         elif header and style == 'tiles' and context:
             html = '<!DOCTYPE html><html lang="en">' \
                    + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
-                   + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
+                   + f'<meta charset="utf-8"><title>{self.name} – TreeTime</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em;} ' \
                    'em {color: #555;}' \
                    'div.red {background-color: #fff9ff;}' \
@@ -1068,7 +1066,7 @@ class Node:
         elif header and style == 'list':
             html = '<!DOCTYPE html><html lang="en">' \
                    + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
-                   + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
+                   + f'<meta charset="utf-8"><title>{self.name} — TreeTime</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} ' \
                    'em {color: #555;}' \
                    'div.red {background-color: #fff9ff;}' \
@@ -1104,7 +1102,7 @@ class Node:
         elif header and style == 'document':
             html = '<!DOCTYPE html><html lang="en">' \
                    + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
-                   + '<meta charset="utf-8"><title>TreeTime Export</title><style>' \
+                   + f'<meta charset="utf-8"><title>{self.name} — TreeTime</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white;} '\
                    'em {color: #555;}' \
                    'div.red {background-color: #fff;}' \

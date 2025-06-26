@@ -177,7 +177,7 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="pageFile">
        <property name="geometry">
@@ -429,7 +429,7 @@
            <item row="2" column="0" colspan="2">
             <widget class="QRadioButton" name="radioButtonExportToWebServer">
              <property name="text">
-              <string>Web server</string>
+              <string>To web server</string>
              </property>
             </widget>
            </item>

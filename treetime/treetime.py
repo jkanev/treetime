@@ -27,15 +27,15 @@ from .mainwindow import *
 import base64
 import datetime
 import time
+import netifaces
 import os.path
 import platform
 from PyQt6 import QtCore, QtGui, QtWidgets
 from threading import Timer, Thread
-from multiprocessing import Process as MpProcess
 from PyQt6.QtGui import QPalette, QColor, QIcon, QClipboard, QGuiApplication
 from PyQt6.QtWidgets import QAbstractItemView
 from werkzeug.wrappers import Request as WzRequest, Response as WzResponse
-from werkzeug.serving import run_simple as wz_run_simple
+from werkzeug.serving import make_server
 
 
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
@@ -508,11 +508,33 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         print("showing main window...")
         self.showMaximized()
 
+    def startWebServer(self, logo):
+        """
+        Starts the web server. Function called externally after application started (for symmetry).
+        :return:
+        """
         # start web server
-        self._web_string = "TreeTime export"
-        address = '0.0.0.0'
-        self._web_service = Thread(target=lambda: wz_run_simple(address, 2020, self.serve_web))
-        self._web_service.start()
+        print("starting web server...")
+        self._web_default_string = ('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
+                                    '<title>TreeTime Export</title>'
+                                    '<meta http-equiv="refresh" content="1">'
+                                    '</head><body>TreeTime Web Service<br/>Not running</body></html>')
+        self._web_string = self._web_default_string
+        self._web_type = 'text/html'
+        self._web_service = make_server('0.0.0.0', 2020, self.serve_web)
+        self._web_thread = Thread(target=self._web_service.serve_forever)
+        self._web_favicon = logo
+        self._web_thread.start()
+        print("... web server running on http://0.0.0.0:2020")
+
+    def stopWebServer(self):
+        """
+        Stops the web server. Function called by application callback when the main window is closed.
+        """
+        # stop webserver
+        print("stopping web server...")
+        self._web_service.shutdown()
+        self._web_thread.join()
 
     def endisableButtons(self, state):
         """
@@ -797,7 +819,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         return
 
                 if exportToWebServer:
-                    file = 'http://0.0.0.0:2020'
+                    ips = ['0.0.0.0']
+                    for iface in netifaces.interfaces():
+                        addrs = netifaces.ifaddresses(iface)
+                        inet_addrs = addrs.get(netifaces.AF_INET, [])
+                        for addr in inet_addrs:
+                            ip = addr.get('addr')
+                            if ip:
+                                ips += [ip]
+                    file = f'http://{ips[-1]}:2020'
 
                 # we're starting continous mode -- set the texts, set the flag, and call the timer function
                 if self.radioButtonExportContinuously.isChecked():
@@ -824,8 +854,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         :param start_response:
         :return:
         """
-        request = WzRequest(environ)
-        response = WzResponse(self._web_string, content_type="text/html")
+        if environ['REQUEST_URI'] == '/favicon.ico':
+            response = WzResponse(self._web_favicon, content_type='image/ico')
+        else:
+            response = WzResponse(self._web_string, content_type=self._web_type)
         return response(environ, start_response)
 
     def delayedContinuousExport(self, file):
@@ -864,6 +896,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # The target string for file write / clipboard write
             data = ""
+            webtype = ""
             wtype = 'w'     # type to write, either 'w' for writing string, or 'wb' for writing bytes
             depth = self.comboBoxExportDepth.currentIndex() - 1
 
@@ -875,50 +908,62 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # write to data string
                     if exportFormat == "CSV":
+                        webtype = 'text/csv'
                         data = currentNode.to_csv(depth=depth,
                                                   nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent)
                     elif exportFormat == "Text (Line Art)":
+                        webtype = 'text/plain'
                         data = currentNode.to_txt(depth=depth,
                                                   nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent)
                     elif exportFormat == "Text (Markdown)":
+                        webtype = 'text/plain'
                         data = currentNode.to_md(depth=depth,
                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent)
                     elif exportFormat == "HTML (Document)":
+                        webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
                                                           fieldNames=fieldNames, fieldContent=fieldContent,
                                                           style='document', continuous=continuous)
                     elif exportFormat == "HTML (List)":
+                        webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
                                                           fieldNames=fieldNames, fieldContent=fieldContent,
                                                           style='list', continuous=continuous)
                     elif exportFormat == "HTML (Tiles)":
+                        webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
                                                           fieldNames=fieldNames, fieldContent=fieldContent,
                                                           style='tiles', continuous=continuous)
                     elif exportFormat == "Image/PNG (top-down)":
+                        webtype = 'image/png'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='dot', format='png')
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (top-down)":
+                        webtype = 'image/svg+xml'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='dot', format='svg')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (circular)":
+                        webtype = 'image/png'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='twopi',
                                                     format='png')
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (circular)":
+                        webtype = 'image/svg+xml'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='twopi',
                                                     format='svg')
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (spread-out)":
+                        webtype = 'image/png'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='sfdp',
                                                     format='png')
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (spread-out)":
+                        webtype = 'image/svg+xml'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='sfdp',
                                                     format='svg')
@@ -940,23 +985,27 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # write data string
                 if exportFormat == "CSV":
+                    webtype = 'text/csv'
                     first = True
                     for c in children:
                         data += c.to_csv(first=first, depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                          fieldContent=fieldContent)
                         first = False
                 elif exportFormat == "Text (Line Art)":
+                    webtype = 'text/plain'
                     for c in children:
                         data += '\n'
                         data += c.to_txt(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                          fieldContent=fieldContent)
                         data += '\n'
                 elif exportFormat == "Text (Markdown)":
+                    webtype = 'text/plain'
                     data += rootNode.to_md(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                            fieldContent=fieldContent)
                 elif (exportFormat == "HTML (List)"
                       or exportFormat == "HTML (Tiles)"
                       or exportFormat == "HTML (Document)"):
+                    webtype = 'text/html'
                     style = ((exportFormat == "HTML (List)" and "list")
                              or (exportFormat == "HTML (Tiles)" and "tiles") or "document")
                     for c in range(0, len(children)):
@@ -976,26 +1025,32 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                         fieldContent=fieldContent, style=style,
                                                         continuous=continuous)[1]
                 elif exportFormat == "Image/PNG (top-down)":
+                    webtype = 'image/png'
                     data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
                                              depth=depth, engine='dot', format='png', exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/SVG (top-down)":
+                    webtype = 'image/svg+xml'
                     data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
                                              depth=depth, engine='dot', format='svg', exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (circular)":
+                    webtype = 'image/png'
                     data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
                                              depth=depth, engine='twopi', format='png', invisible_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/SVG (circular)":
+                    webtype = 'image/svg+xml'
                     data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
                                              depth=depth, engine='twopi', format='svg', invisible_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/PNG (spread-out)":
+                    webtype = 'image/png'
                     data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
                                              depth=depth, engine='sfdp', format='png', exclude_root=True)
                     wtype = 'wb'
                 elif exportFormat == "Image/SVG (spread-out)":
+                    webtype = 'image/svg+xml'
                     data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
                                              depth=depth, engine='sfdp', format='svg', exclude_root=True)
                     wtype = 'wb'
@@ -1010,55 +1065,67 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # write to data string
                     if exportFormat == "CSV":
+                        webtype = 'text/csv'
                         data = currentNode.to_csv(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                                   fieldContent=fieldContent, context=path)
                     elif exportFormat == "Text (Line Art)":
+                        webtype = 'text/plain'
                         data = currentNode.to_txt(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                                   fieldContent=fieldContent, context=path)
                     elif exportFormat == "Text (Markdown)":
+                        webtype = 'text/plain'
                         data = currentNode.to_md(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                                  fieldContent=fieldContent, context=path)
                     elif exportFormat == "HTML (Document)":
+                        webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           nodeNames=nodeNames, fieldNames=fieldNames,
                                                           fieldContent=fieldContent, style='document',
                                                           continuous=continuous)
                     elif exportFormat == "HTML (List)":
+                        webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           nodeNames=nodeNames, fieldNames=fieldNames,
                                                           fieldContent=fieldContent, style='list',
                                                           continuous=continuous)
                     elif exportFormat == "HTML (Tiles)":
+                        webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           nodeNames=nodeNames, fieldNames=fieldNames,
                                                           fieldContent=fieldContent, style='tiles',
                                                           continuous=continuous)
                     elif exportFormat == "Image/PNG (top-down)":
+                        webtype = 'image/png'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='dot', format='png',
                                                     context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (top-down)":
+                        webtype = 'image/svg+xml'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='dot', format='svg',
                                                     context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (circular)":
+                        webtype = 'image/png'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='twopi',
                                                     format='png', context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (circular)":
+                        webtype = 'image/svg+xml'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='twopi',
                                                     format='svg', context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/PNG (spread-out)":
+                        webtype = 'image/png'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='sfdp', format='png',
                                                     context=path)
                         wtype = 'wb'
                     elif exportFormat == "Image/SVG (spread-out)":
+                        webtype = 'image/svg+xml'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
                                                     fieldContent=fieldContent, depth=depth, engine='sfdp', format='svg',
                                                     context=path)
@@ -1080,6 +1147,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # save string
                 self._web_string = data    # where it will be picked up by the server
+                self._web_type = webtype
 
                 # set gui
                 self.labelCurrentExportFile.setText(file)
@@ -2089,9 +2157,13 @@ class TreeTime:
         # start main window
         main_window = TreeTimeWindow(filename=filename)
 
+        # start web server and prepare its end
+        logo = ApplicationLogo()
+        main_window.startWebServer(logo.png)
+        app.lastWindowClosed.connect(main_window.stopWebServer)
+
         # add application icon; test several options, different deploy methods are doing different things with the
         # resources, unfortunately
-        logo = ApplicationLogo()
         main_window.setWindowIcon(logo.icon)
 
         # run
@@ -2201,7 +2273,7 @@ class ApplicationLogo:
              "RVekrf8DQpnvQNJVVVIAAAAASUVORK5CYII=")
 
     def __init__(self):
-        self._buffer = base64.b64decode(self._data)
-        self._pixmap = QtGui.QPixmap()
-        self._pixmap.loadFromData(self._buffer, format='png')
-        self.icon = QIcon(self._pixmap)
+        self.png = base64.b64decode(self._data)
+        self.pixmap = QtGui.QPixmap()
+        self.pixmap.loadFromData(self.png, format='png')
+        self.icon = QIcon(self.pixmap)

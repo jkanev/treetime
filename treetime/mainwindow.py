@@ -478,7 +478,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(-1)
-        self.toolBox.setCurrentIndex(1)
+        self.toolBox.setCurrentIndex(0)
         self.actionQuit.triggered.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -507,7 +507,7 @@ class Ui_MainWindow(object):
         self.radioButtonExportToClipboard.setText(_translate("MainWindow", "To clipboard"))
         self.radioButtonExportToFile.setToolTip(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Export to file.</span></p><p>The export will be saved in a file. When clicking [Export], a file dialog opens to select a target file.</p></body></html>"))
         self.radioButtonExportToFile.setText(_translate("MainWindow", "To file"))
-        self.radioButtonExportToWebServer.setText(_translate("MainWindow", "Web server"))
+        self.radioButtonExportToWebServer.setText(_translate("MainWindow", "To web server"))
         self.label_6.setText(_translate("MainWindow", "Depth  "))
         self.comboBoxExportDepth.setToolTip(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Select a level down to which the current branch is copied.</span></p><p>For the options &quot;This branch&quot; and &quot;Whole tree&quot; this will show the respective level of children.</p><p>For the option &quot;This node with content&quot; this will show the summary path starting at the respective level, counting from the top.</p></body></html>"))
         self.comboBoxExportDepth.setItemText(0, _translate("MainWindow", "all levels"))
