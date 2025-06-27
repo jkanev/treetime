@@ -515,15 +515,54 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         # start web server
         print("starting web server...")
+        self._web_site_wrapper = \
+            """
+            <!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+            <title>TreeTime Export</title>
+            <script type="text/javascript">
+                var baseurl = "http://" + window.location.href.split("/")[2];
+                var stateurl = baseurl + "/state";
+                var laststate = 'new';
+                var frame = 0;
+                function init() {
+                    console.log("init");
+                    // get the iframe
+                    frame = document.getElementById("mainframe");
+                    frame.src = baseurl;
+                    // start
+                    update();
+                }
+                async function update() {
+                    // get new version and possibly update
+                    let response = await fetch(stateurl);
+                    let state = await response.text();
+                    console.log(state);
+                    if (laststate != state) {
+                        laststate = state;
+                        console.log("new state, reloading");
+                        frame.src = baseurl;
+                    }
+                    // recursion
+                    setTimeout(update, 500);
+                }
+            </script></head>
+            <body onload="init()">
+                <iframe id="mainframe" style="position: absolute; border-width: 0; left: 0; top: 0px; width: 100%;
+                                              height: 100%;">
+                    TreeTime software not running
+                </iframe>
+            </body></html>
+            """
         self._web_default_string = ('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
                                     '<title>TreeTime Export</title>'
-                                    '<meta http-equiv="refresh" content="1">'
                                     '</head><body>TreeTime Web Service<br/>Not running</body></html>')
         self._web_string = self._web_default_string
         self._web_type = 'text/html'
         self._web_service = make_server('0.0.0.0', 2020, self.serve_web)
         self._web_thread = Thread(target=self._web_service.serve_forever)
         self._web_favicon = logo
+        self._web_timestamp = 0
+        self._web_timestring = '000'
         self._web_thread.start()
         print("... web server running on http://0.0.0.0:2020")
 
@@ -797,6 +836,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 exportFormat = self.comboBoxExportFormat.currentText()
                 exportToFile = self.radioButtonExportToFile.isChecked()
                 exportToWebServer = self.radioButtonExportToWebServer.isChecked()
+                exportContinuously = self.radioButtonExportContinuously.isChecked()
                 if exportToFile:
                     extensions = {
                         "HTML (Document)": "HTML Files (*.html)",
@@ -827,7 +867,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             ip = addr.get('addr')
                             if ip:
                                 ips += [ip]
-                    file = f'http://{ips[-1]}:2020'
+                    file = f'http://{ips[-1]}:2020' + ((exportContinuously and '/follow') or '')
 
                 # we're starting continous mode -- set the texts, set the flag, and call the timer function
                 if self.radioButtonExportContinuously.isChecked():
@@ -851,11 +891,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def serve_web(self, environ, start_response):
         """
+        localhost:2020/               standard files and non-updating stuff
+        localhost:2020/state          time stamp queries, returning a number that increments when the file changes
+        localhost:2020/favicon.ico    the icon
+        localhost:2020/follow         short polling wrapper file, reloads the things from / when the /state changes
         :param start_response:
         :return:
         """
-        if environ['REQUEST_URI'] == '/favicon.ico':
+        target = environ['REQUEST_URI']
+        if target == '/':
+            response = WzResponse(self._web_string, content_type=self._web_type)
+        elif target == '/favicon.ico':
             response = WzResponse(self._web_favicon, content_type='image/ico')
+        elif target == '/state':
+            response = WzResponse(self._web_timestring, content_type='text/plain')
+        elif target == '/follow':
+            response = WzResponse(self._web_site_wrapper, content_type='text/html')
         else:
             response = WzResponse(self._web_string, content_type=self._web_type)
         return response(environ, start_response)
@@ -872,7 +923,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # If mode active, either calls itself after two seconds
         if self.export_continuous:
-            self.export_timer = Timer(3, lambda: self.delayedContinuousExport(file))
+            exportToWebServer = self.radioButtonExportToWebServer.isChecked()
+            self.export_timer = Timer(exportToWebServer and 1 or 3, lambda: self.delayedContinuousExport(file))
             self.export_timer.start()
 
         # If not, do nothing
@@ -923,17 +975,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
                                                           fieldNames=fieldNames, fieldContent=fieldContent,
-                                                          style='document', continuous=continuous)
+                                                          style='document')
                     elif exportFormat == "HTML (List)":
                         webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
                                                           fieldNames=fieldNames, fieldContent=fieldContent,
-                                                          style='list', continuous=continuous)
+                                                          style='list')
                     elif exportFormat == "HTML (Tiles)":
                         webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, nodeNames=nodeNames,
                                                           fieldNames=fieldNames, fieldContent=fieldContent,
-                                                          style='tiles', continuous=continuous)
+                                                          style='tiles')
                     elif exportFormat == "Image/PNG (top-down)":
                         webtype = 'image/png'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
@@ -1012,8 +1064,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         if c == 0:
                             data += children[c].to_html(header=True, depth=depth,
                                                         nodeNames=nodeNames, fieldNames=fieldNames,
-                                                        fieldContent=fieldContent, style=style,
-                                                        continuous=continuous)[1]
+                                                        fieldContent=fieldContent, style=style)[1]
                         elif c == len(children) - 1:
                             data += children[c].to_html(footer=True, depth=depth,
                                                         nodeNames=nodeNames, fieldNames=fieldNames,
@@ -1022,8 +1073,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         else:
                             data += children[c].to_html(depth=depth,
                                                         nodeNames=nodeNames, fieldNames=fieldNames,
-                                                        fieldContent=fieldContent, style=style,
-                                                        continuous=continuous)[1]
+                                                        fieldContent=fieldContent, style=style)[1]
                 elif exportFormat == "Image/PNG (top-down)":
                     webtype = 'image/png'
                     data = rootNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
@@ -1080,20 +1130,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           nodeNames=nodeNames, fieldNames=fieldNames,
-                                                          fieldContent=fieldContent, style='document',
-                                                          continuous=continuous)
+                                                          fieldContent=fieldContent, style='document')
                     elif exportFormat == "HTML (List)":
                         webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           nodeNames=nodeNames, fieldNames=fieldNames,
-                                                          fieldContent=fieldContent, style='list',
-                                                          continuous=continuous)
+                                                          fieldContent=fieldContent, style='list')
                     elif exportFormat == "HTML (Tiles)":
                         webtype = 'text/html'
                         dummy, data = currentNode.to_html(header=True, footer=True, depth=depth, context=path,
                                                           nodeNames=nodeNames, fieldNames=fieldNames,
-                                                          fieldContent=fieldContent, style='tiles',
-                                                          continuous=continuous)
+                                                          fieldContent=fieldContent, style='tiles')
                     elif exportFormat == "Image/PNG (top-down)":
                         webtype = 'image/png'
                         data = currentNode.to_image(nodeNames=nodeNames, fieldNames=fieldNames,
@@ -1146,8 +1193,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             elif exportToWebServer:
 
                 # save string
-                self._web_string = data    # where it will be picked up by the server
-                self._web_type = webtype
+                if self._web_string != data:                # I find no better way than comparing the entire string;
+                                                            # some changes (timer states) aren't in the data)
+                    self._web_string = data    # where it will be picked up by the server
+                    self._web_type = webtype
+                    self._web_timestamp = (self._web_timestamp < 999) and (self._web_timestamp + 1) or 0
+                    self._web_timestring = f'{self._web_timestamp:03}'
 
                 # set gui
                 self.labelCurrentExportFile.setText(file)
