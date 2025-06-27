@@ -980,7 +980,7 @@ class Node:
         return text
 
     def to_html(self, header=False, footer=False, nodeNames=True, fieldNames=True, fieldContent=True , context=False,
-                continuous=False, style='tiles', depth=-1, current_depth=0):
+                style='tiles', depth=-1, current_depth=0):
 
         # evaluate context
         fields_local, children, context_current = self._evaluateContext(fieldNames or fieldContent, context)
@@ -991,7 +991,6 @@ class Node:
         # page header
         if header and style == 'tiles' and not context:
             html = '<!DOCTYPE html><html lang="en">' \
-                   + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
                    + f'<meta charset="utf-8"><title>{self.name} — TreeTime</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} '\
                    'em {color: #555;}' \
@@ -1027,7 +1026,6 @@ class Node:
                    '</style></head><body>'
         elif header and style == 'tiles' and context:
             html = '<!DOCTYPE html><html lang="en">' \
-                   + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
                    + f'<meta charset="utf-8"><title>{self.name} – TreeTime</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em;} ' \
                    'em {color: #555;}' \
@@ -1065,7 +1063,6 @@ class Node:
                    '</style></head><body>'
         elif header and style == 'list':
             html = '<!DOCTYPE html><html lang="en">' \
-                   + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
                    + f'<meta charset="utf-8"><title>{self.name} — TreeTime</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} ' \
                    'em {color: #555;}' \
@@ -1101,7 +1098,6 @@ class Node:
                    '</style></head><body>'
         elif header and style == 'document':
             html = '<!DOCTYPE html><html lang="en">' \
-                   + (continuous and '<meta http-equiv="refresh" content="1">' or '') \
                    + f'<meta charset="utf-8"><title>{self.name} — TreeTime</title><style>' \
                    'body {font-family: sans-serif; color: black; background-color: white;} '\
                    'em {color: #555;}' \
