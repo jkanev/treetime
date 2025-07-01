@@ -1068,8 +1068,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         elif c == len(children) - 1:
                             data += children[c].to_html(footer=True, depth=depth,
                                                         nodeNames=nodeNames, fieldNames=fieldNames,
-                                                        fieldContent=fieldContent, style=style,
-                                                        continuous=continuous)[1]
+                                                        fieldContent=fieldContent, style=style)[1]
                         else:
                             data += children[c].to_html(depth=depth,
                                                         nodeNames=nodeNames, fieldNames=fieldNames,

@@ -668,7 +668,8 @@ class Node:
             :param str: The string to quote
             :return: String with characters "><& replaced by their html entities
             """
-            return str.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+            return str.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')\
+                      .replace('"', '&quot;').replace('?', '&#63;')
 
         # background colours, applied by depth: blue, red, yellow, green
         colours = {'blue': '#f4f4ff', 'purple': '#fbf4ff', 'red': '#fff4f4', 'orange': '#fffbf2',
@@ -710,13 +711,14 @@ class Node:
                 field_string = ""
                 for name, field in self.fields.items():
                     content = field.getString().strip()
-                    name_string = fieldNames and f'<FONT FACE="Helvetica" POINT-SIZE="10">{name}</FONT>' or ''
+                    name_string = (fieldNames and f'<FONT FACE="Helvetica" POINT-SIZE="10">{quote_string(name)}</FONT>'
+                                   or '')
                     if content:     # wrap field content, larger bits of text start with a newline
                         lines = [quote_string(l) for l in Node._wrap_lines(content, chars=50)]
                         if field.fieldType == "url":
-                            link = len(content) > 50 and content[:50]+'...' or content
+                            link = quote_string(len(content) > 50 and content[:50]+'...' or content)
                             if fieldContent:
-                                content_string = (f'<TD ALIGN="LEFT" VALIGN="TOP" HREF="{content}">'
+                                content_string = (f'<TD ALIGN="LEFT" VALIGN="TOP" HREF="{quote_string(content)}">'
                                                   f'<FONT FACE="Helvetica" COLOR="#0000a0" POINT-SIZE="10">'
                                                   f'{link}</FONT></TD>')
                             else:
