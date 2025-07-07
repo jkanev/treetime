@@ -859,15 +859,34 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         return
 
                 if exportToWebServer:
-                    ips = ['0.0.0.0']
+                    ips = []
                     for iface in netifaces.interfaces():
                         addrs = netifaces.ifaddresses(iface)
                         inet_addrs = addrs.get(netifaces.AF_INET, [])
                         for addr in inet_addrs:
                             ip = addr.get('addr')
                             if ip:
-                                ips += [ip]
-                    file = f'http://{ips[-1]}:2020' + ((exportContinuously and '/follow') or '')
+                                if iface.startswith(('lo', 'docker', 'veth', 'br-', 'vmnet', 'zt')):
+                                    useful = 0
+                                    note = '(on this computer)'
+                                elif ip.startswith(('127.', '169.254.', '0.')):
+                                    useful = 1
+                                    note = '(on this computer)'
+                                elif ip.startswith(('192.168.', '10.', '172.16.', '172.17.', '172.18.', '172.19.',
+                                                    '172.20.', '172.21.', '172.22.', '172.23.', '172.24.',
+                                                    '172.25.', '172.26.', '172.27.', '172.28.', '172.29.',
+                                                    '172.30.', '172.31.')):
+                                    useful = 3
+                                    note = '(on local network)'
+                                else:
+                                    useful = 2
+                                    note = ""
+                                ips += [(useful, ip, note)]
+                    ips = sorted(ips)
+                    display_ip = ips[-1]
+                    fallback_ip = ips[0]
+                    file = (f'http://{display_ip[1]}:2020{(exportContinuously and '/follow') or ''}\n{display_ip[2]}\n'
+                            f'http://{fallback_ip[1]}:2020{(exportContinuously and '/follow') or ''}\n{fallback_ip[2]}')
 
                 # we're starting continous mode -- set the texts, set the flag, and call the timer function
                 if self.radioButtonExportContinuously.isChecked():
@@ -1201,7 +1220,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # set gui
                 self.labelCurrentExportFile.setText(file)
-                self.settings.setValue("exportFile", file)
 
             # save to clipboard
             else:
