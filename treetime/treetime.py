@@ -29,6 +29,7 @@ import datetime
 import time
 import netifaces
 import os.path
+import pathlib
 import platform
 from PyQt6 import QtCore, QtGui, QtWidgets
 from threading import Timer, Thread
@@ -462,7 +463,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._dataFontPointSize = int(self.centralwidget.font().pointSize())
 
         # show last exported file
-        self.labelCurrentExportFile.setText(self.settings.value('exportFile') or "[last exported file]")
+        self.labelCurrentExportFile.setText(self.settings.value('exportLink') or self.settings.value('exportFile') or "[last exported file]")
+        self.labelCurrentExportFile.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextBrowserInteraction)
+        self.labelCurrentExportFile.setOpenExternalLinks(True)
 
         # load last file
         print("opening last file...")
@@ -828,6 +831,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def pushButtonExportClicked(self):
 
         file = ""
+        link = ""
 
         # We're not in contiuous mode -- show file dialog
         if not self.export_continuous:
@@ -855,6 +859,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     fileDir = self.settings.value('exportFile') and os.path.dirname(self.settings.value('exportFile')) or ''
                     file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to " + exportFormat, fileDir,
                                                                  extensions[exportFormat])[0]
+                    link = f'<a href="{pathlib.Path(file).as_uri()}">{file}</a>'
                     if not file:
                         return
 
@@ -868,25 +873,28 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if ip:
                                 if iface.startswith(('lo', 'docker', 'veth', 'br-', 'vmnet', 'zt')):
                                     useful = 0
-                                    note = '(on this computer)'
+                                    note = '(this computer)'
                                 elif ip.startswith(('127.', '169.254.', '0.')):
                                     useful = 1
-                                    note = '(on this computer)'
+                                    note = '(this computer)'
                                 elif ip.startswith(('192.168.', '10.', '172.16.', '172.17.', '172.18.', '172.19.',
                                                     '172.20.', '172.21.', '172.22.', '172.23.', '172.24.',
                                                     '172.25.', '172.26.', '172.27.', '172.28.', '172.29.',
                                                     '172.30.', '172.31.')):
                                     useful = 3
-                                    note = '(on local network)'
+                                    note = '(local network)'
                                 else:
                                     useful = 2
                                     note = ""
                                 ips += [(useful, ip, note)]
                     ips = sorted(ips)
-                    display_ip = ips[-1]
-                    fallback_ip = ips[0]
-                    file = (f'http://{display_ip[1]}:2020{(exportContinuously and '/follow') or ''}\n{display_ip[2]}\n'
-                            f'http://{fallback_ip[1]}:2020{(exportContinuously and '/follow') or ''}\n{fallback_ip[2]}')
+                    useful_address = f'{ips[-1][1]}:2020{(exportContinuously and "/follow") or ''}'
+                    useful_note = ips[-1][2]
+                    fallback_address = f'{ips[0][1]}:2020{(exportContinuously and "/follow") or ''}'
+                    fallback_note = ips[0][2]
+                    file = f'http://{useful_address}'
+                    link = (f'<a href="http://{useful_address}">{useful_address}</a> {useful_note}<br/>'
+                            f'<a href="http://{fallback_address}">{fallback_address}</a> {fallback_note}')
 
                 # we're starting continous mode -- set the texts, set the flag, and call the timer function
                 if self.radioButtonExportContinuously.isChecked():
@@ -895,10 +903,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.radioButtonExportContinuously.setDisabled(True)
                     self.radioButtonExportOnce.setDisabled(True)
                     self.export_continuous = True
-                    self.delayedContinuousExport(file)
+                    self.delayedContinuousExport(file, link=link)
 
                 # we're doing a standard export
-                self.export(file)
+                self.export(file, link=link)
 
         # We're stopping continuous mode -- set the texts, set the flag
         else:
@@ -930,7 +938,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             response = WzResponse(self._web_string, content_type=self._web_type)
         return response(environ, start_response)
 
-    def delayedContinuousExport(self, file):
+    def delayedContinuousExport(self, file, link=''):
         """
         Writes to file using current settings, then checks current state (user may have stopped), then waits for three
         seconds, then calls itself
@@ -938,17 +946,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
 
         # First writes to file
-        self.export(file, continuous=True)
+        self.export(file, link=link, continuous=True)
 
         # If mode active, either calls itself after two seconds
         if self.export_continuous:
             exportToWebServer = self.radioButtonExportToWebServer.isChecked()
-            self.export_timer = Timer(exportToWebServer and 1 or 3, lambda: self.delayedContinuousExport(file))
+            self.export_timer = Timer(exportToWebServer and 1 or 3, lambda: self.delayedContinuousExport(file, link=link))
             self.export_timer.start()
 
         # If not, do nothing
 
-    def export(self, file, continuous=False):
+    def export(self, file, link='', continuous=False):
         """
         Callback for the text/html/csv export. Asks for a file name, then writes branch text export into it.
         """
@@ -1204,8 +1212,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if exportToFile:
                 with open(file, wtype) as f:
                     f.write(data)
-                self.labelCurrentExportFile.setText(file)
                 self.settings.setValue("exportFile", file)
+                self.settings.setValue("exportLink", link)
+                self.labelCurrentExportFile.setText(link)
 
             # save to web server
             elif exportToWebServer:
@@ -1219,7 +1228,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self._web_timestring = f'{self._web_timestamp:03}'
 
                 # set gui
-                self.labelCurrentExportFile.setText(file)
+                self.settings.setValue("exportFile", file)
+                self.settings.setValue("exportLink", link)
+                self.labelCurrentExportFile.setText(link)
 
             # save to clipboard
             else:

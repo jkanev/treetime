@@ -182,8 +182,8 @@
       <widget class="QWidget" name="pageFile">
        <property name="geometry">
         <rect>
-         <x>0</x>
-         <y>0</y>
+         <x>-15</x>
+         <y>-21</y>
          <width>251</width>
          <height>762</height>
         </rect>
@@ -391,6 +391,45 @@
              </property>
              <property name="text">
               <string>This node with conte&amp;xt</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="11" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBoxExportContent">
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="checkBoxExportNodeNames">
+             <property name="text">
+              <string>Node names</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QCheckBox" name="checkBoxExportFieldContent">
+             <property name="text">
+              <string>Field content</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QCheckBox" name="checkBoxExportFieldNames">
+             <property name="text">
+              <string>Field names</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -683,45 +722,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item row="11" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBoxExportContent">
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="checkBoxExportNodeNames">
-             <property name="text">
-              <string>Node names</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QCheckBox" name="checkBoxExportFieldContent">
-             <property name="text">
-              <string>Field content</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QCheckBox" name="checkBoxExportFieldNames">
-             <property name="text">
-              <string>Field names</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
         </item>
        </layout>
       </widget>
@@ -1114,8 +1114,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>128</width>
-         <height>164</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1241,8 +1241,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>230</width>
-         <height>411</height>
+         <width>250</width>
+         <height>760</height>
         </rect>
        </property>
        <attribute name="label">
