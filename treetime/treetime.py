@@ -28,6 +28,7 @@ import base64
 import datetime
 import time
 import netifaces
+import requests
 import os.path
 import pathlib
 import platform
@@ -864,39 +865,30 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         return
 
                 if exportToWebServer:
-                    ips = []
-                    for iface in netifaces.interfaces():
-                        addrs = netifaces.ifaddresses(iface)
-                        inet_addrs = addrs.get(netifaces.AF_INET, [])
-                        for addr in inet_addrs:
-                            ip = addr.get('addr')
-                            if ip:
-                                if iface.startswith(('lo', 'docker', 'veth', 'br-', 'vmnet', 'zt')):
-                                    useful = 0
-                                    note = '(this computer)'
-                                elif ip.startswith(('127.', '169.254.', '0.')):
-                                    useful = 1
-                                    note = '(this computer)'
-                                elif ip.startswith(('192.168.', '10.', '172.16.', '172.17.', '172.18.', '172.19.',
-                                                    '172.20.', '172.21.', '172.22.', '172.23.', '172.24.',
-                                                    '172.25.', '172.26.', '172.27.', '172.28.', '172.29.',
-                                                    '172.30.', '172.31.')):
-                                    useful = 3
-                                    note = '(local network)'
-                                else:
-                                    useful = 2
-                                    note = ""
-                                ips += [(useful, ip, note)]
-                    ips = sorted(ips)
-                    useful_address = f'{ips[-1][1]}:2020{(exportContinuously and "/follow") or ''}'
-                    useful_note = ips[-1][2]
-                    fallback_address = f'{ips[0][1]}:2020{(exportContinuously and "/follow") or ''}'
-                    fallback_note = ips[0][2]
-                    file = f'http://{useful_address}'
-                    link = (f'<a href="http://{useful_address}">{useful_address}</a> {useful_note}<br/>'
-                            f'<a href="http://{fallback_address}">{fallback_address}</a> {fallback_note}')
+                    ips = [('localhost', '(local)')]
+                    try:
+                        iface = netifaces.gateways()['default'][netifaces.AF_INET][1]
+                        lan_ip = netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr']
+                        note = '(network)'
+                        ips += [(lan_ip, note)]
+                    except:
+                        ips += [('', 'not available on network')]
+                    try:
+                        web_ip = requests.get('https://api.ipify.org').text
+                        avail = requests.get(f'http://{web_ip}:2020', timeout=0.5)
+                        note = '(internet)'
+                        ips += [(web_ip, note)]
+                    except:
+                        ips += [('', 'not available on internet')]
+                    file = ''
+                    link = ''
+                    for ip, note in ips:
+                        path = ip and f'{ip}:2020{(exportContinuously and "/follow") or ''}' or ''
+                        file = path and f'http://{path}' or file
+                        href = path and f'<a href="http://{path}">{path}</a>' or ''
+                        link += f'{href} {note}<br/>'
 
-                # we're starting continous mode -- set the texts, set the flag, and call the timer function
+                # we're starting continuous mode -- set the texts, set the flag, and call the timer function
                 if self.radioButtonExportContinuously.isChecked():
                     self.pushButtonExport.setText("Stop continuous export")
                     self.labelExportFileDescription.setText("Exporting continuously to:")
