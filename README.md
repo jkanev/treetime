@@ -1,4 +1,4 @@
-#  <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64">&nbsp; &nbsp; &nbsp; &nbsp;TreeTime
+#  <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64"/>&nbsp; &nbsp; &nbsp; &nbsp;TreeTime
 
 
 Note: If your looking for the phylogenetics software of the same name, you can find it here: [github.com/neherlab/treetime](https://github.com/neherlab/treetime).
@@ -112,7 +112,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 
 ### Using pre-compiled Binaries ###
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2025.1](https://github.com/jkanev/treetime/releases/tag/2025.1) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
+- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2025.2](https://github.com/jkanev/treetime/releases/tag/2025.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run _TreeTime_ or _TreeTime.exe_ from the new folder. Unzip the data package too. Add the program folder to your path.  
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 
@@ -204,33 +204,37 @@ Past
 - Done February 2023: Added new tree field types "concatenation" and "set".
 - Done February 2023: Implemented adjustable width for the data item and the tree table main view.
 - Done February 2023: Release 2023.1
-* Done April 2023: Removed deprecated tree field ("concatenation"), fixed missing logo.
-* Done May 2023: Ported to PyQt 6.0
-* Done May 2023: Implemented auto-adjusting name column
-* Done June 2023: Created new default theme "Organic", a mix between Fusion and Breeze
-* Done June 2023: Implemented display of tree field definitions and of data field definitions
-* Done July 2023: Release **version 2023.2**
-* Done October 2023: Bugfix: crash when exporting text to clipboard.
-* Done January 2024: Changed node symbol to small circle in text eport (after asking users on social media).
-* Done February 2024: Implemented min, max, min-string, max-string fields.
-* Done March 2024: Implemented longtext data field.
-* Done April 2024: Extended documentation on readthedocs.io. Release **version 2024.1**
-* Done April 2024: Restructured export area, added name-only export. Made all export options (full tree / branch / node with contect) (all fields / names only) available for all file formats and for both file and clipboard export.
-* Done April 2024: Release **version 2024.2**
-* Done March 2024: Implemented changeable font size (zoom) of data display
-* Done May 2024:  Implemented continuous text and html export
-* Done July 2024: Release **version 2024.3**
-* Done January 2025: Changed colours on html export to a seven-colour rainbow palette.
-* Done February 2025: Implemented PNG export
-* Done March 2025: Implemented SVG export
-* Done March 2025: Implemented HTML/Document export
-* Done April 2025: Improvements to image export.
-* Done April 2025: Release **version 2025.1**
+- Done April 2023: Removed deprecated tree field ("concatenation"), fixed missing logo.
+- Done May 2023: Ported to PyQt 6.0
+- Done May 2023: Implemented auto-adjusting name column
+- Done June 2023: Created new default theme "Organic", a mix between Fusion and Breeze
+- Done June 2023: Implemented display of tree field definitions and of data field definitions
+- Done July 2023: Release **version 2023.2**
+- Done October 2023: Bugfix: crash when exporting text to clipboard.
+- Done January 2024: Changed node symbol to small circle in text eport (after asking users on social media).
+- Done February 2024: Implemented min, max, min-string, max-string fields.
+- Done March 2024: Implemented longtext data field.
+- Done April 2024: Extended documentation on readthedocs.io. Release **version 2024.1**
+- Done April 2024: Restructured export area, added name-only export. Made all export options (full tree / branch / node with contect) (all fields / names only) available for all file formats and for both file and clipboard export.
+- Done April 2024: Release **version 2024.2**
+- Done March 2024: Implemented changeable font size (zoom) of data display
+- Done May 2024:  Implemented continuous text and html export
+- Done July 2024: Release **version 2024.3**
+- Done January 2025: Changed colours on html export to a seven-colour rainbow palette.
+- Done February 2025: Implemented PNG export
+- Done March 2025: Implemented SVG export
+- Done March 2025: Implemented HTML/Document export
+- Done April 2025: Improvements to image export.
+- Done April 2025: Release **version 2025.1**
+- Done June 2025: Bugfix in SVG export (line breaks)
+- Done June 2025: Implemented MarkDown export
+- Done June 2025: Implemented flexible export (field names / content / node name)
+- Done July 2025: Implemented web server for continuous sharing
+- Done July 2025: Release **version 2025.2**
 
 Present
 - Running: Bugfixing
 - Running: Extend documentation on readthedocs.io
-- Running: 
 - Running: Add more examples and more template data files
 - Running: Structure editing/viewing in extra tab (editing the structure, number and definitions and trees and tree fields and data fields)
 
@@ -239,9 +243,6 @@ Future
 - Near Future: Implement search function
 - Mid Future: Implement global functions (Linearise Tree, Level-Swap, Merge identical Siblings, Merge Identical Parents/Children, Remove all Orphans, Insert all Orphans as Children)
 - Far Future: Implement safe usage by multiple simultaneous users
-- Far Future: Implement a database backend instead of text file storage
-- Far Future: Implement a web server
-- Far Future: A whole lot of other fancy things that will probably never get done
 
 <div id='id-dependencies'/>
 

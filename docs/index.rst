@@ -1,7 +1,6 @@
 
-.. image:: ../../treetime/data/treetime-logo.png
+.. image:: ../../treetime/data/treetime-logo-small.png
    :align: left
-   :scale: 50%
    
 *TreeTime* is a general data organisation, management and analysis tool using linked trees instead of flat lists of tables.
 A tree is a hierarchical structure that arranges your data into units and sub-units.
