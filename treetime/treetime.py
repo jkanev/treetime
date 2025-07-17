@@ -32,6 +32,8 @@ import requests
 import os.path
 import pathlib
 import platform
+import sys
+import os
 from PyQt6 import QtCore, QtGui, QtWidgets
 from threading import Timer, Thread
 from PyQt6.QtGui import QPalette, QColor, QIcon, QClipboard, QGuiApplication
@@ -462,6 +464,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # store system font size
         self._dataFontPointSize = int(self.centralwidget.font().pointSize())
+
+        # library path otherwise the unpacked graphviz .so files don't load with linux/pyinstaller
+        if getattr(sys, 'frozen', False):
+            for pname in ('LD_LIBRARY_PATH', 'PATH'):
+                path = os.environ.get(pname)
+                if path:
+                    path = path + os.pathsep + sys._MEIPASS
+                else:
+                    path = sys._MEIPASS
+                os.environ[pname] = path
 
         # show last exported file
         self.labelCurrentExportFile.setText(self.settings.value('exportLink') or self.settings.value('exportFile') or "[last exported file]")

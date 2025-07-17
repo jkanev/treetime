@@ -22,7 +22,7 @@ from textwrap import wrap
 import datetime
 from math import floor, ceil, inf
 import graphviz as gv
-
+from PyQt6 import QtCore, QtWidgets
 
 class Field:
     """
@@ -784,19 +784,35 @@ class Node:
 
         # end of recursion, create picture
         image = None
+
         if not current_depth:
-            # pre-layout to avoid edge
-            if engine == 'twopi':
-                image = graph.pipe(format=format, engine=engine)
-            elif engine == 'dot':
-                image = graph.unflatten(stagger=5,
-                                        chain=3,
-                                        fanout=3).pipe(format=format, engine=engine)
-            else:    # sfdp/neato
-                try:     # sometimes sfdp dies with a strange error: "SpringSmoother_new: Assertion `nz > 0' failed"
+            try:
+                # pre-layout to avoid edge
+                if engine == 'twopi':
                     image = graph.pipe(format=format, engine=engine)
-                except:
-                    image = graph.pipe(format=format, engine='neato')
+                elif engine == 'dot':
+                    image = graph.unflatten(stagger=5,
+                                            chain=3,
+                                            fanout=3).pipe(format=format, engine=engine)
+                else:    # sfdp/neato
+                    try:     # sometimes sfdp dies with a strange error: "SpringSmoother_new: Assertion `nz > 0' failed"
+                        image = graph.pipe(format=format, engine=engine)
+                    except:
+                        image = graph.pipe(format=format, engine='neato')
+            except:
+                # almost impossible to include graphviz correctly in pyinstaller for linux.
+                message = ('This software relies on the GraphViz library for diagram drawing.<br/>'
+                           'Please install graphviz on your system. <br/> Instructions are here: '
+                           '<a href="https://graphviz.org/download/">graphviz.org/download</a>.')
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText(message)
+                msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextBrowserInteraction)
+                msgBox.setTextFormat(QtCore.Qt.TextFormat.RichText)
+                msgBox.setWindowTitle("External Library Missing")
+                msgBox.setStandardButtons(
+                    QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+                result = msgBox.exec()
+
 
         return image
 
