@@ -1,5 +1,5 @@
 
-.. image:: ../../treetime/data/treetime-logo-small.png
+.. image:: ../data/treetime-logo-small.png
    :align: left
    
 *TreeTime* is a general data organisation, management and analysis tool using linked trees instead of flat lists of tables.
