@@ -103,7 +103,7 @@ _TreeTime_ lets you select different themes and will try to use the default colo
 
 ## Data Files ##
 
-_TreeTime_'s data is stored in ._trt_ files. These are plain editable text files. Please have a look at the file _Simple-Task-List.trt_ to understand the syntax. A detailed description will follow later. (Sorry...)
+_TreeTime_'s data is stored in ._trt_ files. These are plain editable text files. Please have a look at the file _Simple-Task-List.trt_ to understand the syntax. A detailed description can be round [here](https://treetime-data-manager.readthedocs.io/en/latest/data-format.html).
 
 <div id='id-installation'/>
 
