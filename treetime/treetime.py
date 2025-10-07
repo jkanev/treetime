@@ -574,13 +574,25 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     '</head><body>TreeTime Web Service<br/>Not running</body></html>')
         self._web_string = self._web_default_string
         self._web_type = 'text/html'
-        self._web_service = make_server('0.0.0.0', 2020, self.serve_web)
-        self._web_thread = Thread(target=self._web_service.serve_forever)
-        self._web_favicon = logo
-        self._web_timestamp = 0
-        self._web_timestring = '000'
-        self._web_thread.start()
-        print("... web server running on http://0.0.0.0:2020")
+        self._web_port = None
+        tries = 20
+        while tries and not self._web_port:
+            try:
+                port = 2020 + 20 - tries
+                self._web_service = make_server('0.0.0.0', port, self.serve_web)
+                self._web_port = port
+            except:
+                tries -= 1
+        if self._web_port:
+            self._web_thread = Thread(target=self._web_service.serve_forever)
+            self._web_favicon = logo
+            self._web_timestamp = 0
+            self._web_timestring = '000'
+            self._web_thread.start()
+            print(f"... web server running on http://0.0.0.0:{self._web_port}")
+        else:
+            print("... could not start web server.")
+            self.radioButtonExportToWebServer.setEnabled(False)
 
     def stopWebServer(self):
         """
@@ -796,7 +808,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # change label
         self.labelZoom.setText("Zoom {}{}".format(offset > 0 and '+' or '', offset))
 
-
     def pushButtonSaveToFileClicked(self):
         """
         Callback for the save-file button. Saves the current data to a new file and keeps that file connected.
@@ -887,7 +898,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         ips += [('', 'not available on network')]
                     try:
                         web_ip = requests.get('https://api.ipify.org').text
-                        avail = requests.get(f'http://{web_ip}:2020', timeout=0.5)
+                        avail = requests.get(f'http://{web_ip}:{self._web_port}', timeout=0.5)
                         note = '(internet)'
                         ips += [(web_ip, note)]
                     except:
@@ -895,7 +906,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     file = ''
                     link = ''
                     for ip, note in ips:
-                        path = ip and f'{ip}:2020{(exportContinuously and "/follow") or ''}' or ''
+                        path = ip and f'{ip}:{self._web_port}{(exportContinuously and "/follow") or ''}' or ''
                         file = path and f'http://{path}' or file
                         href = path and f'<a href="http://{path}">{path}</a>' or ''
                         link += f'{href} {note}<br/>'

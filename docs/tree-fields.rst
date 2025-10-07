@@ -170,6 +170,23 @@ max-string
 The largest of a list of strings.
 Same as *min-string*, but shows the maximum.
 
+product
+-----
+
+The product of all input fields.
+Syntax::
+
+        field "Name"
+            field-type "product"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
+Result: The value *field1 * field2 * field3 * ...*, where *N* is the number of fields.
+
 ratio
 -----
 
@@ -185,7 +202,7 @@ Syntax::
 
 were "field1", "field2", "field3", ..., are the names of data or tree fields.
 
-Result: The value *field1 / (field2 + field3 + ...)*, where *N* is the number of fields.
+Result: The value *field1 / (field2 + field3 + ...)*.
 
 ratio-percent
 -------------

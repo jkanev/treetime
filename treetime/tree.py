@@ -189,6 +189,9 @@ class Field:
         elif self.fieldType == "max-string":
             self.getValue = self.getValueMaxString
             self.getString = self.getStringUnchanged
+        elif self.fieldType == "product":
+            self.getValue = self.getValueProduct
+            self.getString = self.getStringRounded
         elif self.fieldType == "ratio":
             self.getValue = self.getValueRatio
             self.getString = self.getStringRounded
@@ -410,9 +413,22 @@ class Field:
         else:
             return None
 
+    def getValueProduct(self):
+        """
+        Returns the product a*b*c*d*... of field values a,b,c,d...
+        """
+        values = self.getFieldValues()
+        prod = 1.0
+        for v in values:
+            try:
+                prod *= v
+            except:
+                pass    # same as: prod *= 1.0
+        return prod
+
     def getValueRatio(self):
         """
-        Returns the ration a/(b+c+d+e+...) of field values a,b,c,d,e,...
+        Returns the ratio a/(b+c+d+e+...) of field values a,b,c,d,e,...
         """
         values = self.getFieldValues()
         if len(values) < 2:
@@ -1037,6 +1053,7 @@ class Node:
                    'div.max {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
@@ -1074,6 +1091,7 @@ class Node:
                    'div.max {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
@@ -1109,6 +1127,7 @@ class Node:
                    'div.max {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
@@ -1145,6 +1164,7 @@ class Node:
                    'div.max {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.mean {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.mean-percent {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.product {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.ratio {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.ratio-percent {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.node-name {position: relative; float: left; width: 25%; padding: 1%; }' \
