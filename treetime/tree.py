@@ -179,10 +179,10 @@ class Field:
             self.getString = self.getStringPercent
         elif self.fieldType == "min":
             self.getValue = self.getValueMin
-            self.getString = self.getStringUnchanged
+            self.getString = self.getStringRounded
         elif self.fieldType == "max":
             self.getValue = self.getValueMax
-            self.getString = self.getStringUnchanged
+            self.getString = self.getStringRounded
         elif self.fieldType == "min-string":
             self.getValue = self.getValueMinString
             self.getString = self.getStringUnchanged
