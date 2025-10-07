@@ -1,5 +1,10 @@
-#  <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="64" height="64"/>&nbsp; &nbsp; &nbsp; &nbsp;TreeTime
 
+## TreeTime is moving to CodeBerg:
+
+### The Github repository will receive code updates in parallel until the end of the year. New releases and downloadable files will be available on <a href="https://codeberg.org/jkanev/treetime">codeberg.org/jkanev/treetime</a>.
+### The documentation on <a href="https://treetime-data-manager.readthedocs.io/en/latest/">treetime-data-manager.readthedocs.io</a> and the project homepage <a href="https://tree-time.info">treetime.info</a> will stay uneffected.
+
+# <img src="https://raw.githubusercontent.com/jkanev/treetime/master/data/treetime-logo.png" alt="logo" width="32" height="32"/>&nbsp; &nbsp;TreeTime
 
 Note: If your looking for the phylogenetics software of the same name, you can find it here: [github.com/neherlab/treetime](https://github.com/neherlab/treetime).
 
