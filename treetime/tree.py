@@ -41,6 +41,7 @@ class Field:
         self.sourceNode = node
         self.getValue = None
         self.getString = None
+        self.hidden = False
         self.fieldType = fieldType
         if (self.fieldType != ""):
             self.initFieldType()
@@ -63,7 +64,8 @@ class Field:
         newField.childFields = copy.deepcopy(self.childFields)
         newField.parentFields = copy.deepcopy(self.parentFields)
         newField.fieldType = copy.deepcopy(self.fieldType)
-        
+        newField.hidden = copy.deepcopy(self.hidden)
+
         # the source node is a link
         newField.sourceNode = self.sourceNode
         
@@ -450,6 +452,8 @@ class Field:
         string += "        child-fields " + json.dumps(self.childFields) + "\n"
         string += "        sibling-fields " + json.dumps(self.siblingFields) + "\n"
         string += "        parent-fields " + json.dumps(self.parentFields) + "\n"
+        if self.hidden:
+            string += "        hidden\n"
         return string
 
     def readFromString(self, string):
@@ -460,27 +464,29 @@ class Field:
         try:
             self.fieldType = json.loads(s[0])
         except:
-            self.printReadError(name, "field-type", s[0]);
+            self.printReadError(name, "field-type", s[0])
         s = s[1].split("\n        child-fields ")
         try:
             self.ownFields = json.loads(s[0])
         except:
-            self.printReadError(name, "own-fields", s[0]);
+            self.printReadError(name, "own-fields", s[0])
         s = s[1].split("\n        sibling-fields ")
         try:
             self.childFields = json.loads(s[0])
         except:
-            self.printReadError(name, "child-fields", s[0]);
+            self.printReadError(name, "child-fields", s[0])
         s = s[1].split("\n        parent-fields ")
         try:
             self.siblingFields = json.loads(s[0])
         except:
-            self.printReadError(name, "sibling-fields", s[0]);
+            self.printReadError(name, "sibling-fields", s[0])
+        s = s[1].split("\n        hidden")
         try:
-            self.parentFields = json.loads(s[1])
+            self.parentFields = json.loads(s[0])
         except:
-            self.printReadError(name, "parent-fields", s[0]);
-
+            self.printReadError(name, "parent-fields", s[0])
+        if len(s) == 2:
+            self.hidden = True
         self.initFieldType()
         
         return name
@@ -586,7 +592,8 @@ class Node:
         # append item content and print
         s += self.name
         for name,field in self.fields.items():
-            s += " [" + name + "] " + str(field.getString())
+            if not field.hidden:
+                s += " [" + name + "] " + str(field.getString())
         print(s)
         
         # recurse
@@ -726,29 +733,30 @@ class Node:
             if fields_local:
                 field_string = ""
                 for name, field in self.fields.items():
-                    content = field.getString().strip()
-                    name_string = (fieldNames and f'<FONT FACE="Helvetica" POINT-SIZE="10">{quote_string(name)}</FONT>'
-                                   or '')
-                    if content:     # wrap field content, larger bits of text start with a newline
-                        lines = [quote_string(l) for l in Node._wrap_lines(content, chars=50)]
-                        if field.fieldType == "url":
-                            link = quote_string(len(content) > 50 and content[:50]+'...' or content)
-                            if fieldContent:
-                                content_string = (f'<TD ALIGN="LEFT" VALIGN="TOP" HREF="{quote_string(content)}">'
-                                                  f'<FONT FACE="Helvetica" COLOR="#0000a0" POINT-SIZE="10">'
-                                                  f'{link}</FONT></TD>')
+                    if not field.hidden:
+                        content = field.getString().strip()
+                        name_string = (fieldNames and f'<FONT FACE="Helvetica" POINT-SIZE="10">{quote_string(name)}</FONT>'
+                                       or '')
+                        if content:     # wrap field content, larger bits of text start with a newline
+                            lines = [quote_string(l) for l in Node._wrap_lines(content, chars=50)]
+                            if field.fieldType == "url":
+                                link = quote_string(len(content) > 50 and content[:50]+'...' or content)
+                                if fieldContent:
+                                    content_string = (f'<TD ALIGN="LEFT" VALIGN="TOP" HREF="{quote_string(content)}">'
+                                                      f'<FONT FACE="Helvetica" COLOR="#0000a0" POINT-SIZE="10">'
+                                                      f'{link}</FONT></TD>')
+                                else:
+                                    content_string = ''
+                                field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
+                                                 f'{name_string}</TD>{content_string}</TR>')
                             else:
-                                content_string = ''
-                            field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
-                                             f'{name_string}</TD>{content_string}</TR>')
-                        else:
-                            content_string = fieldContent and ('<FONT FACE="Helvetica" POINT-SIZE="10">'
-                                                               + '<BR ALIGN="LEFT"/>'.join(lines)
-                                                               + '</FONT>') \
-                                                          or ''
-                            field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
-                                             f'{name_string}</TD>'
-                                             f'<TD ALIGN="LEFT" VALIGN="TOP">{content_string}</TD></TR>')
+                                content_string = fieldContent and ('<FONT FACE="Helvetica" POINT-SIZE="10">'
+                                                                   + '<BR ALIGN="LEFT"/>'.join(lines)
+                                                                   + '</FONT>') \
+                                                              or ''
+                                field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
+                                                 f'{name_string}</TD>'
+                                                 f'<TD ALIGN="LEFT" VALIGN="TOP">{content_string}</TD></TR>')
             else:
                 field_string = ""
 
@@ -923,28 +931,29 @@ class Node:
 
         if fields_local:
             for name, field in self.fields.items():
+                if not field.hidden:
 
-                # wrap field content, larger bits of text start with a newline
-                lines = fieldContent and Node._wrap_lines(field.getString()) or []
+                    # wrap field content, larger bits of text start with a newline
+                    lines = fieldContent and Node._wrap_lines(field.getString()) or []
 
-                # empty array if only whitespace content
-                if lines == ['\n']:
-                    lines = []
+                    # empty array if only whitespace content
+                    if lines == ['\n']:
+                        lines = []
 
-                # start on new line if field content spans multiple lines
-                if fieldNames:
-                    if len(lines) > 1:
-                        lines = [''] + lines
+                    # start on new line if field content spans multiple lines
+                    if fieldNames:
+                        if len(lines) > 1:
+                            lines = [''] + lines
 
-                # assemble final text with tree decorations
-                first = True
-                for line in lines:
-                    line = line == '\n' and line or line + '\n'
-                    if first and fieldNames:
-                        text += line_prefix + name + ": " + line
-                        first = False
-                    else:
-                        text += line_prefix + "    " + line
+                    # assemble final text with tree decorations
+                    first = True
+                    for line in lines:
+                        line = line == '\n' and line or line + '\n'
+                        if first and fieldNames:
+                            text += line_prefix + name + ": " + line
+                            first = False
+                        else:
+                            text += line_prefix + "    " + line
 
         # recurse
         if children and depth:
@@ -982,23 +991,24 @@ class Node:
 
         if fields_local:
             for name, field in self.fields.items():
+                if not field.hidden:
 
-                if field.sourceNode:
-                    # wrap field content, larger bits of text start with a newline
-                    lines = fieldContent and Node._wrap_lines(field.getString().replace('\n', '\n'), chars=120) or []
+                    if field.sourceNode:
+                        # wrap field content, larger bits of text start with a newline
+                        lines = fieldContent and Node._wrap_lines(field.getString().replace('\n', '\n'), chars=120) or []
 
-                    # empty array if only whitespace content
-                    if lines == ['\n']:
-                        lines = []
+                        # empty array if only whitespace content
+                        if lines == ['\n']:
+                            lines = []
 
-                    # assemble final text only if field is used
-                    first = True
-                    for line in lines:
-                        if first and fieldNames:
-                            text += '*  *' + name.strip() + ':* ' + line + '\n'
-                            first = False
-                        else:
-                            text += '    ' + line.replace('#', '\\#') + '\n'
+                        # assemble final text only if field is used
+                        first = True
+                        for line in lines:
+                            if first and fieldNames:
+                                text += '*  *' + name.strip() + ':* ' + line + '\n'
+                                first = False
+                            else:
+                                text += '    ' + line.replace('#', '\\#') + '\n'
 
         # recurse
         if children and depth:
@@ -1203,15 +1213,16 @@ class Node:
         if fields_local:
             html += '<div class="fields">'
             for name, field in self.fields.items():
-                content = field.getString().strip()
-                if content or (style == 'list'):   # in tile mode empty fields are hidden, in list mode always displayed
-                    content = fieldContent and content.replace('\n', '<br/>') or ''
-                    name_string = fieldNames and f'<em>{name}</em><br/>' or ''
-                    if field.fieldType == "url":
-                        html += (f'<div class="{field.fieldType}">{name_string}<a href="{content}">'
-                                 f'{len(content) > 40 and content[:37]+"..." or content}</a></div>')
-                    else:
-                        html += f'<div class="{field.fieldType}">{name_string}{content}</div>'
+                if not field.hidden:
+                    content = field.getString().strip()
+                    if content or (style == 'list'):   # in tile mode empty fields are hidden, in list mode always displayed
+                        content = fieldContent and content.replace('\n', '<br/>') or ''
+                        name_string = fieldNames and f'<em>{name}</em><br/>' or ''
+                        if field.fieldType == "url":
+                            html += (f'<div class="{field.fieldType}">{name_string}<a href="{content}">'
+                                     f'{len(content) > 40 and content[:37]+"..." or content}</a></div>')
+                        else:
+                            html += f'<div class="{field.fieldType}">{name_string}{content}</div>'
             html += '</div>'
 
         child_html = ""
@@ -1559,7 +1570,8 @@ class Tree(Node):
                 f = Field()
                 name = f.readFromString(fs)
                 self.fields[name] = f
-                self.fieldOrder += [name]
+                if not f.hidden:
+                    self.fieldOrder += [name]
 
     def removeEmptyNodes(self):
         """
