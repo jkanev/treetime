@@ -206,6 +206,23 @@ were "field1", "field2", "field3", ..., are the names of data or tree fields.
 
 Result: The value *field1 * field2 * field3 * ...*, where *N* is the number of fields.
 
+reciprocal
+-----
+
+The reciprocal of one input field value (or, if you enter several parameters, of the sum).
+Syntax::
+
+        field "Name"
+            field-type "reciprocal"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
+Result: The value *1.0 / (field1 + field2 + field3 + ...)*.
+
 ratio
 -----
 

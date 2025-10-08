@@ -194,6 +194,9 @@ class Field:
         elif self.fieldType == "product":
             self.getValue = self.getValueProduct
             self.getString = self.getStringRounded
+        elif self.fieldType == "reciprocal":
+            self.getValue = self.getValueReciprocal
+            self.getString = self.getStringRounded
         elif self.fieldType == "ratio":
             self.getValue = self.getValueRatio
             self.getString = self.getStringRounded
@@ -206,6 +209,9 @@ class Field:
         elif self.fieldType == "node-path":
             self.getValue = self.getValueNodePath
             self.getString = self.getStringUnchanged
+        else:
+            if self.fieldType:
+                print(f'... error: field type {self.fieldType} does not exist.')
 
     def getStringPercent(self):
         if self.sourceNode and self.getValue:
@@ -427,6 +433,23 @@ class Field:
             except:
                 pass    # same as: prod *= 1.0
         return prod
+
+    def getValueReciprocal(self):
+        """
+        Returns the reciprocal 1/(a+b+c+d+...) of field values a,b,c,d...
+        """
+        values = self.getFieldValues()
+        rec = 0.0
+        for v in values:
+            try:
+                rec += v
+            except:
+                pass    # same as: prod *= 1.0
+            try:
+                rec = 1.0/rec
+            except:
+                rec = None
+        return rec
 
     def getValueRatio(self):
         """
@@ -1064,6 +1087,7 @@ class Node:
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.reciprocal {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
@@ -1102,6 +1126,7 @@ class Node:
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.reciprocal {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
@@ -1138,6 +1163,7 @@ class Node:
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.reciprocal {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
@@ -1175,6 +1201,7 @@ class Node:
                    'div.mean {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.mean-percent {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.product {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.reciprocal {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.ratio {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.ratio-percent {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.node-name {position: relative; float: left; width: 25%; padding: 1%; }' \
@@ -1657,6 +1684,7 @@ class Forest(Node):
             f.write(itemString)
 
     def readFromFile(self, filename):
+        print(f"Reading file {filename}...")
         with open(filename, "r") as f:
 
             # chop up string into trees, types, and items part
@@ -1669,17 +1697,22 @@ class Forest(Node):
             itemString = s[1]
 
         # create item pool
+        print(f"... reading data items ...")
         self.itemTypes = ItemPool()
         self.itemTypes.readFromString(typeString)
 
         # create type pool
+        print(f"... reading data type ...")
         self.itemPool = ItemPool()
         self.itemPool.readFromString(itemString)
         self.createPaths()
 
         # create trees
+        print(f"... reading tree definitions ...")
         self.readFromString(treeString)
         self.createPaths()     # atm we still need this twice. Fix it.
 
         # remove empty nodes
+        print(f"... removing empty nodes ...")
         self.removeEmptyNodes()
+        print(f"... done.")
