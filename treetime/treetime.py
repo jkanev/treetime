@@ -122,6 +122,54 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.setSelected(select)
 
 
+class QMetaNode(QtWidgets.QTreeWidgetItem):
+    """
+    The GUI object for displaying definitions of trees, fields, data items
+    """
+
+    def __init__(self, source, name=None, type=None):
+
+        # initialise display
+        self.source = source
+        if type == 'tree':
+            displayStrings = [source.name, 'Tree']
+        elif type == 'tree field':
+            displayStrings = [name, source.hidden and source.fieldType  + ' (hidden)' or source.fieldType]
+        elif type == 'data field':
+            displayStrings = [name, source['type']]
+        elif type=='parameter list':
+            displayStrings = [name, f'{source}'[1:-1]]
+        else:
+            displayStrings = [name or source.name, type]
+        super().__init__(displayStrings)
+
+        # recurse
+        if type=='tree':
+            for name, field in source.fields.items():
+                child = QMetaNode(field, name, 'tree field')
+                super().addChild(child)
+        elif type=='tree field':
+            child1 = QMetaNode(source.ownFields, 'own fields', 'parameter list')
+            super().addChild(child1)
+            child2 = QMetaNode(source.childFields, 'child fields', 'parameter list')
+            super().addChild(child2)
+            child3 = QMetaNode(source.siblingFields, 'sibling fields', 'parameter list')
+            super().addChild(child3)
+            child4 = QMetaNode(source.parentFields, 'parent fields', 'parameter list')
+            super().addChild(child4)
+        elif type=='data item':
+            for nm, fld in source.fields.items():
+                child = QMetaNode(fld, nm, 'data field')
+                super().addChild(child)
+
+    def parent(self):
+        """
+        Returns the parent of a node
+        """
+        return super().parent() or self.treeWidget().invisibleRootItem() or None
+
+
+
 class UrlWidget(QtWidgets.QWidget):
     """
     Special custom widget class for URL fields
@@ -1560,7 +1608,23 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             newTree.setColumnCount(len(c.fieldOrder))
             newGridLayout.addWidget(newTree, 0, 0, 1, 1)
             self.treeWidgets += [newTree]
-        
+
+        # create meta tabs and widget
+        newTab = QtWidgets.QWidget()
+        newTab.setObjectName("tabM")
+        newGridLayout = QtWidgets.QGridLayout(newTab)
+        self.tabWidget.addTab(newTab, "")
+        self.tabWidgets += [newTab]
+        self.tabWidget.setTabText(len(self.tabWidgets)-1, "[Meta]")
+        newTree = QtWidgets.QTreeWidget(newTab)
+        newTree.setGeometry(QtCore.QRect(0, 0, 731, 751))
+        newTree.setAllColumnsShowFocus(True)
+        newTree.setWordWrap(True)
+        newTree.headerItem().setText(0, "1")
+        newTree.setColumnCount(2)
+        newGridLayout.addWidget(newTree, 0, 0, 1, 1)
+        self.treeWidgets += [newTree]
+
         self.locked = False
 
     def resizeNameColumn(self):
@@ -1592,6 +1656,26 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # expand name column so all names are readable
             self.treeWidgets[n].resizeColumnToContents(0)
 
+        # for the meta tree
+        m = len(self.forest.children)
+        #self.treeWidgets[m].itemSelectionChanged.connect(self.itemSelectionChanged)
+        self.treeWidgets[m].itemCollapsed.connect(self.resizeNameColumn)
+        self.treeWidgets[m].itemExpanded.connect(self.resizeNameColumn)
+        self.treeWidgets[m].setHeaderLabels(["Name", "Type / Content"])
+        root = self.treeWidgets[m].invisibleRootItem()
+
+        # add items
+        for it in self.forest.itemTypes.items:
+            parent = QMetaNode(it, None, 'data item')
+            root.addChild(parent)
+
+        # add trees
+        for t in self.forest.children:
+            parent = QMetaNode(t, None, 'tree')
+            root.addChild(parent)
+
+        # expand name column so all names are readable
+        self.treeWidgets[m].resizeColumnToContents(0)
 
     def _protectCells(self, row, columns):
 
