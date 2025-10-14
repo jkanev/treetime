@@ -25,6 +25,7 @@ class Item:
     """
     The list/forest item containing the actual data
     """
+    FieldTypes = ('string', 'text', 'longtext', 'url', 'integer', 'timer')
 
     def __init__(self, name, fieldstring='{}', treestring='[]'):
         self.name = name

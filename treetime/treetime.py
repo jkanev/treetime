@@ -151,9 +151,14 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         super().__init__(displayStrings)
 
         # create change functions
-        self.changeName = lambda x: print("Name changing not implemented yet.")
-        self.changeType = lambda x: print("Type changing not implemented yet.")
-        self.changeContent = lambda x: print("Content changing not implemented yet.")
+        if type == 'tree':
+            self.changeName = self.source.changeName
+            self.changeType = lambda x: print("Type changing not implemented yet.")
+            self.changeContent = lambda x: print("Content changing not implemented yet.")
+        else:
+            self.changeName = lambda x: print("Name changing not implemented yet.")
+            self.changeType = lambda x: print("Type changing not implemented yet.")
+            self.changeContent = lambda x: print("Content changing not implemented yet.")
 
         # register callbacks
 
@@ -176,11 +181,25 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
                 child = QMetaNode(fld, nm, 'data field')
                 super().addChild(child)
 
+    def availableFields(self):
+        """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
+        :return: Get
+        """
+        fields = ['']
+        if self.type == 'tree':
+            dataItem = self.parent().child(0).source
+            fields += [f for f in dataItem.fields.keys()]
+            fields += [f for f in self.source.fields.keys()]
+        return fields
+
     def parent(self):
         """
         Returns the parent of a node
         """
         return super().parent() or self.treeWidget().invisibleRootItem() or None
+
+    def notifyNameChange(self, newName):
+        super().setText(0, newName)
 
 
 
@@ -1603,6 +1622,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.locked = False
 
+    def notifyTreeNameChange(self, n, newName):
+        self.tabWidget.setTabText(n, newName)
+        self.currentMetaNode.notifyNameChange(newName)
+
     def resizeNameColumn(self):
         if self.editMode == 'content':
             self.treeWidgets[self.currentTree].resizeColumnToContents(0)
@@ -1620,6 +1643,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.treeWidgets[n].itemCollapsed.connect(self.resizeNameColumn)
             self.treeWidgets[n].itemExpanded.connect(self.resizeNameColumn)
             self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
+            c.registerNameChangeCallback(lambda x, n=n: self.notifyTreeNameChange(n, x))
             root = self.treeWidgets[n].invisibleRootItem()
             c.viewNode = root
 
@@ -1724,7 +1748,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # add name
                 name = QtWidgets.QTableWidgetItem(self.currentItem.name)
-                name.setFlags(nonEditFlags)
                 font = name.font()
                 font.setPointSize(self._dataFontPointSize + 3)
                 name.setFont(font)
@@ -1873,13 +1896,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # field name plus empty line
             name = QtWidgets.QTableWidgetItem(currentNode.name)
-            name.setFlags(nonEditFlags)
+            #name.setFlags(nonEditFlags)
             font = name.font()
             font.setPointSize(self._dataFontPointSize + 3)
             name.setFont(font)
             font.setPointSize(self._dataFontPointSize)
             self.tableWidget.setItem(n, 3, name)
-            self._protectCells(n, [0, 1, 2, 3, 4])
+            #self._protectCells(n, [0, 1, 2, 4])
             n += 1
             self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.type))
             self._protectCells(n, [0, 1, 2, 3, 4])
@@ -1889,7 +1912,23 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # field type plus empty line
             self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Type"))
-            self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.contentType))
+            if currentNode.type == 'data field':
+                widget = QtWidgets.QComboBox()
+                widget.setFont(font)
+                widget.addItems(Item.FieldTypes)
+                widget.setCurrentText(currentNode.contentType)
+                widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                self.tableWidget.setCellWidget(n, 3, widget)
+            elif currentNode.type == 'tree field':
+                widget = QtWidgets.QComboBox()
+                widget.setFont(font)
+                widget.addItems(Field.Types)
+                widget.setCurrentText(currentNode.contentType)
+                widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                self.tableWidget.setCellWidget(n, 3, widget)
+            else:
+                self.tableWidget.setCellWidget(n, 3, None)
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.contentType))
             self._protectCells(n, [0, 1, 2, 3, 4])
             n += 1
             self._protectCells(n, [0, 1, 2, 3, 4])
@@ -1905,19 +1944,33 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 n += 1
             elif currentNode.type == 'parameter list':
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
+                if currentNode.parent().contentType not in ('node-path', 'node-name'):
+                    list = currentNode.parent().parent().availableFields()
+                else:
+                    list = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
                 for cnt in currentNode.source:
-                    self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(cnt)))
+                    widget = QtWidgets.QComboBox()
+                    widget.setFont(font)
+                    widget.addItems(list)
+                    widget.setCurrentText(str(cnt))
+                    widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                    self.tableWidget.setCellWidget(n, 3, widget)
                     self._protectCells(n, [0, 1, 2, 3, 4])
                     n += 1
-                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem('[new entry]'))
+                widget = QtWidgets.QComboBox()
+                widget.setFont(font)
+                widget.addItems(list)
+                widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                self.tableWidget.setCellWidget(n, 3, widget)
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
 
             # empty lines to fill the 23 lines in the main view
             if n < 23:
                 for k in range(n, 23):
-                    self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem(None))
-                    self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(None))
+                    self.tableWidget.setItem(k, 1, QtWidgets.QTableWidgetItem(''))
+                    self.tableWidget.setCellWidget(k, 3, None)
+                    self.tableWidget.setItem(k, 3, QtWidgets.QTableWidgetItem(''))
                     self._protectCells(k, [0, 1, 2, 3, 4])
 
             self.gridInitialised = True
@@ -2050,7 +2103,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     if self.editMode == 'content':
                         self.currentItem.changeName(newName)
                     else:
-                        self.currentMetanode.changeName(newName)
+                        self.currentMetaNode.changeName(newName)
 
                 # one of the fields has been changed
                 else:

@@ -29,6 +29,9 @@ class Field:
     A set of instructions to view/display the content of data items.
     Fields are part of nodes, and are stored in templates.
     """
+    Types = ("string", "url", "text", "sum", "set", "sum-time", "difference", "difference-time", "mean", "mean-percent",
+             "min", "max", "min-string", "max-string", "product", "reciprocal", "ratio", "ratio-percent", "node-name",
+             "node-path")
 
     def __init__(self, node=None, ownFields=[], childFields=[], siblingFields=[], parentFields=[], fieldType=None):
         """Initialises the class, links the source node, field type, and sets the evaluation method."""
@@ -1608,6 +1611,15 @@ class Tree(Node):
         for c in self.children:
             c.removeEmptyNodes()
 
+    def changeName(self, newName):
+        """
+        Called by a MetaNode. Changes the tree's name and calls all callbacks to propagate that change through the
+        system, including (finally) the MetaNode.
+        :param newName: The new name
+        :return: void
+        """
+        self.name = newName
+        self.nameChangeCallback(newName)
 
 class Forest(Node):
     """
