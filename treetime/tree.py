@@ -46,6 +46,8 @@ class Field:
         self.getString = None
         self.hidden = False
         self.fieldType = fieldType
+        self.nameChanged = None
+        self.definitionChanged = None
         if (self.fieldType != ""):
             self.initFieldType()
 
@@ -68,6 +70,8 @@ class Field:
         newField.parentFields = copy.deepcopy(self.parentFields)
         newField.fieldType = copy.deepcopy(self.fieldType)
         newField.hidden = copy.deepcopy(self.hidden)
+        newField.nameChanged = self.nameChanged
+        newField.definitionChanged = self.definitionChanged
 
         # the source node is a link
         newField.sourceNode = self.sourceNode
@@ -78,6 +82,12 @@ class Field:
         
         memo[id(self)] = newField
         return newField
+
+    def registerNameChangeCallback(self, callback):
+        self.nameChanged = callback
+
+    def registerDefinitionChangeCallback(self, callback):
+        self.definitionChanged = callback
 
     @staticmethod
     def getFieldValue(field):
@@ -394,7 +404,6 @@ class Field:
                 maxValue = v
         return maxValue
 
-
     def getValueMinString(self):
         values = self.getFieldValues()
         minValue = ""
@@ -411,6 +420,7 @@ class Field:
             if v > maxValue:
                 maxValue = v
         return maxValue
+
     def getValueMean(self):
         values = self.getFieldValues()
         sum = 0.0
@@ -540,6 +550,7 @@ class Node:
         self.fieldChangeCallback = None
         self.deletionCallback = None
         self.moveCallback = None
+        self.fieldNameChangeCallback = None
 
     @staticmethod
     def _wrap_lines(raw_lines, chars=70):
@@ -1452,6 +1463,9 @@ class Node:
     def registerSelectionCallback(self, callback):
         self.selectionCallback = callback
 
+    def registerFieldNameChangeCallback(self, callback):
+        self.fieldNameChangeCallback = callback
+
     def notifyNameChange(self, newName):
         """
         Callback used to notify a node of a name change. Changes the name, then
@@ -1550,6 +1564,41 @@ class Node:
         if not self.item:
             self.notifyDeletion()
 
+    def updateFieldOrderEntry(self, n, newName):
+        """ Updates the field order in this node (if it is a tree), and in the node's view node, via the callback
+        :param n: Index of node
+        :param newName: New name of node
+        :return: void
+        """
+        if len(self.fieldOrder) > n:
+            self.fieldOrder[n] = newName
+        if self.fieldNameChangeCallback:
+            self.fieldNameChangeCallback(n, newName)
+        for c in self.children:
+            c.updateFieldOrderEntry(n, newName)
+
+    def changeTreeFieldDefinition(self, oldName, fieldName, field):
+        """
+        Changing the field definition during meta structure editing. Will apply a deep copy of the field to itself,
+        and recursively, all children.
+        """
+        if oldName:
+            self.fields.pop(oldName)
+        self.fields[fieldName] = copy.deepcopy(field)
+        self.fields[fieldName].sourceNode = self
+        for c in self.children:
+            c.changeTreeFieldDefinition(oldName, fieldName, field)
+
+    def notifyTreeFieldsDefinitionChange(self, fieldName):
+        """
+        Notifying a change of the field definition during meta structure editing. Will call the notify functions on
+        all children, recursively.
+        """
+        for c in self.children:
+            c.notifyTreeFieldsDefinitionChange(fieldName)
+        if self.fieldChangeCallback:
+            self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
+
 
 class Tree(Node):
     """
@@ -1620,6 +1669,53 @@ class Tree(Node):
         """
         self.name = newName
         self.nameChangeCallback(newName)
+
+    def changeFieldName(self, oldName, newName):
+        """
+        Called by a MetaNode. Changes a field's name and calls all callbacks to propagate that change through the
+        system, including (finally) the MetaNode. Calls the changeField() and the notifyFieldsChanges() from the
+        nodes class.
+        :param newName: The new name
+        :return: void
+        """
+
+        def renameSingle(paramList):
+            changed = False
+            for n, x in enumerate(paramList):
+                if x == oldName:
+                    paramList[n] = newName
+                    changed = True
+            return changed
+
+        # update field order list
+        [index] = [n for n, x in enumerate(self.fieldOrder) if x == oldName] or [-1]
+        self.updateFieldOrderEntry(index, newName)
+
+        # Change name in field itself
+        self.fields[newName] = self.fields.pop(oldName)
+        self.fields[newName].nameChanged(newName)    # make meta note update itself
+
+        # Build new fields if they use the old name in definition
+        changes = []    # list of fields that were changed
+        for fname, field in self.fields.items():
+            changed = False
+            changed |= renameSingle(field.ownFields)
+            changed |= renameSingle(field.childFields)
+            changed |= renameSingle(field.siblingFields)
+            changed |= renameSingle(field.parentFields)
+            if changed:
+                changes += [fname]
+
+        # Replace all fields in tree and update their value
+        for fname in changes:
+            for c in self.children:
+                c.changeTreeFieldDefinition(fname==newName and oldName or None, fname, self.fields[fname])    # this is the renamed field, replace old name
+
+        # then (when all fields are replaced) send the definition updates
+        for fname in changes:
+            self.notifyTreeFieldsDefinitionChange(fname)
+            self.fields[fname].definitionChanged()    # make meta note update itself
+
 
 class Forest(Node):
     """
