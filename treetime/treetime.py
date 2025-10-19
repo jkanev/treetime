@@ -547,6 +547,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tableWidget.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.Stretch)     # column 3: stretch
         self.tableWidget.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Fixed)     # column 4: fixed
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
+        self.toolBox.currentChanged.connect(self.toolBoxCurrentChanged)
         self.write_delay = 0
         self.write_timer = False
         self.locked = True
@@ -1523,6 +1524,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if not len(self.treeWidgets[-1].selectedItems()):
                 self.treeWidgets[-1].topLevelItem(0).setSelected(True)
 
+            # if not active, select meta tab
+            if self.tabWidget.currentIndex() != len(self.forest.children):
+                self.tabWidget.setCurrentIndex(len(self.forest.children))
+
+            # if not active, select meta structure toolbar tab
+            if self.toolBox.currentIndex() != 2:
+                self.toolBox.setCurrentIndex(2)
+
         # entering content edit mode
         elif mode != 'meta' and self.editMode == 'meta':
             self.editMode = mode
@@ -2115,6 +2124,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.changeEditMode('content')
             self.currentTree = tree
         self.itemSelectionChanged()
+
+    def toolBoxCurrentChanged(self, page):
+        '''Called when the user selects another tree in the tab widget.
+        '''
+
+        if page == 2:     # select the meta structure page
+            self.changeEditMode('meta')
+            self.itemSelectionChanged()
 
     def tableWidgetCellChanged(self, row, column):
         """

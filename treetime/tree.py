@@ -1635,9 +1635,17 @@ class Tree(Node):
 
     def writeToString(self):
         string = "tree " + json.dumps(self.name) + "\n"
+
+        # first write the visible fields in order
+        for name in self.fieldOrder:
+            string += "    field " + json.dumps(name) + "\n"
+            string += "    " + self.fields[name].writeToString()
+
+        # then the hidden fields
         for n,f in self.fields.items():
-            string += "    field " + json.dumps(n) + "\n"
-            string += "    " + f.writeToString()
+            if n not in self.fieldOrder:
+                string += "    field " + json.dumps(n) + "\n"
+                string += "    " + f.writeToString()
         return string
 
     def readFromString(self, string):
