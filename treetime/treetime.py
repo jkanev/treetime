@@ -180,6 +180,9 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
                 child = QMetaNode(fld, nm, 'data field', self.source)
                 super().addChild(child)
 
+    def changeContent(self, newContent):
+        print(f"Content change to {newContent} not implemented yet for type {self.type}.")
+
     def changeName(self, newName):
         """
         The name of the field or tree has been changed in the GUI. The GUI calls this function, which checks for
@@ -205,11 +208,14 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         self.name = newName
         super().setText(0, newName)
 
-    def changeType(self):
-        print(f"Type changing not implemented yet for type {self.type}.")
+    def changeType(self, newType):
+        print(f"Type change to {newType} not implemented yet for type {self.type}.")
 
-    def changeContent(self):
-        print(f"Content changing not implemented yet for type {self.type}.")
+    def changeContent(self, newContent, index=-1):
+        print(f"Content change to {newContent} at index {index} not implemented yet for type {self.type}.")
+
+    def changeVisibility(self, newVisibility):
+        print(f"Visibility change to {newVisibility} not implemented yet for type {self.type}.")
 
     def availableFields(self):
         """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
@@ -1980,9 +1986,24 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # display content according to type
             if currentNode.type == 'data field':
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Default"))
+                self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.source['content']))
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
+                self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+            elif currentNode.type == 'tree field':
+                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Visibility"))
+                widget = QtWidgets.QCheckBox()
+                widget.setFont(font)
+                widget.setText("hidden")
+                widget.setChecked(currentNode.source.hidden)
+                widget.checkStateChanged.connect(lambda x: currentNode.changeVisibility(x))
+                self.tableWidget.setCellWidget(n, 3, widget)
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+                self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
             elif currentNode.type == 'parameter list':
@@ -1991,19 +2012,20 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     list = currentNode.parent().parent().availableFields()
                 else:
                     list = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
+                offset = n
                 for cnt in currentNode.source:
                     widget = QtWidgets.QComboBox()
                     widget.setFont(font)
                     widget.addItems(list)
                     widget.setCurrentText(str(cnt))
-                    widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                    widget.currentTextChanged.connect(lambda x, n=n-offset: currentNode.changeContent(x, n))
                     self.tableWidget.setCellWidget(n, 3, widget)
                     self._protectCells(n, [0, 1, 2, 3, 4])
                     n += 1
                 widget = QtWidgets.QComboBox()
                 widget.setFont(font)
                 widget.addItems(list)
-                widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                widget.currentTextChanged.connect(lambda x, n=n-offset: currentNode.changeContent(x, n))
                 self.tableWidget.setCellWidget(n, 3, widget)
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
