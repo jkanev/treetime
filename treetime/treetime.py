@@ -131,13 +131,13 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
     The GUI object for displaying definitions of trees, fields, data items
     """
 
-    def __init__(self, source, name=None, type=None, mainWindow=None, index=-1, tree=None):
+    def __init__(self, source, name=None, type=None, parent=None, index=-1, tree=None):
 
         # initialise display
         self.source = source
         self.type = type
         self.name = name or source.name
-        self.mainWindow = mainWindow
+        self.dataParent = parent
         self.index = index
         if type == 'tree':
             self.contentType = type
@@ -156,29 +156,15 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             displayStrings = [name or source.name, type]
         super().__init__(displayStrings)
 
-        # create change functions
-        if type == 'tree':
-            self.changeName = self.source.changeName
-            self.changeType = lambda x: print("Type changing not implemented yet.")
-            self.changeContent = lambda x: print("Content changing not implemented yet.")
-        elif type == 'tree field':
-            self.changeName = lambda name: tree.changeFieldName(self.name, name)
-            self.changeType = lambda x: print("Type changing not implemented yet.")
-            self.changeContent = lambda x: print("Content changing not implemented yet.")
-            source.registerNameChangeCallback(self.notifyNameChange)
+        # call backs to make the other qmetanodes update their content
+        if type == 'tree field':
             source.registerDefinitionChangeCallback(self.notifyDefinitionChange)
-        else:
-            self.changeName = lambda x: print("Name changing not implemented yet.")
-            self.changeType = lambda x: print("Type changing not implemented yet.")
-            self.changeContent = lambda x: print("Content changing not implemented yet.")
-
-        # register callbacks
 
         # recurse
         if type=='tree':
             for name, field in source.fields.items():
                 [index] = [n for n,x in enumerate(source.fieldOrder) if x==name] or [-1]
-                child = QMetaNode(field, name, 'tree field', mainWindow, index, source)
+                child = QMetaNode(field, name=name, type='tree field', parent=self.source, index=index)
                 super().addChild(child)
         elif type=='tree field':
             child1 = QMetaNode(source.ownFields, 'own fields', 'parameter list')
@@ -191,8 +177,39 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             super().addChild(child4)
         elif type=='data item':
             for nm, fld in source.fields.items():
-                child = QMetaNode(fld, nm, 'data field')
+                child = QMetaNode(fld, nm, 'data field', self.source)
                 super().addChild(child)
+
+    def changeName(self, newName):
+        """
+        The name of the field or tree has been changed in the GUI. The GUI calls this function, which checks for
+        feasibility (some changes are not allowed), then changes the name in the QMetaNode, then hands down to the
+        QNodes and/or items. This might change some field definitions, if that's the case the Tree.fields will
+        send a definition-changed message to their respective QMetaNodes.
+        """
+
+        # create change functions
+        if self.type == 'data item':
+            self.source.changeName(newName)
+        if self.type == 'tree':
+            self.source.changeName(newName)
+            self.dataParent.notifyTreeNameChange(self.index, newName)     # tell mainwindow to change writing on tab
+        elif self.type == 'tree field':
+            self.dataParent.changeFieldName(self.name, newName)
+        elif self.type == 'data field':
+            self.dataParent.changeFieldName(self.name, newName)
+        else:
+            print(f"Name changing not implemented yet for type {self.type}.")
+
+        # change name
+        self.name = newName
+        super().setText(0, newName)
+
+    def changeType(self):
+        print(f"Type changing not implemented yet for type {self.type}.")
+
+    def changeContent(self):
+        print(f"Content changing not implemented yet for type {self.type}.")
 
     def availableFields(self):
         """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
@@ -210,16 +227,6 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         Returns the parent of a node
         """
         return super().parent() or self.treeWidget().invisibleRootItem() or None
-
-    def notifyNameChange(self, newName):
-        oldName = self.name
-        self.name = newName
-        super().setText(0, newName)
-        if self.type == "tree":
-            self.mainWindow.notifyTreeNameChange(oldName, newName)
-        elif self.type == "tree field":
-            treeIndex = self.parent().index
-            self.mainWindow.notifyTreeFieldNameChange(treeIndex, self.index, newName)
 
     def notifyDefinitionChange(self):
         if self.type == "parameter list":
@@ -1680,7 +1687,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.treeWidgets[n].itemCollapsed.connect(self.resizeNameColumn)
             self.treeWidgets[n].itemExpanded.connect(self.resizeNameColumn)
             self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
-            c.registerNameChangeCallback(lambda x, n=n: self.notifyTreeNameChange(n, x))
             root = self.treeWidgets[n].invisibleRootItem()
             c.viewNode = root
 
@@ -1706,12 +1712,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # add items
         for it in self.forest.itemTypes.items:
-            parent = QMetaNode(it, None, 'data item')
+            parent = QMetaNode(it, name=None, type='data item', parent=self)
             root.addChild(parent)
 
         # add trees
-        for t in range(len(self.forest.children)):
-            parent = QMetaNode(self.forest.children[t], None, 'tree', self, t)
+        for t, tree in enumerate(self.forest.children):
+            parent = QMetaNode(self.forest.children[t], name=None, type='tree', parent=self, index=t, tree=tree)
             root.addChild(parent)
 
         # expand name column so all names are readable

@@ -21,6 +21,7 @@ import copy
 import json
 from threading import Timer
 
+
 class Item:
     """
     The list/forest item containing the actual data
@@ -35,6 +36,7 @@ class Item:
         self.viewNodes = []
         self.nameChangeCallbacks = []
         self.fieldChangeCallbacks = []
+        self.fieldNameChangeCallbacks = []
         self.deletionCallbacks = []
         self.moveCallbacks = []
         self.selectionCallbacks = []
@@ -79,6 +81,7 @@ class Item:
         self.viewNodes = []
         self.nameChangeCallbacks = []
         self.fieldChangeCallbacks = []
+        self.fieldNameChangeCallbacks = []
         self.deletionCallbacks = []
         self.moveCallbacks = []
         self.selectionCallbacks = []
@@ -86,6 +89,7 @@ class Item:
             self.viewNodes += [None]
             self.nameChangeCallbacks += [None]
             self.fieldChangeCallbacks += [None]
+            self.fieldNameChangeCallbacks += [None]
             self.deletionCallbacks += [None]
             self.moveCallbacks += [None]
             self.selectionCallbacks += [None]
@@ -128,6 +132,9 @@ class Item:
 
     def registerFieldChangeCallback(self, tree, callback):
         self.fieldChangeCallbacks[tree] = callback
+
+    def registerFieldNameChangeCallback(self, tree, callback):
+        self.fieldNameChangeCallbacks[tree] = callback
 
     def registerDeletionCallback(self, tree, callback):
         self.deletionCallbacks[tree] = callback
@@ -204,6 +211,31 @@ class Item:
         for f in self.fieldChangeCallbacks:
             if f is not None:
                 f(fieldName)
+
+    def changeFieldName(self, oldName, newName):
+        """
+        Edit the content of a field. The content is expected to be a string and
+        will be converted according to the field type.
+        """
+
+        if oldName not in self.fields:
+            return "A field with name " + oldName + " does not exist in node " + self.name + "."
+        else:
+            # update field content
+            self.fields[newName] = self.fields.pop(oldName)
+
+            # notify changes
+            self.notifyFieldNameChange(oldName, newName)
+
+        return True
+
+    def notifyFieldNameChange(self, oldName, newName):
+        """
+        Notify the three the a field name has changed
+        """
+        for f in self.fieldNameChangeCallbacks:
+            if f is not None:
+                f(oldName, newName)
 
     def removeFromTree(self, treeIndex):
         """

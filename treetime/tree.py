@@ -1676,7 +1676,6 @@ class Tree(Node):
         :return: void
         """
         self.name = newName
-        self.nameChangeCallback(newName)
 
     def changeFieldName(self, oldName, newName):
         """
@@ -1695,13 +1694,14 @@ class Tree(Node):
                     changed = True
             return changed
 
-        # update field order list
+        # update field order list, if field in list (for hidden fields and data item fields, do nothing)
         [index] = [n for n, x in enumerate(self.fieldOrder) if x == oldName] or [-1]
-        self.updateFieldOrderEntry(index, newName)
+        if index+1:
+            self.updateFieldOrderEntry(index, newName)
 
-        # Change name in field itself
-        self.fields[newName] = self.fields.pop(oldName)
-        self.fields[newName].nameChanged(newName)    # make meta note update itself
+        # Change name in field itself, if this is a tree field (for data item fields, do nothing)
+        if oldName in self.fields:
+            self.fields[newName] = self.fields.pop(oldName)
 
         # Build new fields if they use the old name in definition
         changes = []    # list of fields that were changed
@@ -1827,6 +1827,10 @@ class Forest(Node):
         print(f"... reading tree definitions ...")
         self.readFromString(treeString)
         self.createPaths()     # atm we still need this twice. Fix it.
+
+        # link name change function of default item to all trees
+        for t,tree in enumerate(self.children):
+            self.itemTypes.items[0].registerFieldNameChangeCallback(t, lambda old, new: tree.changeFieldName(old, new))
 
         # remove empty nodes
         print(f"... removing empty nodes ...")
