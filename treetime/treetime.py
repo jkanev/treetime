@@ -65,10 +65,8 @@ class QNode(QtWidgets.QTreeWidgetItem):
         super().__init__(displayStrings)
         
         # build reverse field order dictionary
-        self.fieldOrder = {}
-        for i,f in enumerate(fieldOrder):
-            self.fieldOrder[f] = i+1     # plus one because column 0 is the node name
-        
+        self.notifyFieldOrderChange(fieldOrder)
+
         # recurse
         for c in sourceNode.children:
             child = QNode(c, fieldOrder)
@@ -94,6 +92,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.sourceNode.registerMoveCallback(self.notifyMove)
         self.sourceNode.registerViewNode(self)
         self.sourceNode.registerFieldNameChangeCallback(self.notifyFieldNameChange)
+        self.sourceNode.registerFieldNameChangeCallback(self.notifyFieldOrderChange)
 
     def notifyNameChange(self, newName):
         super().setText(0, newName)
@@ -123,7 +122,25 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.setSelected(select)
 
     def notifyFieldNameChange(self, n, newName):
-        self.fieldOrder[n] = newName
+        """ Updates the name of a field in the reverse-field-order dict and in the main window
+        :param n: Field index
+        :param newName: New name of field with index n
+        :return: void
+        """
+        [oldName] = [n for n, i in self.fieldOrder.items() if i==n] or [False]
+        if oldName:
+            self.fieldOrder.pop(oldName)
+        self.fieldOrder[newName] = n
+
+    def notifyFieldOrderChange(self, fieldOrder):
+        """ Updates the reverse-field-order dict
+        :param n: Field index
+        :param newName: New name of field with index n
+        :return: void
+        """
+        self.fieldOrder = {}
+        for i, f in enumerate(fieldOrder):
+            self.fieldOrder[f] = i+1     # plus one because column 0 is the node name
 
 
 class QMetaNode(QtWidgets.QTreeWidgetItem):
@@ -180,9 +197,6 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
                 child = QMetaNode(fld, nm, 'data field', self.source)
                 super().addChild(child)
 
-    def changeContent(self, newContent):
-        print(f"Content change to {newContent} not implemented yet for type {self.type}.")
-
     def changeName(self, newName):
         """
         The name of the field or tree has been changed in the GUI. The GUI calls this function, which checks for
@@ -199,6 +213,8 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             self.dataParent.notifyTreeNameChange(self.index, newName)     # tell mainwindow to change writing on tab
         elif self.type == 'tree field':
             self.dataParent.changeFieldName(self.name, newName)
+            self.parent().dataParent.notifyTreeFieldNameChange(self.parent().index, self.index, newName)
+
         elif self.type == 'data field':
             self.dataParent.changeFieldName(self.name, newName)
         else:
@@ -215,7 +231,15 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         print(f"Content change to {newContent} at index {index} not implemented yet for type {self.type}.")
 
     def changeVisibility(self, newVisibility):
-        print(f"Visibility change to {newVisibility} not implemented yet for type {self.type}.")
+        """ Change the visibility of a node.
+        :param newVisibility: Checkbox state (True/False)
+        :return: void
+        """
+        if self.type == 'tree field':
+            self.parent().source.changeFieldVisibility(self.name, newVisibility == QtCore.Qt.CheckState.Checked)
+            self.parent().dataParent.notifyTreeColumnChange(self.parent().index)
+        else:
+            print(f"Visibility change to hidden={newVisibility and True} not implemented yet for type {self.type}.")
 
     def availableFields(self):
         """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
@@ -1675,6 +1699,18 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def notifyTreeFieldNameChange(self, n, m, newName):
         self.treeWidgets[n].headerItem().setText(m+1, newName)
+
+    def notifyTreeColumnChange(self, n):
+        """
+        Re-reads the column information from tree n and adapts the display.
+        :param n: Tree index
+        :return: void
+        """
+        fieldOrder = self.forest.children[n].fieldOrder
+        treeWidget = self.treeWidgets[n]
+        treeWidget.setColumnCount(len(fieldOrder))
+        for f, field in enumerate(fieldOrder):
+            treeWidget.headerItem().setText(f+1, field)
 
     def resizeNameColumn(self):
         if self.editMode == 'content':

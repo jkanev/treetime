@@ -542,7 +542,6 @@ class Node:
         self.item = None
         self.name = ""
         self.fields = {}
-        self.fieldOrder = []
         self.tree = tree
         self.path = path
         self.viewNode = None
@@ -551,6 +550,7 @@ class Node:
         self.deletionCallback = None
         self.moveCallback = None
         self.fieldNameChangeCallback = None
+        self.fieldOrderChangeCallback = None
 
     @staticmethod
     def _wrap_lines(raw_lines, chars=70):
@@ -1466,6 +1466,9 @@ class Node:
     def registerFieldNameChangeCallback(self, callback):
         self.fieldNameChangeCallback = callback
 
+    def registerFieldOrderChangeCallback(self, callback):
+        self.fieldOrderChangeCallback = callback
+
     def notifyNameChange(self, newName):
         """
         Callback used to notify a node of a name change. Changes the name, then
@@ -1565,17 +1568,26 @@ class Node:
             self.notifyDeletion()
 
     def updateFieldOrderEntry(self, n, newName):
-        """ Updates the field order in this node (if it is a tree), and in the node's view node, via the callback
+        """ Notifies the QNode of a change in the tree's fieldOrderer in this node (if it is a tree), and in the node's view node, via the
+        callback
         :param n: Index of node
         :param newName: New name of node
         :return: void
         """
-        if len(self.fieldOrder) > n:
-            self.fieldOrder[n] = newName
         if self.fieldNameChangeCallback:
             self.fieldNameChangeCallback(n, newName)
         for c in self.children:
             c.updateFieldOrderEntry(n, newName)
+
+    def updateFieldOrder(self, fieldOrder):
+        """ Updates the field order in this node (if it is a tree), and in the node's view node, via the callback
+        :param fieldOrder: New fieldOrder dict
+        :return: void
+        """
+        if self.fieldOrderChangeCallback:
+            self.fieldOrderChangeCallback(fieldOrder)
+        for c in self.children:
+            c.updateFieldOrder(fieldOrder)
 
     def changeTreeFieldDefinition(self, oldName, fieldName, field):
         """
@@ -1609,6 +1621,7 @@ class Tree(Node):
         """Initialise"""
         
         super().__init__(parent, index, [])
+        self.fieldOrder = []
         self.fields = {}
         self.name = ""
 
@@ -1698,31 +1711,65 @@ class Tree(Node):
         [index] = [n for n, x in enumerate(self.fieldOrder) if x == oldName] or [-1]
         if index+1:
             self.updateFieldOrderEntry(index, newName)
+            self.fieldOrder[index] = newName
 
-        # Change name in field itself, if this is a tree field (for data item fields, do nothing)
-        if oldName in self.fields:
-            self.fields[newName] = self.fields.pop(oldName)
+            # Change name in field itself, if this is a tree field (for data item fields, do nothing)
+            if oldName in self.fields:
+                self.fields[newName] = self.fields.pop(oldName)
 
-        # Build new fields if they use the old name in definition
-        changes = []    # list of fields that were changed
-        for fname, field in self.fields.items():
-            changed = False
-            changed |= renameSingle(field.ownFields)
-            changed |= renameSingle(field.childFields)
-            changed |= renameSingle(field.siblingFields)
-            changed |= renameSingle(field.parentFields)
-            if changed:
-                changes += [fname]
+            # Build new fields if they use the old name in definition
+            changes = []    # list of fields that were changed
+            for fname, field in self.fields.items():
+                changed = False
+                changed |= renameSingle(field.ownFields)
+                changed |= renameSingle(field.childFields)
+                changed |= renameSingle(field.siblingFields)
+                changed |= renameSingle(field.parentFields)
+                if changed:
+                    changes += [fname]
 
-        # Replace all fields in tree and update their value
-        for fname in changes:
-            for c in self.children:
-                c.changeTreeFieldDefinition(fname==newName and oldName or None, fname, self.fields[fname])    # this is the renamed field, replace old name
+            # Replace all fields in tree and update their value
+            for fname in changes:
+                for c in self.children:
+                    c.changeTreeFieldDefinition(fname==newName and oldName or None, fname, self.fields[fname])    # this is the renamed field, replace old name
 
-        # then (when all fields are replaced) send the definition updates
-        for fname in changes:
-            self.notifyTreeFieldsDefinitionChange(fname)
-            self.fields[fname].definitionChanged()    # make meta note update itself
+            # then (when all fields are replaced) send the definition updates
+            for fname in changes:
+                self.notifyTreeFieldsDefinitionChange(fname)
+                self.fields[fname].definitionChanged()    # make meta note update itself
+
+    def changeFieldVisibility(self, name, hidden):
+        """
+        Called by a MetaNode. Changes a field's visibility, calls the notifyFieldVisibilityChance in the main window,
+        then updates all entries to redisplay the new data.
+        :param name: The field name
+        :param hidden: Whether the field is now hidden or not
+        :return: void
+        """
+
+        field = self.fields[name]
+        inOrder = name in self.fieldOrder
+
+        # Return if nothing to do
+        if (field.hidden and hidden and not inOrder) or (not field.hidden and not hidden and inOrder):
+            return
+
+        # Apply new value
+        field.hidden = hidden
+
+        # Adapt fieldOrder entry
+        index = -1
+        if hidden and inOrder:
+            [index] = [n for n, x in enumerate(self.fieldOrder) if x == name]
+            self.fieldOrder.pop(index)
+        elif not hidden and not inOrder:
+            self.fieldOrder += [name]
+
+        # Propagate new field order to all QNodes
+        self.updateFieldOrder(self.fieldOrder)
+
+        # Update all field values
+        self.notifyTreeFieldsDefinitionChange(name)
 
 
 class Forest(Node):
