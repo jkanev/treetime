@@ -359,3 +359,12 @@ class ItemPool:
         for i, t in enumerate(item.trees):
             item.removeFromTree(i)
         self.items.remove(item)
+
+    def changeFieldName(self, oldName, newName):
+        """ Changes the name of a field in all items
+        :param oldName: Previous field name
+        :param newName: New field name
+        :return: void
+        """
+        for it in self.items:
+            it.changeFieldName(oldName, newName)

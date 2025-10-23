@@ -1717,31 +1717,31 @@ class Tree(Node):
             if oldName in self.fields:
                 self.fields[newName] = self.fields.pop(oldName)
 
-            # Build new fields if they use the old name in definition
-            changes = []    # list of fields that were changed
-            for fname, field in self.fields.items():
-                changed = False
-                changed |= renameSingle(field.ownFields)
-                changed |= renameSingle(field.childFields)
-                changed |= renameSingle(field.siblingFields)
-                changed |= renameSingle(field.parentFields)
-                if changed:
-                    changes += [fname]
+        # Build new fields if they use the old name in definition
+        changes = []    # list of fields that were changed
+        for fname, field in self.fields.items():
+            changed = False
+            changed |= renameSingle(field.ownFields)
+            changed |= renameSingle(field.childFields)
+            changed |= renameSingle(field.siblingFields)
+            changed |= renameSingle(field.parentFields)
+            if changed:
+                changes += [fname]
 
-            # Replace all fields in tree and update their value
-            for fname in changes:
-                for c in self.children:
-                    c.changeTreeFieldDefinition(fname==newName and oldName or None, fname, self.fields[fname])    # this is the renamed field, replace old name
+        # Replace all fields in tree and update their value
+        for fname in changes:
+            for c in self.children:
+                c.changeTreeFieldDefinition(fname==newName and oldName or None, fname, self.fields[fname])    # this is the renamed field, replace old name
 
-            # then (when all fields are replaced) send the definition updates
-            for fname in changes:
-                self.notifyTreeFieldsDefinitionChange(fname)
-                self.fields[fname].definitionChanged()    # make meta note update itself
+        # then (when all fields are replaced) send the definition updates
+        for fname in changes:
+            self.notifyTreeFieldsDefinitionChange(fname)
+            self.fields[fname].definitionChanged()    # make meta note update itself
 
-    def changeFieldVisibility(self, name, hidden):
+    def notifyFieldVisibilityChange(self, name):
         """
-        Called by a MetaNode. Changes a field's visibility, calls the notifyFieldVisibilityChance in the main window,
-        then updates all entries to redisplay the new data.
+        Called by a MetaNode. A top-level field visibility has changed, update the fieldOrder list, then update all
+        nodes and redisplay.
         :param name: The field name
         :param hidden: Whether the field is now hidden or not
         :return: void
@@ -1751,18 +1751,15 @@ class Tree(Node):
         inOrder = name in self.fieldOrder
 
         # Return if nothing to do
-        if (field.hidden and hidden and not inOrder) or (not field.hidden and not hidden and inOrder):
+        if (field.hidden and not inOrder) or (not field.hidden and inOrder):
             return
-
-        # Apply new value
-        field.hidden = hidden
 
         # Adapt fieldOrder entry
         index = -1
-        if hidden and inOrder:
+        if inOrder:
             [index] = [n for n, x in enumerate(self.fieldOrder) if x == name]
             self.fieldOrder.pop(index)
-        elif not hidden and not inOrder:
+        else:
             self.fieldOrder += [name]
 
         # Propagate new field order to all QNodes
@@ -1883,3 +1880,25 @@ class Forest(Node):
         print(f"... removing empty nodes ...")
         self.removeEmptyNodes()
         print(f"... done.")
+
+    def changeTreeFieldName(self, treeName, fieldName, newName):
+        for c in self.children:
+            if c.name == treeName:
+                c.changeFieldName(fieldName, newName)
+
+    def changeDataFieldName(self, fieldName, newName):
+        self.itemTypes.changeFieldName(fieldName, newName)
+        self.itemPool.changeFieldName(fieldName, newName)
+
+    def notifyTreeFieldVisibilityChange(self, treeName, fieldName):
+        for tree in self.children:
+            if tree.name == treeName:
+                tree.notifyFieldVisibilityChange(fieldName)
+
+    def indexOfName(self, name):
+        """
+        :param name: The name of the tree
+        :return: The tree index of the tree with the given name
+        """
+        [index] = [n for n, tree in enumerate(self.children) if tree.name==name] or [-1]
+        return index

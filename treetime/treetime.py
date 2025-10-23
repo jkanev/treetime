@@ -145,56 +145,70 @@ class QNode(QtWidgets.QTreeWidgetItem):
 
 class QMetaNode(QtWidgets.QTreeWidgetItem):
     """
-    The GUI object for displaying definitions of trees, fields, data items
+    The GUI object for displaying definitions of trees, fields, data items.
+    Each node has a pointer to its source (central tree field, default data item field, etc) and changes them directly,
+    then calls appropriate functions in the forest to update all other nodes/items.
     """
 
-    def __init__(self, source, name=None, type=None, parent=None, index=-1, tree=None):
+    def __init__(self, source, forest, name='', parentName='', grandParentName='', nodeType=''):
 
         # initialise display
         self.source = source
-        self.type = type
-        self.name = name or source.name
-        self.dataParent = parent
-        self.index = index
-        if type == 'tree':
-            self.contentType = type
+        self.forest = forest
+        self.nodeType = nodeType
+        self.name = name
+        self.parentName = parentName
+        self.grandParentName = grandParentName
+        if nodeType == 'tree':
+            self.contentType = nodeType
             displayStrings = [source.name, 'Tree']
-        elif type == 'tree field':
+        elif nodeType == 'tree field':
             self.contentType = source.fieldType
             displayStrings = [name, source.hidden and source.fieldType  + ' (hidden)' or source.fieldType]
-        elif type == 'data field':
+        elif nodeType == 'data field':
             self.contentType = source['type']
             displayStrings = [name, source['type']]
-        elif type=='parameter list':
-            self.contentType = type
+        elif nodeType=='parameter list':
+            self.contentType = nodeType
             displayStrings = [name, f'{source}'[1:-1]]
         else:
-            self.contentType = type
-            displayStrings = [name or source.name, type]
+            self.contentType = nodeType
+            displayStrings = [name or source.name, nodeType]
         super().__init__(displayStrings)
 
         # call backs to make the other qmetanodes update their content
-        if type == 'tree field':
+        if nodeType == 'tree field':
             source.registerDefinitionChangeCallback(self.notifyDefinitionChange)
 
         # recurse
-        if type=='tree':
+        if nodeType=='tree':
             for name, field in source.fields.items():
                 [index] = [n for n,x in enumerate(source.fieldOrder) if x==name] or [-1]
-                child = QMetaNode(field, name=name, type='tree field', parent=self.source, index=index)
+                child = QMetaNode(field, self.forest,
+                                  name=name, parentName=self.name, grandParentName=self.parentName,
+                                  nodeType='tree field')
                 super().addChild(child)
-        elif type=='tree field':
-            child1 = QMetaNode(source.ownFields, 'own fields', 'parameter list')
+        elif nodeType=='tree field':
+            child1 = QMetaNode(source.ownFields, self.forest,
+                               name='own fields', parentName=self.name, grandParentName=self.parentName,
+                               nodeType='parameter list')
             super().addChild(child1)
-            child2 = QMetaNode(source.childFields, 'child fields', 'parameter list')
+            child2 = QMetaNode(source.childFields, self.forest,
+                               name='child fields', parentName=self.name, grandParentName=self.parentName,
+                               nodeType='parameter list')
             super().addChild(child2)
-            child3 = QMetaNode(source.siblingFields, 'sibling fields', 'parameter list')
+            child3 = QMetaNode(source.siblingFields, self.forest,
+                               name='sibling fields', parentName=self.name, grandParentName=self.parentName,
+                               nodeType='parameter list')
             super().addChild(child3)
-            child4 = QMetaNode(source.parentFields, 'parent fields', 'parameter list')
+            child4 = QMetaNode(source.parentFields, self.forest,
+                               name='parent fields', parentName=self.name, grandParentName=self.parentName,
+                               nodeType='parameter list')
             super().addChild(child4)
-        elif type=='data item':
+        elif nodeType=='data item':
             for nm, fld in source.fields.items():
-                child = QMetaNode(fld, nm, 'data field', self.source)
+                child = QMetaNode(fld, self.forest, name=nm, parentName=self.name, grandParentName=self.parentName,
+                                  nodeType='data field')
                 super().addChild(child)
 
     def changeName(self, newName):
@@ -206,47 +220,47 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         """
 
         # create change functions
-        if self.type == 'data item':
+        if self.nodeType == 'data item':
             self.source.changeName(newName)
-        if self.type == 'tree':
+        if self.nodeType == 'tree':
             self.source.changeName(newName)
-            self.dataParent.notifyTreeNameChange(self.index, newName)     # tell mainwindow to change writing on tab
-        elif self.type == 'tree field':
-            self.dataParent.changeFieldName(self.name, newName)
-            self.parent().dataParent.notifyTreeFieldNameChange(self.parent().index, self.index, newName)
-
-        elif self.type == 'data field':
-            self.dataParent.changeFieldName(self.name, newName)
+            #self.dataParent.notifyTreeNameChange(self.index, newName)     # tell mainwindow to change writing on tab
+        elif self.nodeType == 'tree field':
+            self.forest.changeTreeFieldName(self.parentName, self.name, newName)
+        elif self.nodeType == 'data field':
+            self.forest.changeDataFieldName(self.name, newName)
         else:
-            print(f"Name changing not implemented yet for type {self.type}.")
+            print(f"Name changing not implemented yet for type {self.nodeType}.")
 
         # change name
         self.name = newName
         super().setText(0, newName)
 
     def changeType(self, newType):
-        print(f"Type change to {newType} not implemented yet for type {self.type}.")
+        print(f"Type change to {newType} not implemented yet for type {self.nodeType}.")
 
     def changeContent(self, newContent, index=-1):
-        print(f"Content change to {newContent} at index {index} not implemented yet for type {self.type}.")
+        print(f"Content change to {newContent} at index {index} not implemented yet for type {self.nodeType}.")
 
     def changeVisibility(self, newVisibility):
-        """ Change the visibility of a node.
+        """ Change the visibility of a node. Changes the visiblilty in the tree field directly, then notifies the
+        forest to update all nodes
         :param newVisibility: Checkbox state (True/False)
-        :return: void
+        :return: True
         """
-        if self.type == 'tree field':
-            self.parent().source.changeFieldVisibility(self.name, newVisibility == QtCore.Qt.CheckState.Checked)
-            self.parent().dataParent.notifyTreeColumnChange(self.parent().index)
+        if self.nodeType == 'tree field':
+            self.source.hidden = (newVisibility == QtCore.Qt.CheckState.Checked)
+            self.forest.notifyTreeFieldVisibilityChange(self.parentName, self.name)
         else:
-            print(f"Visibility change to hidden={newVisibility and True} not implemented yet for type {self.type}.")
+            print(f"Visibility change to hidden={newVisibility and True} not implemented yet for type {self.nodeType}.")
+        return True
 
     def availableFields(self):
         """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
         :return: Get
         """
         fields = ['']
-        if self.type == 'tree':
+        if self.nodeType == 'tree':
             dataItem = self.parent().child(0).source
             fields += [f for f in dataItem.fields.keys()]
             fields += [f for f in self.source.fields.keys()]
@@ -259,7 +273,7 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         return super().parent() or self.treeWidget().invisibleRootItem() or None
 
     def notifyDefinitionChange(self):
-        if self.type == "parameter list":
+        if self.nodeType == "parameter list":
             super().setText(1, f'{self.source}'[1:-1])
         else:
             for c in range(self.childCount()):
@@ -1694,13 +1708,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.locked = False
 
-    def notifyTreeNameChange(self, n, newName):
-        self.tabWidget.setTabText(n, newName)
+    def notifyTreeNameChange(self, n):
+        self.tabWidget.setTabText(n, self.forest.children[n].name)
 
     def notifyTreeFieldNameChange(self, n, m, newName):
         self.treeWidgets[n].headerItem().setText(m+1, newName)
 
-    def notifyTreeColumnChange(self, n):
+    def notifyTreeColumnChange(self, n, name):
         """
         Re-reads the column information from tree n and adapts the display.
         :param n: Tree index
@@ -1711,6 +1725,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         treeWidget.setColumnCount(len(fieldOrder))
         for f, field in enumerate(fieldOrder):
             treeWidget.headerItem().setText(f+1, field)
+        return True
 
     def resizeNameColumn(self):
         if self.editMode == 'content':
@@ -1754,12 +1769,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # add items
         for it in self.forest.itemTypes.items:
-            parent = QMetaNode(it, name=None, type='data item', parent=self)
+            parent = QMetaNode(it, self.forest, name=it.name, nodeType='data item')
             root.addChild(parent)
 
         # add trees
         for t, tree in enumerate(self.forest.children):
-            parent = QMetaNode(self.forest.children[t], name=None, type='tree', parent=self, index=t, tree=tree)
+            parent = QMetaNode(self.forest.children[t], self.forest, name=tree.name, nodeType='tree')
             root.addChild(parent)
 
         # expand name column so all names are readable
@@ -1989,7 +2004,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableWidget.setItem(n, 3, name)
             #self._protectCells(n, [0, 1, 2, 4])
             n += 1
-            self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.type))
+            self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.nodeType))
             self._protectCells(n, [0, 1, 2, 3, 4])
             n += 1
             self._protectCells(n, [0, 1, 2, 3, 4])
@@ -1997,14 +2012,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # field type plus empty line
             self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Type"))
-            if currentNode.type == 'data field':
+            if currentNode.nodeType == 'data field':
                 widget = QtWidgets.QComboBox()
                 widget.setFont(font)
                 widget.addItems(Item.FieldTypes)
                 widget.setCurrentText(currentNode.contentType)
                 widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
                 self.tableWidget.setCellWidget(n, 3, widget)
-            elif currentNode.type == 'tree field':
+            elif currentNode.nodeType == 'tree field':
                 widget = QtWidgets.QComboBox()
                 widget.setFont(font)
                 widget.addItems(Field.Types)
@@ -2020,7 +2035,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             n += 1
 
             # display content according to type
-            if currentNode.type == 'data field':
+            if currentNode.nodeType == 'data field':
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Default"))
                 self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
                 self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.source['content']))
@@ -2029,20 +2044,21 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
-            elif currentNode.type == 'tree field':
+            elif currentNode.nodeType == 'tree field':
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Visibility"))
                 widget = QtWidgets.QCheckBox()
                 widget.setFont(font)
                 widget.setText("hidden")
                 widget.setChecked(currentNode.source.hidden)
-                widget.checkStateChanged.connect(lambda x: currentNode.changeVisibility(x))
+                treeIndex = self.forest.indexOfName(currentNode.parentName)
+                widget.checkStateChanged.connect(lambda x, t=treeIndex: currentNode.changeVisibility(x) and self.notifyTreeColumnChange(t))
                 self.tableWidget.setCellWidget(n, 3, widget)
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
                 self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
-            elif currentNode.type == 'parameter list':
+            elif currentNode.nodeType == 'parameter list':
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
                 if currentNode.parent().contentType not in ('node-path', 'node-name'):
                     list = currentNode.parent().parent().availableFields()
@@ -2213,6 +2229,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self.currentItem.changeName(newName)
                     else:
                         self.currentMetaNode.changeName(newName)
+                        metaType = self.currentMetaNode.nodeType
+                        if metaType == 'tree':
+                            self.notifyTreeNameChange(self.forest.indexOfName(newName))
 
                 # one of the fields has been changed
                 else:
@@ -2235,12 +2254,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         if fieldType == 'timer':
                             self.adjustAutoUpdate(self.currentItem, fieldName)
                     else:
-                        metaType = self.tableWidget.item(row, 1).text()
+                        metaName = self.currentMetaNode.name
+                        metaType = self.currentMetaNode.nodeType
+                        parentName = self.currentMetaNode.parentName
+                        self.forest.changeMetaName(metaName, parentName, metaType)
+                        newType = self.tableWidget.item(row, 1).text()
                         content = self.tableWidget.item(row, 3).text()
                         if metaType == 'Type':
-                            self.currentMetaNode.changeType(content)
+                            self.forest.changeMetaType(metaName, parentName, metaType, newType)
                         else:
-                            self.currentMetaNode.changeContent(content)
+                            self.forest.changeMetaContent(metaName, parentName, metaType, content)
 
             self.locked = False
             self.delayedWriteToFile()
