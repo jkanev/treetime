@@ -46,8 +46,6 @@ class Field:
         self.getString = None
         self.hidden = False
         self.fieldType = fieldType
-        self.nameChanged = None
-        self.definitionChanged = None
         if (self.fieldType != ""):
             self.initFieldType()
 
@@ -70,8 +68,6 @@ class Field:
         newField.parentFields = copy.deepcopy(self.parentFields)
         newField.fieldType = copy.deepcopy(self.fieldType)
         newField.hidden = copy.deepcopy(self.hidden)
-        newField.nameChanged = self.nameChanged
-        newField.definitionChanged = self.definitionChanged
 
         # the source node is a link
         newField.sourceNode = self.sourceNode
@@ -82,12 +78,6 @@ class Field:
         
         memo[id(self)] = newField
         return newField
-
-    def registerNameChangeCallback(self, callback):
-        self.nameChanged = callback
-
-    def registerDefinitionChangeCallback(self, callback):
-        self.definitionChanged = callback
 
     @staticmethod
     def getFieldValue(field):
@@ -229,15 +219,20 @@ class Field:
     def getStringPercent(self):
         if self.sourceNode and self.getValue:
             v = self.getValue()
-            if v:
-                whitespace = ""
-                if v < 0.1:
-                    whitespace = "  "
-                elif v < 1.0:
-                    whitespace = " "
-                return whitespace + str(round(100*v)) + " %"
-            else:
-                return ""
+            try:
+                if v:
+                    whitespace = ""
+                    if v < 0.1:
+                        whitespace = "  "
+                    elif v < 1.0:
+                        whitespace = " "
+                    return whitespace + str(round(100*v)) + " %"
+                else:
+                    return ""
+            except (TypeError, ValueError):
+                print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
+                      f"Type mismatch, please check field definition.")
+                return "undefined"
         else:
             return ""
 
@@ -250,18 +245,23 @@ class Field:
     def getStringTime(self):
         if self.sourceNode and self.getValue:
             v = self.getValue()
-            if v:
-                if v < 0:
-                    adjust = 0.49999
+            try:
+                if v:
+                    if v < 0:
+                        adjust = 0.49999
+                    else:
+                        adjust = -0.49999
+                    hours = round(v + adjust)
+                    minutes = round(60.0*(v - hours) + adjust)
+                    seconds = round(3600.0*((v - hours) - minutes/60.0) + adjust)
+                    sign = v < 0.0 and "- " or "  "
+                    return "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
                 else:
-                    adjust = -0.49999
-                hours = round(v + adjust)
-                minutes = round(60.0*(v - hours) + adjust)
-                seconds = round(3600.0*((v - hours) - minutes/60.0) + adjust)
-                sign = v < 0.0 and "- " or "  "
-                return "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
-            else:
-                return ""
+                    return ""
+            except (TypeError, ValueError):
+                print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
+                      f"Type mismatch, please check field definition.")
+                return "undefined"
         else:
             return ""
 
@@ -275,7 +275,12 @@ class Field:
         if self.sourceNode and self.getValue:
             value = self.getValue()
             if value:
-                return str(round(value, 3))
+                try:
+                    return str(round(value, 3))
+                except (TypeError, ValueError):
+                    print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
+                          f"Type mismatch, please check field definition.")
+                    return "undefined"
             else:
                 return ""
         else:
@@ -362,7 +367,10 @@ class Field:
         sum = 0
         for v in values:
             if v:     # either sum up using the value
-                sum += v
+                try:
+                    sum += v
+                except:
+                    pass
             else:     # or the neutral element for addition (0)
                 sum += 0
         return sum
@@ -377,15 +385,17 @@ class Field:
         for v in values:
             if first:
                 if v:
-                    difference = v     # first element is positive
-                else:
-                    difference = 0     # or the neutral element for addition (0)
+                    try:
+                        difference += v     # first element is positive
+                    except:
+                        pass
                 first = False
             else:
                 if v:
-                    difference -= v     # all other elements are negative
-                else:
-                    difference += 0     # or the neutral element for addition (0)
+                    try:
+                        difference -= v     # all other elements are negative
+                    except:
+                        pass
         return difference
 
     def getValueMin(self):
@@ -427,12 +437,16 @@ class Field:
         n = 0.0
         for v in values:
             if v:     # in case of 'None', use neutal elements of 0 for addition, and 1 for multiplication
-                n += 1.0
-                sum += v
+                try:
+                    n += 1.0
+                    sum += v
+                except:
+                    pass
         if n > 0.0:
-            return sum/n
+            sum = sum/n
         else:
-            return None
+            sum = None
+        return sum
 
     def getValueProduct(self):
         """
@@ -476,7 +490,10 @@ class Field:
             sum = 0
             for v in values[1:]:
                 if v:
-                    sum += v
+                    try:
+                        sum += v
+                    except:
+                        pass
             if sum != 0:
                 return denom/sum
             else:
@@ -1601,6 +1618,20 @@ class Node:
             c.changeFieldName(oldName, newName)
         return True
 
+    def changeFieldType(self, field, newType):
+        """
+        Changes the type of a field to the new type, sets the appropriate callbacks, and recurses down all children.
+        Does not update anything (not possible during changing), this has to be done separately by calling the
+        notifyDefinitionChange function.
+        :param field: The field name to update
+        :param newType: The new type of the field
+        :return: void
+        """
+        self.fields[field].fieldType = newType
+        self.fields[field].initFieldType()
+        for c in self.children:
+            c.changeFieldType(field, newType)
+
     def changeFieldDefinition(self, fieldName, field):
         """
         Changing the field definition during meta structure editing. Will apply a deep copy of the field to itself,
@@ -1611,13 +1642,13 @@ class Node:
         for c in self.children:
             c.changeFieldDefinition(fieldName, field)
 
-    def notifyTreeFieldsDefinitionChange(self, fieldName):
+    def updateFieldContent(self, fieldName):
         """
         Notifying a change of the field definition during meta structure editing. Will call the notify functions on
         all children, recursively.
         """
         for c in self.children:
-            c.notifyTreeFieldsDefinitionChange(fieldName)
+            c.updateFieldContent(fieldName)
         if self.fieldChangeCallback:
             try:
                 self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
@@ -1748,10 +1779,24 @@ class Tree(Node):
 
         # then (when all fields are replaced) send the definition updates
         for fname in changes:
-            self.notifyTreeFieldsDefinitionChange(fname)
-            self.fields[fname].definitionChanged()    # make meta note update itself
+            self.updateFieldContent(fname)
 
-    def notifyFieldVisibilityChange(self, name):
+    def updateFieldType(self, fieldName):
+        """
+        Sets all fields in the tree to the type in the top-level field
+        :param fieldName:
+        :return:
+        """
+
+        # Change type of all fields
+        newType = self.fields[fieldName].fieldType
+        for c in self.children:
+            c.changeFieldType(fieldName, newType)
+
+        # Notify definition change
+        self.updateFieldContent(fieldName)
+
+    def updateFieldVisibility(self, name):
         """
         Called by a MetaNode. A top-level field visibility has changed, update the fieldOrder list, then update all
         nodes and redisplay.
@@ -1779,7 +1824,7 @@ class Tree(Node):
         self.updateFieldOrder(self.fieldOrder)
 
         # Update all field values
-        self.notifyTreeFieldsDefinitionChange(name)
+        self.updateFieldContent(name)
 
     def fieldIndexFromName(self, name):
         """
@@ -1911,10 +1956,29 @@ class Forest(Node):
         self.itemTypes.changeFieldName(fieldName, newName)
         self.itemPool.changeFieldName(fieldName, newName)
 
-    def notifyTreeFieldVisibilityChange(self, treeName, fieldName):
+    def updateDataFieldType(self, fieldName):
+        """ Propagets the change of data field type in the governing data item (default type) through the pool
+        :param fieldName: name of field
+        :return:
+        """
+        newType = self.itemTypes.items[0].fields[fieldName]['type']
+        self.itemPool.changeFieldType(fieldName, newType)
+
+    def updateTreeFieldType(self, treeName, fieldName):
+        """
+        Propagates the type that was set in a top-level field through the tree and updates the display
+        :param treeName: p
+        :param fieldName:
+        :return:
+        """
+        for c in self.children:
+            if c.name == treeName:
+                c.updateFieldType(fieldName)
+
+    def updateTreeFieldVisibility(self, treeName, fieldName):
         for tree in self.children:
             if tree.name == treeName:
-                tree.notifyFieldVisibilityChange(fieldName)
+                tree.updateFieldVisibility(fieldName)
 
     def treeIndexFromName(self, name):
         """

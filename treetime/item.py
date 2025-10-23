@@ -214,8 +214,7 @@ class Item:
 
     def changeFieldName(self, oldName, newName):
         """
-        Edit the content of a field. The content is expected to be a string and
-        will be converted according to the field type.
+        Change the name of a field.
         """
 
         if oldName not in self.fields:
@@ -223,15 +222,36 @@ class Item:
         else:
             # update field content
             self.fields[newName] = self.fields.pop(oldName)
-
             # notify changes
             self.notifyFieldNameChange(oldName, newName)
+        return True
 
+    def changeFieldType(self, field, newType):
+        """
+        Change the type of a field
+        """
+
+        if field not in self.fields:
+            return "A field with name " + field + " does not exist in node " + self.name + "."
+        else:
+            # update field content
+            self.fields[field]['type'] = newType
+            if newType in ('string', 'text', 'longtext', 'url'):
+                self.fields[field]['content'] = str(self.fields[field]['content'])
+            elif newType in ('integer', 'timer'):
+                try:
+                    self.fields[field]['content'] = float(self.fields[field]['content'])
+                except ValueError:
+                    self.fields[field]['content'] = 0.0
+            if newType == 'timer':
+                self.fields[field]['running_since'] = None
+            elif 'running_since' in self.fields[field].keys():
+                self.fields[field].pop('running_since')
         return True
 
     def notifyFieldNameChange(self, oldName, newName):
         """
-        Notify the three the a field name has changed
+        Notify the tree that a field name has changed. The tree will then re-define the fields that contain this field.
         """
         for f in self.fieldNameChangeCallbacks:
             if f is not None:
@@ -368,3 +388,14 @@ class ItemPool:
         """
         for it in self.items:
             it.changeFieldName(oldName, newName)
+
+    def changeFieldType(self, field, newType):
+        """ Changes the type of a field in all items
+        :param field: Field name
+        :param newType: New field type
+        :return: void
+        """
+        for it in self.items:
+            it.changeFieldType(field, newType)
+        for it in self.items:
+            it.notifyFieldChange(field)     # necessary because some changes might cause errors

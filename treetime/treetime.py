@@ -176,10 +176,6 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             displayStrings = [name or source.name, nodeType]
         super().__init__(displayStrings)
 
-        # call backs to make the other qmetanodes update their content
-        if nodeType == 'tree field':
-            source.registerDefinitionChangeCallback(self.notifyDefinitionChange)
-
         # recurse
         if nodeType=='tree':
             for name, field in source.fields.items():
@@ -236,7 +232,15 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         super().setText(0, newName)
 
     def changeType(self, newType):
-        print(f"Type change to {newType} not implemented yet for type {self.nodeType}.")
+        self.contentType = newType
+        if self.nodeType == 'tree field':
+            self.source.fieldType = newType
+            self.forest.updateTreeFieldType(self.parentName, self.name)
+            super().setText(1, self.source.hidden and newType + ' (hidden)' or newType)
+        else:
+            self.source['type'] = newType
+            self.forest.updateDataFieldType(self.name)
+            super().setText(1, newType)
 
     def changeContent(self, newContent, index=-1):
         print(f"Content change to {newContent} at index {index} not implemented yet for type {self.nodeType}.")
@@ -249,9 +253,10 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         """
         if self.nodeType == 'tree field':
             self.source.hidden = (newVisibility == QtCore.Qt.CheckState.Checked)
-            self.forest.notifyTreeFieldVisibilityChange(self.parentName, self.name)
+            self.forest.updateTreeFieldVisibility(self.parentName, self.name)
         else:
             print(f"Visibility change to hidden={newVisibility and True} not implemented yet for type {self.nodeType}.")
+        super().setText(1, self.source.hidden and self.source.fieldType + ' (hidden)' or self.source.fieldType)
         return True
 
     def availableFields(self):
@@ -2252,22 +2257,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         result = self.currentItem.changeFieldContent(fieldName, newValue)
                         if result is not True:
                             message = "Couldn't update field content.\n" + str(result)
-                            result = QtWidgets.QMessageBox.warning(self, message)
+                            print(message)
 
                         # add/remove timer to list
                         if fieldType == 'timer':
                             self.adjustAutoUpdate(self.currentItem, fieldName)
                     else:
-                        metaName = self.currentMetaNode.name
-                        metaType = self.currentMetaNode.nodeType
-                        parentName = self.currentMetaNode.parentName
-                        self.forest.changeMetaName(metaName, parentName, metaType)
-                        newType = self.tableWidget.item(row, 1).text()
-                        content = self.tableWidget.item(row, 3).text()
-                        if metaType == 'Type':
-                            self.forest.changeMetaType(metaName, parentName, metaType, newType)
-                        else:
-                            self.forest.changeMetaContent(metaName, parentName, metaType, content)
+                        # change type of data field (all other changes are via dropdown box)
+                        newType = self.tableWidget.item(row, 3).text()
+                        self.currentMetaNode.changeContent(newType)
 
             self.locked = False
             self.delayedWriteToFile()
