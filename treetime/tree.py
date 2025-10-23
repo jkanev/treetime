@@ -1589,17 +1589,27 @@ class Node:
         for c in self.children:
             c.updateFieldOrder(fieldOrder)
 
-    def changeTreeFieldDefinition(self, oldName, fieldName, field):
+    def changeFieldName(self, oldName, newName):
+        """
+        :param oldName: current field name
+        :param newName: new field name
+        :return: True
+        """
+        if oldName in self.fields.keys():
+            self.fields[newName] = self.fields.pop(oldName)
+        for c in self.children:
+            c.changeFieldName(oldName, newName)
+        return True
+
+    def changeFieldDefinition(self, fieldName, field):
         """
         Changing the field definition during meta structure editing. Will apply a deep copy of the field to itself,
         and recursively, all children.
         """
-        if oldName:
-            self.fields.pop(oldName)
         self.fields[fieldName] = copy.deepcopy(field)
         self.fields[fieldName].sourceNode = self
         for c in self.children:
-            c.changeTreeFieldDefinition(oldName, fieldName, field)
+            c.changeFieldDefinition(fieldName, field)
 
     def notifyTreeFieldsDefinitionChange(self, fieldName):
         """
@@ -1609,8 +1619,10 @@ class Node:
         for c in self.children:
             c.notifyTreeFieldsDefinitionChange(fieldName)
         if self.fieldChangeCallback:
-            self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
-
+            try:
+                self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
+            except:
+                print("Error in propagating tree field definition change")
 
 class Tree(Node):
     """
@@ -1713,9 +1725,9 @@ class Tree(Node):
             self.updateFieldOrderEntry(index, newName)
             self.fieldOrder[index] = newName
 
-            # Change name in field itself, if this is a tree field (for data item fields, do nothing)
-            if oldName in self.fields:
-                self.fields[newName] = self.fields.pop(oldName)
+        # Change name in field itself, if this is a tree field (for data item fields, do nothing)
+        if oldName in self.fields:
+            self.fields[newName] = self.fields.pop(oldName)
 
         # Build new fields if they use the old name in definition
         changes = []    # list of fields that were changed
@@ -1729,9 +1741,10 @@ class Tree(Node):
                 changes += [fname]
 
         # Replace all fields in tree and update their value
-        for fname in changes:
-            for c in self.children:
-                c.changeTreeFieldDefinition(fname==newName and oldName or None, fname, self.fields[fname])    # this is the renamed field, replace old name
+        for c in self.children:
+            c.changeFieldName(oldName, newName)
+            for fname in changes:
+                c.changeFieldDefinition(fname, self.fields[fname])    # this is the renamed field, replace old name
 
         # then (when all fields are replaced) send the definition updates
         for fname in changes:
@@ -1767,6 +1780,14 @@ class Tree(Node):
 
         # Update all field values
         self.notifyTreeFieldsDefinitionChange(name)
+
+    def fieldIndexFromName(self, name):
+        """
+        :param name: The name of the tree
+        :return: The tree index of the tree with the given name
+        """
+        [index] = [n for n, field in enumerate(self.fieldOrder) if field==name] or [-1]
+        return index
 
 
 class Forest(Node):
@@ -1895,7 +1916,7 @@ class Forest(Node):
             if tree.name == treeName:
                 tree.notifyFieldVisibilityChange(fieldName)
 
-    def indexOfName(self, name):
+    def treeIndexFromName(self, name):
         """
         :param name: The name of the tree
         :return: The tree index of the tree with the given name

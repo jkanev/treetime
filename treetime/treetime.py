@@ -92,7 +92,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.sourceNode.registerMoveCallback(self.notifyMove)
         self.sourceNode.registerViewNode(self)
         self.sourceNode.registerFieldNameChangeCallback(self.notifyFieldNameChange)
-        self.sourceNode.registerFieldNameChangeCallback(self.notifyFieldOrderChange)
+        self.sourceNode.registerFieldOrderChangeCallback(self.notifyFieldOrderChange)
 
     def notifyNameChange(self, newName):
         super().setText(0, newName)
@@ -224,7 +224,6 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             self.source.changeName(newName)
         if self.nodeType == 'tree':
             self.source.changeName(newName)
-            #self.dataParent.notifyTreeNameChange(self.index, newName)     # tell mainwindow to change writing on tab
         elif self.nodeType == 'tree field':
             self.forest.changeTreeFieldName(self.parentName, self.name, newName)
         elif self.nodeType == 'data field':
@@ -1711,10 +1710,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def notifyTreeNameChange(self, n):
         self.tabWidget.setTabText(n, self.forest.children[n].name)
 
-    def notifyTreeFieldNameChange(self, n, m, newName):
+    def notifyTreeFieldNameChange(self, n, m):
+        newName = self.forest.children[n].fieldOrder[m]
         self.treeWidgets[n].headerItem().setText(m+1, newName)
 
-    def notifyTreeColumnChange(self, n, name):
+    def notifyTreeColumnChange(self, n):
         """
         Re-reads the column information from tree n and adapts the display.
         :param n: Tree index
@@ -2050,7 +2050,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 widget.setFont(font)
                 widget.setText("hidden")
                 widget.setChecked(currentNode.source.hidden)
-                treeIndex = self.forest.indexOfName(currentNode.parentName)
+                treeIndex = self.forest.treeIndexFromName(currentNode.parentName)
                 widget.checkStateChanged.connect(lambda x, t=treeIndex: currentNode.changeVisibility(x) and self.notifyTreeColumnChange(t))
                 self.tableWidget.setCellWidget(n, 3, widget)
                 self._protectCells(n, [0, 1, 2, 3, 4])
@@ -2231,7 +2231,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self.currentMetaNode.changeName(newName)
                         metaType = self.currentMetaNode.nodeType
                         if metaType == 'tree':
-                            self.notifyTreeNameChange(self.forest.indexOfName(newName))
+                            self.notifyTreeNameChange(self.forest.treeIndexFromName(newName))
+                        elif metaType == 'tree field':
+                            t = self.forest.treeIndexFromName(self.currentMetaNode.parentName)
+                            f = self.forest.children[t].fieldIndexFromName(newName)
+                            self.notifyTreeFieldNameChange(t, f)
 
                 # one of the fields has been changed
                 else:
