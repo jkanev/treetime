@@ -221,9 +221,13 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         if self.nodeType == 'tree':
             self.source.changeName(newName)
         elif self.nodeType == 'tree field':
-            self.forest.changeTreeFieldName(self.parentName, self.name, newName)
+            changedFields = self.forest.changeTreeFieldName(self.parentName, self.name, newName)
+            self.parent().updateChildren()
         elif self.nodeType == 'data field':
             self.forest.changeDataFieldName(self.name, newName)
+            root = self.parent().parent()
+            for c in range(1, root.childCount()):
+                root.child(c).updateChildren()
         else:
             print(f"Name changing not implemented yet for type {self.nodeType}.")
 
@@ -287,6 +291,17 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             fields += [f for f in dataItem.fields.keys()]
             fields += [f for f in self.source.fields.keys()]
         return fields
+
+    def updateChildren(self):
+        """
+        Redisplays all children
+        :return:
+        """
+        if self.nodeType in ('tree', 'tree field'):
+            for c in range(self.childCount()):
+                self.child(c).updateChildren()
+        elif self.nodeType == "parameter list":
+            super().setText(1, f'{self.source}'[1:-1])
 
     def parent(self):
         """
@@ -2095,7 +2110,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     widget.setCurrentText(str(cnt))
                     widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
                                                                             and self.showTreeFieldInDataView())
-                    print(f"Adding {cnt} at position {n-offset}.")
                     self.tableWidget.setCellWidget(n, 3, widget)
                     self._protectCells(n, [0, 1, 2, 3, 4])
                     n += 1
@@ -2104,7 +2118,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 widget.addItems(list)
                 widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
                                                                         and self.showTreeFieldInDataView())
-                print(f"Adding empty list at position {n - offset}.")
                 self.tableWidget.setCellWidget(n, 3, widget)
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
