@@ -1642,6 +1642,50 @@ class Node:
         for c in self.children:
             c.changeFieldDefinition(fieldName, field)
 
+    def changeFieldOwnParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        self.fields[name].ownFields = copy.deepcopy(params)
+        for c in self.children:
+            c.changeFieldOwnParameters(name, params)
+
+    def changeFieldChildParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        self.fields[name].childFields = copy.deepcopy(params)
+        for c in self.children:
+            c.changeFieldChildParameters(name, params)
+
+    def changeFieldSiblingParameters(self, name, params):
+        """
+        Recursively changes the sibling-fields parameter list in all fields
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        self.fields[name].siblingFields = copy.deepcopy(params)
+        for c in self.children:
+            c.changeFieldSiblingParameters(name, params)
+
+    def changeFieldParentParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        self.fields[name].parentFields = copy.deepcopy(params)
+        for c in self.children:
+            c.changeFieldParentParameters(name, params)
+
     def updateFieldContent(self, fieldName):
         """
         Notifying a change of the field definition during meta structure editing. Will call the notify functions on
@@ -1715,6 +1759,14 @@ class Tree(Node):
                 self.fields[name] = f
                 if not f.hidden:
                     self.fieldOrder += [name]
+
+    def fieldIndexFromName(self, name):
+        """
+        :param name: The name of the tree
+        :return: The tree index of the tree with the given name
+        """
+        [index] = [n for n, field in enumerate(self.fieldOrder) if field==name] or [-1]
+        return index
 
     def removeEmptyNodes(self):
         """
@@ -1826,13 +1878,34 @@ class Tree(Node):
         # Update all field values
         self.updateFieldContent(name)
 
-    def fieldIndexFromName(self, name):
+    def updateFieldParameters(self, fieldName, listName):
         """
-        :param name: The name of the tree
-        :return: The tree index of the tree with the given name
+        Called by a MetaNode. A top-level field visibility has changed, update the fieldOrder list, then update all
+        nodes and redisplay.
+        :param name: The field name
+        :param hidden: Whether the field is now hidden or not
+        :return: True if success, False if error
         """
-        [index] = [n for n, field in enumerate(self.fieldOrder) if field==name] or [-1]
-        return index
+
+        field = self.fields[fieldName]
+
+        # Propagate new field order to all QNodes
+        result = True
+        if listName == 'own-fields':
+            self.changeFieldOwnParameters(fieldName, self.fields[fieldName].ownFields)
+        elif listName == 'child-fields':
+            self.changeFieldChildParameters(fieldName, self.fields[fieldName].childFields)
+        elif listName == 'sibling-fields':
+            self.changeFieldSiblingParameters(fieldName, self.fields[fieldName].siblingFields)
+        elif listName == 'parent-fields':
+            self.changeFieldParentParameters(fieldName, self.fields[fieldName].parentFields)
+        else:
+            print(f"Error when replacing parameters for field {fieldName:} list type {listName} does not exist")
+            result = False
+
+        # Update all field values
+        self.updateFieldContent(fieldName)
+        return result
 
 
 class Forest(Node):
@@ -1947,6 +2020,14 @@ class Forest(Node):
         self.removeEmptyNodes()
         print(f"... done.")
 
+    def treeIndexFromName(self, name):
+        """
+        :param name: The name of the tree
+        :return: The tree index of the tree with the given name
+        """
+        [index] = [n for n, tree in enumerate(self.children) if tree.name == name] or [-1]
+        return index
+
     def changeTreeFieldName(self, treeName, fieldName, newName):
         for c in self.children:
             if c.name == treeName:
@@ -1980,10 +2061,16 @@ class Forest(Node):
             if tree.name == treeName:
                 tree.updateFieldVisibility(fieldName)
 
-    def treeIndexFromName(self, name):
+    def updateTreeFieldParameters(self, treeName, fieldName, listName):
         """
-        :param name: The name of the tree
-        :return: The tree index of the tree with the given name
+        Propagates the changed parameter list that was set in a top-level field through the tree and updates the display
+        :param treeName: The name of the tree
+        :param fieldName: The name of the tree field
+        :param listName: The name of the parameter list, one of 'own-fields', 'child-fields', 'sibling-fields',
+        'parent-fields'.
+        :return:
         """
-        [index] = [n for n, tree in enumerate(self.children) if tree.name==name] or [-1]
-        return index
+        for c in self.children:
+            if c.name == treeName:
+                c.updateFieldParameters(fieldName, listName)
+
