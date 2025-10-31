@@ -625,6 +625,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonDeleteNode.clicked.connect(self.pushButtonDeleteNodeClicked)
         self.pushButtonRemoveBranch.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
         self.pushButtonDeleteBranch.clicked.connect(self.pushButtonDeleteBranchClicked)
+        self.pushButtonNewDataField.clicked.connect(self.pushButtonNewDataFieldClicked)
+        self.pushButtonNewTreeField.clicked.connect(self.pushButtonNewTreeFieldClicked)
+        self.pushButtonNewTree.clicked.connect(self.pushButtonNewTreeClicked)
+        self.pushButtonDeleteDataField.clicked.connect(self.pushButtonDeleteDataFieldClicked)
+        self.pushButtonDeleteTreeField.clicked.connect(self.pushButtonDeleteTreeFieldClicked)
+        self.pushButtonDeleteTree.clicked.connect(self.pushButtonDeleteTreeClicked)
         self.sliderZoom.valueChanged.connect(self.sliderZoomChanged)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
@@ -821,6 +827,21 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonDeleteNode.setEnabled(state)
         self.pushButtonRemoveBranch.setEnabled(state)
         self.pushButtonDeleteBranch.setEnabled(state)
+
+    def endisableMetaButtons(self, metaType, state):
+        """
+        Enables all buttons if state==True, disables them otherwise
+        :param state: the button state to set
+        """
+        if metaType in ('parameter list', 'tree field', 'tree'):
+            self.pushButtonNewTree.setEnabled(state)
+            self.pushButtonDeleteTree.setEnabled(state)
+        if metaType in ('parameter list', 'tree field'):
+            self.pushButtonNewTreeField.setEnabled(state)
+            self.pushButtonDeleteTreeField.setEnabled(state)
+        if metaType == 'data field':
+            self.pushButtonNewDataField.setEnabled(state)
+            self.pushButtonDeleteDataField.setEnabled(state)
 
     def closeEvent(self, event):
         """
@@ -1586,6 +1607,24 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.forest.itemPool.deleteItem(i)
                 self.delayedWriteToFile()
 
+    def pushButtonNewDataFieldClicked(self):
+        print('Not implemented yet')
+
+    def pushButtonNewTreeFieldClicked(self):
+        print('Not implemented yet')
+
+    def pushButtonNewTreeClicked(self):
+        print('Not implemented yet')
+
+    def pushButtonDeleteDataFieldClicked(self):
+        print('Not implemented yet')
+
+    def pushButtonDeleteTreeFieldClicked(self):
+        print('Not implemented yet')
+
+    def pushButtonDeleteTreeClicked(self):
+        print('Not implemented yet')
+
     def changeEditMode(self, mode):
         """
         Changes the current editing mode to the mode in the parameters.
@@ -1620,9 +1659,19 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.toolBox.currentIndex() != 2:
                 self.toolBox.setCurrentIndex(2)
 
+            self.itemSelectionChanged()
+
         # entering content edit mode
         elif mode != 'meta' and self.editMode == 'meta':
             self.editMode = mode
+
+            # if meta tab active, select first tab
+            if self.tabWidget.currentIndex() == len(self.forest.children):
+                self.tabWidget.setCurrentIndex(0)
+
+            # if meta toolbar tab active, select second tab (edit content)
+            if self.toolBox.currentIndex() == 2:
+                self.toolBox.setCurrentIndex(1)
 
             # enable tabs
             for tab in self.tabWidgets:
@@ -1631,6 +1680,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # init display
             self.tableWidget.clear()
             self.gridInitialised = False
+            self.itemSelectionChanged()
+
 
     def loadFile(self, filename):
         self.removeBranchTabs()
@@ -1836,7 +1887,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.editMode == 'content':
             self.showContentInDataView(self.currentTree)
         elif self.editMode == 'meta':
-            self.showTreeFieldInDataView()
+            if self.currentMetaNode:
+                self.endisableMetaButtons(self.currentMetaNode.nodeType, False)   # disable old
+            self.showTreeFieldInDataView()   # display content and set currentMetaNode
+            self.endisableMetaButtons(self.currentMetaNode.nodeType, True)    # enable new
 
     def showContentInDataView(self, treeIndex):
         if not self.locked:
@@ -2251,7 +2305,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if page == 2:     # select the meta structure page
             self.changeEditMode('meta')
-            self.itemSelectionChanged()
+        elif page in (0,1):    # no change when "Settings" tab is selected
+            self.changeEditMode('content')
 
     def tableWidgetCellChanged(self, row, column):
         """

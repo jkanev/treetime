@@ -1146,7 +1146,7 @@
            </font>
           </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;No edit options&lt;/p&gt;&lt;p&gt;implemented yet,&lt;/p&gt;&lt;p&gt;watch out for&lt;/p&gt;&lt;p&gt;next releases.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Insert New Elements&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1154,6 +1154,51 @@
          </widget>
         </item>
         <item row="2" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewDataField">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>New Data Field</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewTreeField">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>New Tree Field</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewTree">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>New Tree</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="2">
+         <widget class="QLabel" name="label_14">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Remove Elements</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="2">
          <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
@@ -1166,33 +1211,37 @@
           </property>
          </spacer>
         </item>
-        <item row="3" column="0" colspan="2">
-         <spacer name="verticalSpacer_16">
-          <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
+        <item row="7" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonDeleteDataField">
+          <property name="enabled">
+           <bool>false</bool>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
+          <property name="text">
+           <string>Delete Data Field</string>
           </property>
-         </spacer>
+         </widget>
         </item>
-        <item row="4" column="0" colspan="2">
-         <spacer name="verticalSpacer_17">
-          <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
+        <item row="8" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonDeleteTreeField">
+          <property name="enabled">
+           <bool>false</bool>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
+          <property name="text">
+           <string>Delete Tree Field</string>
           </property>
-         </spacer>
+         </widget>
         </item>
-        <item row="5" column="0" colspan="2">
+        <item row="9" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonDeleteTree">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Delete Tree</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0" colspan="2">
          <spacer name="verticalSpacer_15">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
@@ -1212,8 +1261,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>233</width>
+         <height>411</height>
         </rect>
        </property>
        <attribute name="label">
