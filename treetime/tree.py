@@ -1699,6 +1699,7 @@ class Node:
             except:
                 print("Error in propagating tree field definition change")
 
+
 class Tree(Node):
     """
     A tree inside a forest. One item can appear several times in the forest, but only once in each tree.
@@ -1790,7 +1791,7 @@ class Tree(Node):
         Called by a MetaNode. Changes a field's name and calls all callbacks to propagate that change through the
         system, including (finally) the MetaNode. Calls the changeField() and the notifyFieldsChanges() from the
         nodes class.
-        :param newName: The new name
+        :param newName: The new name. If =None, the field is removed from the parameter list.
         :return: void
         """
 
@@ -1798,7 +1799,10 @@ class Tree(Node):
             changed = False
             for n, x in enumerate(paramList):
                 if x == oldName:
-                    paramList[n] = newName
+                    if newName:
+                        paramList[n] = newName
+                    else:
+                        paramList.pop(n)
                     changed = True
             return changed
 
@@ -1892,13 +1896,17 @@ class Tree(Node):
         # Propagate new field order to all QNodes
         result = True
         if listName == 'own-fields':
-            self.changeFieldOwnParameters(fieldName, self.fields[fieldName].ownFields)
+            for c in self.children:     # don't start on yourself, the deep copy will destroy the meta node links
+                c.changeFieldOwnParameters(fieldName, self.fields[fieldName].ownFields)
         elif listName == 'child-fields':
-            self.changeFieldChildParameters(fieldName, self.fields[fieldName].childFields)
+            for c in self.children:     # don't start on yourself, the deep copy will destroy the meta node links
+                c.changeFieldChildParameters(fieldName, self.fields[fieldName].childFields)
         elif listName == 'sibling-fields':
-            self.changeFieldSiblingParameters(fieldName, self.fields[fieldName].siblingFields)
+            for c in self.children:     # don't start on yourself, the deep copy will destroy the meta node links
+                c.changeFieldSiblingParameters(fieldName, self.fields[fieldName].siblingFields)
         elif listName == 'parent-fields':
-            self.changeFieldParentParameters(fieldName, self.fields[fieldName].parentFields)
+            for c in self.children:     # don't start on yourself, the deep copy will destroy the meta node links
+                c.changeFieldParentParameters(fieldName, self.fields[fieldName].parentFields)
         else:
             print(f"Error when replacing parameters for field {fieldName:} list type {listName} does not exist")
             result = False
@@ -2028,6 +2036,19 @@ class Forest(Node):
         [index] = [n for n, tree in enumerate(self.children) if tree.name == name] or [-1]
         return index
 
+    def listFieldNames(self, scope=None):
+        """
+        :param scope: The name of a tree or None. If not None, only tree fields within that tree, and data field
+                      names, are listed. Otherwise, all tree field names and data field names are listed.
+        :return: a list of existing tree field and data item field names
+        """
+        # find name for new field
+        existingNames = [f for f in self.itemTypes.items[0].fields]
+        for tree in self.children:
+            if not scope or tree.name == scope:
+                existingNames += [f for f in tree.fields]
+        return existingNames
+
     def changeTreeFieldName(self, treeName, fieldName, newName):
         for c in self.children:
             if c.name == treeName:
@@ -2060,6 +2081,51 @@ class Forest(Node):
         for tree in self.children:
             if tree.name == treeName:
                 tree.updateFieldVisibility(fieldName)
+
+    def newDataField(self):
+        """
+        :return: A pointer to the newly created data field in the default data item
+        """
+
+        # find new name
+        name = 'new field'
+        n = 2
+        while name in self.listFieldNames():
+            name = f'new field {n}'
+            n += 1
+
+        # create default field (string)
+        field = {'type': 'string', 'content': ''}
+        self.itemTypes.addField(name, field)
+        self.itemPool.addField(name, field)
+
+        # return field
+        return name, self.itemTypes.items[0].fields[name]
+
+    def newTreeField(self, tree, index):
+        """
+        Creates a new tree field of default type (string)
+        :param tree: the name of the tree to add the field to
+        :param index: the indes of the new field
+        :return: a pointer to the newly created field
+        """
+
+        # find new name
+        name = 'New Field'
+        n = 2
+        while name in self.listFieldNames(tree):
+            name = f'New Field {n}'
+            n += 1
+
+        # create default field (string)
+        field = Field(fieldType='string')
+
+        # return field
+        return None, None
+
+    def deleteDataField(self, name):
+        self.itemTypes.deleteField(name)
+        self.itemPool.deleteField(name)
 
     def updateTreeFieldParameters(self, treeName, fieldName, listName):
         """

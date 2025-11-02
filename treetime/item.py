@@ -97,8 +97,9 @@ class Item:
     def addField(self, name, content):
         self.fields[name] = content
 
-    def removeField(self, name, content):
-        del self.fields[name]
+    def deleteField(self, name):
+        self.fields.pop(name)
+        self.notifyFieldNameChange(name, None)
 
     def writeToString(self):
         string = self.name + "\n"
@@ -399,3 +400,11 @@ class ItemPool:
             it.changeFieldType(field, newType)
         for it in self.items:
             it.notifyFieldChange(field)     # necessary because some changes might cause errors
+
+    def addField(self, name, field):
+        for it in self.items:
+            it.addField(name, copy.deepcopy(field))
+
+    def deleteField(self, name):
+        for it in self.items:
+            it.deleteField(name)

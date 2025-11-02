@@ -281,6 +281,41 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         return True
         return True
 
+    def newDataField(self):
+        """ Add a new data field by calling the forest and then adding a new child/sibling node
+        :return: void
+        """
+        name, field = self.forest.newDataField()
+        if self.nodeType == 'data item':
+            parent = self
+        else:
+            parent = self.parent()
+        child = QMetaNode(field, self.forest, name=name, parentName=parent.name,
+                          grandParentName=parent.parentName, nodeType='data field')
+        parent.addChild(child)
+
+    def newTreeField(self):
+        pass
+
+    def newTree(self):
+        pass
+
+    def deleteDataField(self):
+        """ Remove the current data field
+        :return:
+        """
+        self.forest.deleteDataField(self.name)
+        root = self.parent().parent()
+        for c in range(1, root.childCount()):
+            root.child(c).updateChildren()
+        self.parent().removeChild(self)
+
+    def deleteTreeField(self):
+        pass
+
+    def deleteTree(self):
+        pass
+
     def availableFields(self):
         """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
         :return: Get
@@ -1608,22 +1643,28 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.delayedWriteToFile()
 
     def pushButtonNewDataFieldClicked(self):
-        print('Not implemented yet')
+        if self.currentMetaNode:
+            self.currentMetaNode.newDataField()
 
     def pushButtonNewTreeFieldClicked(self):
-        print('Not implemented yet')
+        if self.currentMetaNode:
+            self.currentMetaNode.newTreeField()
 
     def pushButtonNewTreeClicked(self):
-        print('Not implemented yet')
+        if self.currentMetaNode:
+            self.currentMetaNode.newTree()
 
     def pushButtonDeleteDataFieldClicked(self):
-        print('Not implemented yet')
+        if self.currentMetaNode:
+            self.currentMetaNode.deleteDataField()
 
     def pushButtonDeleteTreeFieldClicked(self):
-        print('Not implemented yet')
+        if self.currentMetaNode:
+            self.currentMetaNode.deleteTreeField()
 
     def pushButtonDeleteTreeClicked(self):
-        print('Not implemented yet')
+        if self.currentMetaNode:
+            self.currentMetaNode.deleteTreeField()
 
     def changeEditMode(self, mode):
         """
@@ -1681,7 +1722,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableWidget.clear()
             self.gridInitialised = False
             self.itemSelectionChanged()
-
 
     def loadFile(self, filename):
         self.removeBranchTabs()
