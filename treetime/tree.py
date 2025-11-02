@@ -142,9 +142,9 @@ class Field:
 
             # look in parent fields
             for f in self.parentFields:
-                if f in node.item.fields:
+                if f in node.fields:
                     values += [node.fields[f].getValue()]
-                elif f in node.fields:
+                elif f in node.item.fields:
                     values += [Field.getFieldValue(node.item.fields[f])]
         
         # return
