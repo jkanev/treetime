@@ -1441,6 +1441,31 @@ class Node:
         node.initFields(self.fields)
         return node
 
+    def addField(self, name, field):
+        """ Adds a new field recursively in the entire tree. Silently, no messages sent. After adding, the visibility
+        still needs to be adapted, and then update messages sent through the tree.
+        :param name: The field name
+        :param field: The field itself
+        :return: void
+        """
+        self.fields[name] = copy.deepcopy(field)
+        self.fields[name].sourceNode = self
+        for c in self.children:
+            c.addField(name, field)
+
+    def findNodeByName(self, name):
+        """
+        Finds the first node of a given name in the tree.
+        """
+        if self.name == name:
+            return self
+        else:
+            for c in self.children:
+                found = c.findNodeByName(name)
+                if found is not None:
+                    return found
+        return None
+
     def initFields(self, fields):
         self.fields = copy.deepcopy(fields)
         
@@ -1882,31 +1907,63 @@ class Tree(Node):
         # Update all field values
         self.updateFieldContent(name)
 
+    def changeFieldOwnParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        for c in self.children:
+            c.changeFieldOwnParameters(name, params)
+
+    def changeFieldChildParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        for c in self.children:
+            c.changeFieldChildParameters(name, params)
+
+    def changeFieldSiblingParameters(self, name, params):
+        """
+        Recursively changes the sibling-fields parameter list in all fields
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        for c in self.children:
+            c.changeFieldSiblingParameters(name, params)
+
+    def changeFieldParentParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        for c in self.children:
+            c.changeFieldParentParameters(name, params)
+
     def updateFieldParameters(self, fieldName, listName):
         """
-        Called by a MetaNode. A top-level field visibility has changed, update the fieldOrder list, then update all
+        Called by a MetaNode. A top-level field parameter list has changed, update the fieldOrder list, then update all
         nodes and redisplay.
         :param name: The field name
         :param hidden: Whether the field is now hidden or not
         :return: True if success, False if error
         """
-
-        field = self.fields[fieldName]
-
-        # Propagate new field order to all QNodes
         result = True
         if listName == 'own-fields':
-            for c in self.children:     # don't start on yourself, the deep copy will destroy the meta node links
-                c.changeFieldOwnParameters(fieldName, self.fields[fieldName].ownFields)
+            self.changeFieldOwnParameters(fieldName, self.fields[fieldName].ownFields)
         elif listName == 'child-fields':
-            for c in self.children:     # don't start on yourself, the deep copy will destroy the meta node links
-                c.changeFieldChildParameters(fieldName, self.fields[fieldName].childFields)
+            self.changeFieldChildParameters(fieldName, self.fields[fieldName].childFields)
         elif listName == 'sibling-fields':
-            for c in self.children:     # don't start on yourself, the deep copy will destroy the meta node links
-                c.changeFieldSiblingParameters(fieldName, self.fields[fieldName].siblingFields)
+            self.changeFieldSiblingParameters(fieldName, self.fields[fieldName].siblingFields)
         elif listName == 'parent-fields':
-            for c in self.children:     # don't start on yourself, the deep copy will destroy the meta node links
-                c.changeFieldParentParameters(fieldName, self.fields[fieldName].parentFields)
+            self.changeFieldParentParameters(fieldName, self.fields[fieldName].parentFields)
         else:
             print(f"Error when replacing parameters for field {fieldName:} list type {listName} does not exist")
             result = False
@@ -1914,6 +1971,18 @@ class Tree(Node):
         # Update all field values
         self.updateFieldContent(fieldName)
         return result
+
+    def addField(self, name, field):
+        """ Adds a new field recursively in the entire tree. Silently, no messages sent. After adding, the visibility
+        still needs to be adapted, and then update messages sent through the tree.
+        :param name: The field name
+        :param field: The field itself
+        :return: void
+        """
+        self.fields[name] = field
+        self.fields[name].sourceNode = self
+        for c in self.children:
+            c.addField(name, field)
 
 
 class Forest(Node):
@@ -2102,26 +2171,32 @@ class Forest(Node):
         # return field
         return name, self.itemTypes.items[0].fields[name]
 
-    def newTreeField(self, tree, index):
+    def newTreeField(self, treeName):
         """
         Creates a new tree field of default type (string)
         :param tree: the name of the tree to add the field to
-        :param index: the indes of the new field
+        :param index: the index of the new field in the visible
         :return: a pointer to the newly created field
         """
 
         # find new name
         name = 'New Field'
         n = 2
-        while name in self.listFieldNames(tree):
+        while name in self.listFieldNames(treeName):
             name = f'New Field {n}'
             n += 1
 
         # create default field (string)
         field = Field(fieldType='string')
 
+        # register with trees
+        for tree in self.children:
+            if tree.name == treeName:
+                tree.addField(name, field)
+                tree.updateFieldVisibility(name)
+
         # return field
-        return None, None
+        return name, field
 
     def deleteDataField(self, name):
         self.itemTypes.deleteField(name)

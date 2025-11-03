@@ -279,7 +279,6 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             print(f"Visibility change to hidden={newVisibility and True} not implemented yet for type {self.nodeType}.")
         super().setText(1, self.source.hidden and self.source.fieldType + ' (hidden)' or self.source.fieldType)
         return True
-        return True
 
     def newDataField(self):
         """ Add a new data field by calling the forest and then adding a new child/sibling node
@@ -295,7 +294,17 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         parent.addChild(child)
 
     def newTreeField(self):
-        pass
+        if self.nodeType == 'parameter list':
+            parent = self.parent().parent()
+        elif self.nodeType == 'tree field':
+            parent = self.parent()
+        else:
+            parent = self
+        name, field = self.forest.newTreeField(parent.name)
+        child = QMetaNode(field, self.forest, name=name, parentName=parent.name,
+                          grandParentName=parent.parentName, nodeType='tree field')
+        parent.addChild(child)
+        return parent.name, child.name
 
     def newTree(self):
         pass
@@ -1648,7 +1657,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def pushButtonNewTreeFieldClicked(self):
         if self.currentMetaNode:
-            self.currentMetaNode.newTreeField()
+            treeName, fieldName = self.currentMetaNode.newTreeField()
+            self.notifyTreeColumnChange(self.forest.treeIndexFromName(treeName))
 
     def pushButtonNewTreeClicked(self):
         if self.currentMetaNode:
