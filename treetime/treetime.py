@@ -215,24 +215,27 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         send a definition-changed message to their respective QMetaNodes.
         """
 
-        # create change functions
+        # call change functions
         if self.nodeType == 'data item':
             self.source.changeName(newName)
+            self.name = newName
         if self.nodeType == 'tree':
             self.source.changeName(newName)
+            self.name = newName
         elif self.nodeType == 'tree field':
             changedFields = self.forest.changeTreeFieldName(self.parentName, self.name, newName)
+            self.name = newName
             self.parent().updateChildren()
         elif self.nodeType == 'data field':
             self.forest.changeDataFieldName(self.name, newName)
             root = self.parent().parent()
+            self.name = newName
             for c in range(1, root.childCount()):
                 root.child(c).updateChildren()
         else:
             print(f"Name changing not implemented yet for type {self.nodeType}.")
 
-        # change name
-        self.name = newName
+        # publish main text
         super().setText(0, newName)
         return True
 
@@ -338,11 +341,15 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
 
     def updateChildren(self):
         """
-        Redisplays all children
+        Redisplays all children and adjusts changed names
         :return:
         """
         if self.nodeType in ('tree', 'tree field'):
             for c in range(self.childCount()):
+                self.child(c).parentName = self.name
+                self.child(c).grandParentName = self.parentName
+                print(f'changed names to: parent:"{self.name}" and grandParent:"{self.parentName}" for meta node child '
+                      f'{self.child(c).name} of {self.name}')
                 self.child(c).updateChildren()
         elif self.nodeType == "parameter list":
             super().setText(1, f'{self.source}'[1:-1])

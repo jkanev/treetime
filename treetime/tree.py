@@ -1443,15 +1443,17 @@ class Node:
 
     def addField(self, name, field):
         """ Adds a new field recursively in the entire tree. Silently, no messages sent. After adding, the visibility
-        still needs to be adapted, and then update messages sent through the tree.
+        still needs to be adapted, and then update messages sent through the tree. . The first call does not create deep
+        copies, only subsequent recursive calls do. This is to not touch existing references when the top-level fields
+        are changed (meta nodes keep pointers to the parameter lists).
         :param name: The field name
         :param field: The field itself
         :return: void
         """
-        self.fields[name] = copy.deepcopy(field)
+        self.fields[name] = field
         self.fields[name].sourceNode = self
         for c in self.children:
-            c.addField(name, field)
+            c.addField(name, copy.deepcopy(field))
 
     def findNodeByName(self, name):
         """
@@ -1638,6 +1640,7 @@ class Node:
         :return: True
         """
         if oldName in self.fields.keys():
+            print(f'changing "{oldName}" to "{newName}" in node {self.name}')
             self.fields[newName] = self.fields.pop(oldName)
         for c in self.children:
             c.changeFieldName(oldName, newName)
@@ -1669,47 +1672,55 @@ class Node:
 
     def changeFieldOwnParameters(self, name, params):
         """
-        Recursively changes the own-fields parameter list in all fields
+        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
+        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
+        changed (meta nodes keep pointers to the parameter lists).
         :param name: Name of the field
         :param params: List of parameters
         :return:
         """
-        self.fields[name].ownFields = copy.deepcopy(params)
+        self.fields[name].ownFields = params
         for c in self.children:
-            c.changeFieldOwnParameters(name, params)
+            c.changeFieldOwnParameters(name, copy.deepcopy(params))
 
     def changeFieldChildParameters(self, name, params):
         """
-        Recursively changes the own-fields parameter list in all fields
+        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
+        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
+        changed (meta nodes keep pointers to the parameter lists).
         :param name: Name of the field
         :param params: List of parameters
         :return:
         """
-        self.fields[name].childFields = copy.deepcopy(params)
+        self.fields[name].childFields = params
         for c in self.children:
-            c.changeFieldChildParameters(name, params)
+            c.changeFieldChildParameters(name, copy.deepcopy(params))
 
     def changeFieldSiblingParameters(self, name, params):
         """
-        Recursively changes the sibling-fields parameter list in all fields
+        Recursively changes the sibling-fields parameter list in all fields. The first call does not create deep copies,
+        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
+        changed (meta nodes keep pointers to the parameter lists).
         :param name: Name of the field
         :param params: List of parameters
         :return:
         """
-        self.fields[name].siblingFields = copy.deepcopy(params)
+        self.fields[name].siblingFields = params
         for c in self.children:
-            c.changeFieldSiblingParameters(name, params)
+            c.changeFieldSiblingParameters(name, copy.deepcopy(params))
 
     def changeFieldParentParameters(self, name, params):
         """
-        Recursively changes the own-fields parameter list in all fields
+        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
+        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
+        changed (meta nodes keep pointers to the parameter lists).
         :param name: Name of the field
         :param params: List of parameters
         :return:
         """
-        self.fields[name].parentFields = copy.deepcopy(params)
+        self.fields[name].parentFields = params
         for c in self.children:
-            c.changeFieldParentParameters(name, params)
+            c.changeFieldParentParameters(name, copy.deepcopy(params))
 
     def updateFieldContent(self, fieldName):
         """
@@ -1907,46 +1918,6 @@ class Tree(Node):
         # Update all field values
         self.updateFieldContent(name)
 
-    def changeFieldOwnParameters(self, name, params):
-        """
-        Recursively changes the own-fields parameter list in all fields
-        :param name: Name of the field
-        :param params: List of parameters
-        :return:
-        """
-        for c in self.children:
-            c.changeFieldOwnParameters(name, params)
-
-    def changeFieldChildParameters(self, name, params):
-        """
-        Recursively changes the own-fields parameter list in all fields
-        :param name: Name of the field
-        :param params: List of parameters
-        :return:
-        """
-        for c in self.children:
-            c.changeFieldChildParameters(name, params)
-
-    def changeFieldSiblingParameters(self, name, params):
-        """
-        Recursively changes the sibling-fields parameter list in all fields
-        :param name: Name of the field
-        :param params: List of parameters
-        :return:
-        """
-        for c in self.children:
-            c.changeFieldSiblingParameters(name, params)
-
-    def changeFieldParentParameters(self, name, params):
-        """
-        Recursively changes the own-fields parameter list in all fields
-        :param name: Name of the field
-        :param params: List of parameters
-        :return:
-        """
-        for c in self.children:
-            c.changeFieldParentParameters(name, params)
-
     def updateFieldParameters(self, fieldName, listName):
         """
         Called by a MetaNode. A top-level field parameter list has changed, update the fieldOrder list, then update all
@@ -1971,18 +1942,6 @@ class Tree(Node):
         # Update all field values
         self.updateFieldContent(fieldName)
         return result
-
-    def addField(self, name, field):
-        """ Adds a new field recursively in the entire tree. Silently, no messages sent. After adding, the visibility
-        still needs to be adapted, and then update messages sent through the tree.
-        :param name: The field name
-        :param field: The field itself
-        :return: void
-        """
-        self.fields[name] = field
-        self.fields[name].sourceNode = self
-        for c in self.children:
-            c.addField(name, field)
 
 
 class Forest(Node):
