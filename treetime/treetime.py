@@ -323,7 +323,17 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         self.parent().removeChild(self)
 
     def deleteTreeField(self):
-        pass
+        fieldName = self.nodeType == 'tree field' and self.name or self.parentName
+        treeName = self.nodeType == 'tree field' and self.parentName or self.grandParentName
+        self.forest.deleteTreeField(treeName, fieldName)
+        if self.nodeType == 'tree field':
+            field = self
+        else:
+            field = self.parent()
+        for c in range(0, field.childCount()):
+            field.removeChild(self.child(c))
+        field.parent().removeChild(self)
+        return treeName
 
     def deleteTree(self):
         pass
@@ -881,15 +891,19 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def endisableMetaButtons(self, metaType, state):
         """
-        Enables all buttons if state==True, disables them otherwise
+        Enables state related buttons if state==True, disables them otherwise
+        Disabling (old state) should be called before enabling (new state)
         :param state: the button state to set
         """
-        if metaType in ('parameter list', 'tree field', 'tree'):
+        if metaType in ('tree'):
             self.pushButtonNewTree.setEnabled(state)
             self.pushButtonDeleteTree.setEnabled(state)
+            self.pushButtonNewTreeField.setEnabled(state)
         if metaType in ('parameter list', 'tree field'):
             self.pushButtonNewTreeField.setEnabled(state)
             self.pushButtonDeleteTreeField.setEnabled(state)
+        if metaType == 'data item':
+            self.pushButtonNewDataField.setEnabled(state)
         if metaType == 'data field':
             self.pushButtonNewDataField.setEnabled(state)
             self.pushButtonDeleteDataField.setEnabled(state)
@@ -1677,7 +1691,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def pushButtonDeleteTreeFieldClicked(self):
         if self.currentMetaNode:
-            self.currentMetaNode.deleteTreeField()
+            treeName = self.currentMetaNode.deleteTreeField()
+            self.notifyTreeColumnChange(self.forest.treeIndexFromName(treeName))
 
     def pushButtonDeleteTreeClicked(self):
         if self.currentMetaNode:

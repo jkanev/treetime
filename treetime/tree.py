@@ -1845,12 +1845,18 @@ class Tree(Node):
         # update field order list, if field in list (for hidden fields and data item fields, do nothing)
         [index] = [n for n, x in enumerate(self.fieldOrder) if x == oldName] or [-1]
         if index+1:
-            self.updateFieldOrderEntry(index, newName)
-            self.fieldOrder[index] = newName
+            if newName:
+                self.updateFieldOrderEntry(index, newName)
+                self.fieldOrder[index] = newName
+            else:
+                self.updateFieldOrderEntry(index, newName)
+                self.fieldOrder.pop(index)
 
         # Change name in field itself, if this is a tree field (for data item fields, do nothing)
         if oldName in self.fields:
-            self.fields[newName] = self.fields.pop(oldName)
+            field = self.fields.pop(oldName)
+            if newName:
+                self.fields[newName] = field
 
         # Build new fields if they use the old name in definition
         changes = []    # list of fields that were changed
@@ -2160,6 +2166,19 @@ class Forest(Node):
     def deleteDataField(self, name):
         self.itemTypes.deleteField(name)
         self.itemPool.deleteField(name)
+
+    def deleteTreeField(self, treeName, fieldName):
+        """
+        Deletes a tree field
+        :param treeName: the name of the tree to remove the field from
+        :param fieldName: the name of the field in the tree
+        :return: a pointer to the newly created field
+        """
+
+        # register with trees
+        for tree in self.children:
+            if tree.name == treeName:
+                tree.changeFieldName(fieldName, None)    # notifiy the tree
 
     def updateTreeFieldParameters(self, treeName, fieldName, listName):
         """
