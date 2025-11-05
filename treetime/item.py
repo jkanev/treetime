@@ -97,6 +97,12 @@ class Item:
     def addField(self, name, content):
         self.fields[name] = content
 
+    def addTree(self):
+        """ Appends a new tree at the end of the tree list
+        :return: void
+        """
+        self.trees += [[]]
+
     def deleteField(self, name):
         self.fields.pop(name)
         self.notifyFieldNameChange(name, None)
@@ -404,6 +410,14 @@ class ItemPool:
     def addField(self, name, field):
         for it in self.items:
             it.addField(name, copy.deepcopy(field))
+
+    def addTree(self):
+        """ Add one empty tree at the end of the tree list of each item
+        :return: void
+        """
+        for it in self.items:
+            it.addTree()
+            it.clearCallbacks()
 
     def deleteField(self, name):
         for it in self.items:

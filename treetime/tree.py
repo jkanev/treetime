@@ -2164,6 +2164,31 @@ class Forest(Node):
         # return field
         return name, field
 
+    def newTree(self):
+        """
+        Creates a new tree and append it.
+        :param tree: the name of the tree to add the field to
+        :param index: the index of the new field in the visible
+        :return: a pointer to the newly created field
+        """
+
+        # find new name
+        name = 'New Tree'
+        n = 2
+        while name in (c.name for c in self.children):
+            name = f'New Tree {n}'
+            n += 1
+
+        # add new tree to forest
+        self.addTree()
+        self.itemTypes.addTree()
+        self.itemPool.addTree()
+        tree = self.children[-1]
+        tree.name = name
+
+        # return tree
+        return tree
+
     def deleteDataField(self, name):
         self.itemTypes.deleteField(name)
         self.itemPool.deleteField(name)

@@ -310,7 +310,17 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         return parent.name, child.name
 
     def newTree(self):
-        pass
+        if self.nodeType == 'parameter list':
+            root = self.parent().parent().parent()
+        elif self.nodeType == 'tree field':
+            root = self.parent().parent()
+        elif self.nodeType == 'tree':
+            root = self.parent()
+        tree = self.forest.newTree()
+        node = QMetaNode(tree, self.forest, name=tree.name, parentName=tree.name,
+                          grandParentName=tree.name, nodeType='tree')
+        root.addChild(node)
+        return tree
 
     def deleteDataField(self):
         """ Remove the current data field
@@ -1683,7 +1693,15 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def pushButtonNewTreeClicked(self):
         if self.currentMetaNode:
-            self.currentMetaNode.newTree()
+
+            # create tree
+            tree = self.currentMetaNode.newTree()
+
+            # insert new tab
+            n = len(self.treeWidgets)-1
+            self.createBranchTab(n, 'tabX', tree.name, 0)
+            root = self.fillTreeWidget(n, [])
+            tree.viewNode = root
 
     def pushButtonDeleteDataFieldClicked(self):
         if self.currentMetaNode:
@@ -1829,42 +1847,32 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tabWidget.clear()
             self.tabWidgets = []
 
+    def createBranchTab(self, index, tabName, tabText, nColumns):
+        newTab = QtWidgets.QWidget()
+        newTab.setObjectName(tabName)
+        newGridLayout = QtWidgets.QGridLayout(newTab)
+        self.tabWidget.insertTab(index, newTab, "")
+        self.tabWidgets += [newTab]
+        self.tabWidget.setTabText(index, tabText)
+        newTree = QtWidgets.QTreeWidget(newTab)
+        newTree.setGeometry(QtCore.QRect(0, 0, 731, 751))
+        newTree.setAllColumnsShowFocus(True)
+        newTree.setWordWrap(True)
+        newTree.headerItem().setText(0, "1")
+        newTree.setColumnCount(nColumns)
+        newGridLayout.addWidget(newTree, 0, 0, 1, 1)
+        self.treeWidgets.insert(index, newTree)
+
     def createBranchTabs(self):
         
         self.locked = True
         
         # create tabs and tree widgets
         for n,c in enumerate(self.forest.children):
-            newTab = QtWidgets.QWidget()
-            newTab.setObjectName("tab"+str(n))
-            newGridLayout = QtWidgets.QGridLayout(newTab)
-            self.tabWidget.addTab(newTab, "")
-            self.tabWidgets += [newTab]
-            self.tabWidget.setTabText(n, c.name)
-            newTree = QtWidgets.QTreeWidget(newTab)
-            newTree.setGeometry(QtCore.QRect(0, 0, 731, 751))
-            newTree.setAllColumnsShowFocus(True)
-            newTree.setWordWrap(True)
-            newTree.headerItem().setText(0, "1")
-            newTree.setColumnCount(len(c.fieldOrder))
-            newGridLayout.addWidget(newTree, 0, 0, 1, 1)
-            self.treeWidgets += [newTree]
+            self.createBranchTab(len(self.tabWidgets), "tab" + str(n), c.name, len(c.fieldOrder))
 
         # create meta tabs and widget
-        newTab = QtWidgets.QWidget()
-        newTab.setObjectName("tabM")
-        newGridLayout = QtWidgets.QGridLayout(newTab)
-        self.tabWidget.addTab(newTab, "")
-        self.tabWidgets += [newTab]
-        self.tabWidget.setTabText(len(self.tabWidgets)-1, "[Meta Structure]")
-        newTree = QtWidgets.QTreeWidget(newTab)
-        newTree.setGeometry(QtCore.QRect(0, 0, 731, 751))
-        newTree.setAllColumnsShowFocus(True)
-        newTree.setWordWrap(True)
-        newTree.headerItem().setText(0, "1")
-        newTree.setColumnCount(2)
-        newGridLayout.addWidget(newTree, 0, 0, 1, 1)
-        self.treeWidgets += [newTree]
+        self.createBranchTab(n+1, "tabM", "[Meta Structure]", 2)
 
         self.locked = False
 
@@ -1894,6 +1902,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.treeWidgets[-1].resizeColumnToContents(0)
 
+    def fillTreeWidget(self, n, labels):
+        self.treeWidgets[n].itemSelectionChanged.connect(self.itemSelectionChanged)
+        self.treeWidgets[n].itemCollapsed.connect(self.resizeNameColumn)
+        self.treeWidgets[n].itemExpanded.connect(self.resizeNameColumn)
+        self.treeWidgets[n].setHeaderLabels(labels)
+        return self.treeWidgets[n].invisibleRootItem()
+
     def fillTreeWidgets(self):
         """
         Fills all tree tabs by creating all nodes
@@ -1901,11 +1916,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # for each tree in the forest
         for n, c in enumerate(self.forest.children):
-            self.treeWidgets[n].itemSelectionChanged.connect(self.itemSelectionChanged)
-            self.treeWidgets[n].itemCollapsed.connect(self.resizeNameColumn)
-            self.treeWidgets[n].itemExpanded.connect(self.resizeNameColumn)
-            self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
-            root = self.treeWidgets[n].invisibleRootItem()
+            root = self.fillTreeWidget(n, [""] + c.fieldOrder)
             c.viewNode = root
 
             # add branch
@@ -1922,11 +1933,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # for the meta tree
         m = len(self.forest.children)
-        self.treeWidgets[m].itemSelectionChanged.connect(self.itemSelectionChanged)
-        self.treeWidgets[m].itemCollapsed.connect(self.resizeNameColumn)
-        self.treeWidgets[m].itemExpanded.connect(self.resizeNameColumn)
-        self.treeWidgets[m].setHeaderLabels(["Name", "Type / Content"])
-        root = self.treeWidgets[m].invisibleRootItem()
+        root = self.fillTreeWidget(m, ["Name", "Type / Content"])
 
         # add items
         for it in self.forest.itemTypes.items:
@@ -2657,7 +2664,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # update table and write to file
             self.itemSelectionChanged()
             self.delayedWriteToFile()
-
+        return True
 
 class TreeTime:
     
