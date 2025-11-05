@@ -33,14 +33,15 @@ class Field:
              "min", "max", "min-string", "max-string", "product", "reciprocal", "ratio", "ratio-percent", "node-name",
              "node-path")
 
-    def __init__(self, node=None, ownFields=[], childFields=[], siblingFields=[], parentFields=[], fieldType=None):
+    def __init__(self, node=None, ownFields=False, childFields=False, siblingFields=False, parentFields=False,
+                 fieldType=None):
         """Initialises the class, links the source node, field type, and sets the evaluation method."""
         
         self.cache = None
-        self.ownFields = ownFields
-        self.siblingFields = siblingFields
-        self.childFields = childFields
-        self.parentFields = parentFields
+        self.ownFields = ownFields or []
+        self.siblingFields = siblingFields or []
+        self.childFields = childFields or []
+        self.parentFields = parentFields or []
         self.sourceNode = node
         self.getValue = None
         self.getString = None
