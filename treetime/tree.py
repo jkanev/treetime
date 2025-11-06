@@ -2206,6 +2206,19 @@ class Forest(Node):
             if tree.name == treeName:
                 tree.changeFieldName(fieldName, None)    # notifiy the tree
 
+    def deleteTree(self, treeName):
+        """
+        Deletes a tree by removing it from the parent and removing all tree paths from all items.
+        Python takes care of deleting the actual objects. The update of the GUI is handled by the caller.
+        :param treeName: The name of the tree to be deleted
+        :return: The index of the deleted tree
+        """
+        n = self.treeIndexFromName(treeName)
+        self.itemTypes.deleteTree(n)
+        self.itemPool.deleteTree(n)
+        self.children.pop(n)
+        return n
+
     def updateTreeFieldParameters(self, treeName, fieldName, listName):
         """
         Propagates the changed parameter list that was set in a top-level field through the tree and updates the display

@@ -86,13 +86,14 @@ class Item:
         self.moveCallbacks = []
         self.selectionCallbacks = []
         for t in self.trees:
-            self.viewNodes += [None]
-            self.nameChangeCallbacks += [None]
-            self.fieldChangeCallbacks += [None]
-            self.fieldNameChangeCallbacks += [None]
-            self.deletionCallbacks += [None]
-            self.moveCallbacks += [None]
-            self.selectionCallbacks += [None]
+            for p in (self.viewNodes,
+                      self.nameChangeCallbacks,
+                      self.fieldChangeCallbacks,
+                      self.fieldNameChangeCallbacks,
+                      self.deletionCallbacks,
+                      self.moveCallbacks,
+                      self.selectionCallbacks):
+                p += [None]
 
     def addField(self, name, content):
         self.fields[name] = content
@@ -102,10 +103,33 @@ class Item:
         :return: void
         """
         self.trees += [[]]
+        for p in (self.viewNodes,
+                  self.nameChangeCallbacks,
+                  self.fieldChangeCallbacks,
+                  self.fieldNameChangeCallbacks,
+                  self.deletionCallbacks,
+                  self.moveCallbacks,
+                  self.selectionCallbacks):
+            p += [None]
 
     def deleteField(self, name):
         self.fields.pop(name)
         self.notifyFieldNameChange(name, None)
+
+    def deleteTree(self, n):
+        """ Removed a tree from the item
+        :param n: The tree index
+        :return:
+        """
+        self.trees.pop(n)
+        for p in (self.viewNodes,
+                  self.nameChangeCallbacks,
+                  self.fieldChangeCallbacks,
+                  self.fieldNameChangeCallbacks,
+                  self.deletionCallbacks,
+                  self.moveCallbacks,
+                  self.selectionCallbacks):
+            p.pop(n)
 
     def writeToString(self):
         string = self.name + "\n"
@@ -422,3 +446,12 @@ class ItemPool:
     def deleteField(self, name):
         for it in self.items:
             it.deleteField(name)
+
+    def deleteTree(self, n):
+        """ Delete a empty from the tree list of each item
+        :param n: The index of the tree to delete
+        :return: void
+        """
+        for it in self.items:
+            it.deleteTree(n)
+

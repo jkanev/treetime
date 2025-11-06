@@ -346,7 +346,29 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         return treeName
 
     def deleteTree(self):
-        pass
+        """ Delete a tree. This function is always called from the tree node, we disabled it from the param list and
+        from the field node, because it can be too easily clicked and will remove quite some data.
+        :return:
+        """
+
+        # get tree name
+        treeName = self.name
+
+        # remove parameters and fields
+        for f in range(0, self.childCount()):
+            field = self.child(f)
+            for p in range(0, field.childCount()):
+                plist = field.child(p)
+                field.removeChild(plist)
+        for f in range(0, self.childCount()):
+            self.removeChild(self.child(f))
+
+        # delete the tree structure and data
+        n = self.forest.deleteTree(treeName)
+
+        # remove myself
+        self.parent().removeChild(self)
+        return n
 
     def availableFields(self):
         """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
@@ -917,6 +939,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if metaType == 'data field':
             self.pushButtonNewDataField.setEnabled(state)
             self.pushButtonDeleteDataField.setEnabled(state)
+        if len(self.forest.children) == 1:     # Prohibit deleting of the last tree
+            self.pushButtonDeleteTree.setEnabled(False)
 
     def closeEvent(self, event):
         """
@@ -1685,11 +1709,13 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def pushButtonNewDataFieldClicked(self):
         if self.currentMetaNode:
             self.currentMetaNode.newDataField()
+            self.delayedWriteToFile()
 
     def pushButtonNewTreeFieldClicked(self):
         if self.currentMetaNode:
             treeName, fieldName = self.currentMetaNode.newTreeField()
             self.notifyTreeColumnChange(self.forest.treeIndexFromName(treeName))
+            self.delayedWriteToFile()
 
     def pushButtonNewTreeClicked(self):
         if self.currentMetaNode:
@@ -1702,19 +1728,51 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.createBranchTab(n, 'tabX', tree.name, 0)
             root = self.fillTreeWidget(n, [])
             tree.viewNode = root
+            self.delayedWriteToFile()
 
     def pushButtonDeleteDataFieldClicked(self):
         if self.currentMetaNode:
-            self.currentMetaNode.deleteDataField()
+
+            # warning message
+            message = ("You are about the delete a data field. This will remove data.")
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setText(message)
+            msgBox.setWindowTitle("TreeTime Message")
+            msgBox.setStandardButtons(
+                QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+            result = msgBox.exec()
+
+            # continue
+            if result == QtWidgets.QMessageBox.StandardButton.Ok:
+
+                self.currentMetaNode.deleteDataField()
+                self.delayedWriteToFile()
 
     def pushButtonDeleteTreeFieldClicked(self):
         if self.currentMetaNode:
             treeName = self.currentMetaNode.deleteTreeField()
             self.notifyTreeColumnChange(self.forest.treeIndexFromName(treeName))
+            self.delayedWriteToFile()
 
     def pushButtonDeleteTreeClicked(self):
         if self.currentMetaNode:
-            self.currentMetaNode.deleteTreeField()
+
+            # warning message
+            message = ("You are about the delete an entire tree. This will remove the tree structure and delete all "
+                       "data items that are only in this tree.")
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setText(message)
+            msgBox.setWindowTitle("TreeTime Message")
+            msgBox.setStandardButtons(
+                QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+            result = msgBox.exec()
+
+            # continue to remove tree and tab
+            if result == QtWidgets.QMessageBox.StandardButton.Ok:
+                n = self.currentMetaNode.deleteTree()
+                self.tabWidget.removeTab(n)
+                self.treeWidgets.pop(n)
+                self.delayedWriteToFile()
 
     def changeEditMode(self, mode):
         """
