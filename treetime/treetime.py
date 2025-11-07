@@ -295,6 +295,8 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         child = QMetaNode(field, self.forest, name=name, parentName=parent.name,
                           grandParentName=parent.parentName, nodeType='data field')
         parent.addChild(child)
+        parent.setExpanded(True)
+        return child
 
     def newTreeField(self):
         if self.nodeType == 'parameter list':
@@ -307,7 +309,8 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         child = QMetaNode(field, self.forest, name=name, parentName=parent.name,
                           grandParentName=parent.parentName, nodeType='tree field')
         parent.addChild(child)
-        return parent.name, child.name
+        parent.setExpanded(True)
+        return parent.name, child
 
     def newTree(self):
         if self.nodeType == 'parameter list':
@@ -320,7 +323,7 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         node = QMetaNode(tree, self.forest, name=tree.name, parentName=tree.name,
                           grandParentName=tree.name, nodeType='tree')
         root.addChild(node)
-        return tree
+        return tree, node
 
     def deleteDataField(self):
         """ Remove the current data field
@@ -1708,26 +1711,47 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def pushButtonNewDataFieldClicked(self):
         if self.currentMetaNode:
-            self.currentMetaNode.newDataField()
+            self.locked = True
+            node = self.currentMetaNode.newDataField()
+
+            # select and unfold new node
+            node.setExpanded(True)
+            self.currentMetaNode.setSelected(False)
+            self.locked = False
+            node.setSelected(True)
             self.delayedWriteToFile()
 
     def pushButtonNewTreeFieldClicked(self):
         if self.currentMetaNode:
-            treeName, fieldName = self.currentMetaNode.newTreeField()
+            self.locked = True
+            treeName, node = self.currentMetaNode.newTreeField()
             self.notifyTreeColumnChange(self.forest.treeIndexFromName(treeName))
+
+            # select and unfold new node
+            node.setExpanded(True)
+            self.currentMetaNode.setSelected(False)
+            self.locked = False
+            node.setSelected(True)
             self.delayedWriteToFile()
 
     def pushButtonNewTreeClicked(self):
         if self.currentMetaNode:
+            self.locked = True
 
             # create tree
-            tree = self.currentMetaNode.newTree()
+            tree, node = self.currentMetaNode.newTree()
 
             # insert new tab
             n = len(self.treeWidgets)-1
             self.createBranchTab(n, 'tabX', tree.name, 0)
             root = self.fillTreeWidget(n, [])
             tree.viewNode = root
+
+            # select and unfold new node
+            node.setExpanded(True)
+            self.currentMetaNode.setSelected(False)
+            self.locked = False
+            node.setSelected(True)
             self.delayedWriteToFile()
 
     def pushButtonDeleteDataFieldClicked(self):
@@ -2723,6 +2747,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.itemSelectionChanged()
             self.delayedWriteToFile()
         return True
+
 
 class TreeTime:
     
