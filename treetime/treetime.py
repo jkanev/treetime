@@ -2315,6 +2315,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
                 if currentNode.parent().contentType not in ('node-path', 'node-name'):
                     list = currentNode.parent().parent().availableFields()
+                    if currentNode.name == 'own-fields':
+                        list.remove(currentNode.parentName)
                 else:
                     list = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
                 offset = n
