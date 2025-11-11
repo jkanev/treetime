@@ -2249,118 +2249,120 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.locked = True
 
             # init
-            [currentNode] = self.treeWidgets[-1].selectedItems()
-            self.currentMetaNode = currentNode
+            selection = self.treeWidgets[-1].selectedItems()
+            if len(selection):
+                [currentNode] = selection
+                [self.currentMetaNode] = selection
 
-            # create non-edit flags
-            nonEditFlags = QtCore.Qt.ItemFlag.NoItemFlags
+                # create non-edit flags
+                nonEditFlags = QtCore.Qt.ItemFlag.NoItemFlags
 
-            # go through all lines of the table
-            n = 0
+                # go through all lines of the table
+                n = 0
 
-            # empty line
-            self._protectCells(0, [0, 1, 2, 3, 4])
-            n += 1
+                # empty line
+                self._protectCells(0, [0, 1, 2, 3, 4])
+                n += 1
 
-            # field name plus empty line
-            name = QtWidgets.QTableWidgetItem(currentNode.name)
-            #name.setFlags(nonEditFlags)
-            font = name.font()
-            font.setPointSize(self._dataFontPointSize + 3)
-            name.setFont(font)
-            font.setPointSize(self._dataFontPointSize)
-            self.tableWidget.setItem(n, 3, name)
-            #self._protectCells(n, [0, 1, 2, 4])
-            n += 1
-            self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.nodeType))
-            self._protectCells(n, [0, 1, 2, 3, 4])
-            n += 1
-            self._protectCells(n, [0, 1, 2, 3, 4])
-            n += 1
-
-            # field type plus empty line
-            self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Type"))
-            if currentNode.nodeType == 'data field':
-                widget = QtWidgets.QComboBox()
-                widget.setFont(font)
-                widget.addItems(Item.FieldTypes)
-                widget.setCurrentText(currentNode.contentType)
-                widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
-                self.tableWidget.setCellWidget(n, 3, widget)
-            elif currentNode.nodeType == 'tree field':
-                widget = QtWidgets.QComboBox()
-                widget.setFont(font)
-                widget.addItems(Field.Types)
-                widget.setCurrentText(currentNode.contentType)
-                widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
-                self.tableWidget.setCellWidget(n, 3, widget)
-            else:
-                self.tableWidget.setCellWidget(n, 3, None)
-                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.contentType))
-            self._protectCells(n, [0, 1, 2, 3, 4])
-            n += 1
-            self._protectCells(n, [0, 1, 2, 3, 4])
-            n += 1
-
-            # display content according to type
-            if currentNode.nodeType == 'data field':
-                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Default"))
-                self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
-                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.source['content']))
+                # field name plus empty line
+                name = QtWidgets.QTableWidgetItem(currentNode.name)
+                #name.setFlags(nonEditFlags)
+                font = name.font()
+                font.setPointSize(self._dataFontPointSize + 3)
+                name.setFont(font)
+                font.setPointSize(self._dataFontPointSize)
+                self.tableWidget.setItem(n, 3, name)
+                #self._protectCells(n, [0, 1, 2, 4])
+                n += 1
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.nodeType))
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
-                self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
-            elif currentNode.nodeType == 'tree field':
-                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Visibility"))
-                widget = QtWidgets.QCheckBox()
-                widget.setFont(font)
-                widget.setText("hidden")
-                widget.setChecked(currentNode.source.hidden)
-                treeIndex = self.forest.treeIndexFromName(currentNode.parentName)
-                widget.checkStateChanged.connect(lambda x, t=treeIndex: currentNode.changeVisibility(x) and self.notifyTreeColumnChange(t))
-                self.tableWidget.setCellWidget(n, 3, widget)
-                self._protectCells(n, [0, 1, 2, 3, 4])
-                n += 1
-                self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
-                self._protectCells(n, [0, 1, 2, 3, 4])
-                n += 1
-            elif currentNode.nodeType == 'parameter list':
-                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
-                if currentNode.parent().contentType not in ('node-path', 'node-name'):
-                    list = currentNode.parent().parent().availableFields()
-                    if currentNode.name == 'own-fields':
-                        list.remove(currentNode.parentName)
+
+                # field type plus empty line
+                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Type"))
+                if currentNode.nodeType == 'data field':
+                    widget = QtWidgets.QComboBox()
+                    widget.setFont(font)
+                    widget.addItems(Item.FieldTypes)
+                    widget.setCurrentText(currentNode.contentType)
+                    widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                    self.tableWidget.setCellWidget(n, 3, widget)
+                elif currentNode.nodeType == 'tree field':
+                    widget = QtWidgets.QComboBox()
+                    widget.setFont(font)
+                    widget.addItems(Field.Types)
+                    widget.setCurrentText(currentNode.contentType)
+                    widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                    self.tableWidget.setCellWidget(n, 3, widget)
                 else:
-                    list = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
-                offset = n
-                for cnt in currentNode.source:
+                    self.tableWidget.setCellWidget(n, 3, None)
+                    self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.contentType))
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+                self._protectCells(n, [0, 1, 2, 3, 4])
+                n += 1
+
+                # display content according to type
+                if currentNode.nodeType == 'data field':
+                    self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Default"))
+                    self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
+                    self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.source['content']))
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
+                    self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
+                elif currentNode.nodeType == 'tree field':
+                    self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Visibility"))
+                    widget = QtWidgets.QCheckBox()
+                    widget.setFont(font)
+                    widget.setText("hidden")
+                    widget.setChecked(currentNode.source.hidden)
+                    treeIndex = self.forest.treeIndexFromName(currentNode.parentName)
+                    widget.checkStateChanged.connect(lambda x, t=treeIndex: currentNode.changeVisibility(x) and self.notifyTreeColumnChange(t))
+                    self.tableWidget.setCellWidget(n, 3, widget)
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
+                    self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
+                elif currentNode.nodeType == 'parameter list':
+                    self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
+                    if currentNode.parent().contentType not in ('node-path', 'node-name'):
+                        list = currentNode.parent().parent().availableFields()
+                        if currentNode.name == 'own-fields':
+                            list.remove(currentNode.parentName)
+                    else:
+                        list = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
+                    offset = n
+                    for cnt in currentNode.source:
+                        widget = QtWidgets.QComboBox()
+                        widget.setFont(font)
+                        widget.addItems(list)
+                        widget.setCurrentText(str(cnt))
+                        widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
+                                                                                and self.showTreeFieldInDataView())
+                        self.tableWidget.setCellWidget(n, 3, widget)
+                        self._protectCells(n, [0, 1, 2, 3, 4])
+                        n += 1
                     widget = QtWidgets.QComboBox()
                     widget.setFont(font)
                     widget.addItems(list)
-                    widget.setCurrentText(str(cnt))
                     widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
                                                                             and self.showTreeFieldInDataView())
                     self.tableWidget.setCellWidget(n, 3, widget)
                     self._protectCells(n, [0, 1, 2, 3, 4])
                     n += 1
-                widget = QtWidgets.QComboBox()
-                widget.setFont(font)
-                widget.addItems(list)
-                widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
-                                                                        and self.showTreeFieldInDataView())
-                self.tableWidget.setCellWidget(n, 3, widget)
-                self._protectCells(n, [0, 1, 2, 3, 4])
-                n += 1
 
-            # empty lines to fill the 23 lines in the main view
-            if n < 23:
-                for k in range(n, 23):
-                    self.tableWidget.setItem(k, 1, QtWidgets.QTableWidgetItem(''))
-                    self.tableWidget.setCellWidget(k, 3, None)
-                    self.tableWidget.setItem(k, 3, QtWidgets.QTableWidgetItem(''))
-                    self._protectCells(k, [0, 1, 2, 3, 4])
+                # empty lines to fill the 23 lines in the main view
+                if n < 23:
+                    for k in range(n, 23):
+                        self.tableWidget.setItem(k, 1, QtWidgets.QTableWidgetItem(''))
+                        self.tableWidget.setCellWidget(k, 3, None)
+                        self.tableWidget.setItem(k, 3, QtWidgets.QTableWidgetItem(''))
+                        self._protectCells(k, [0, 1, 2, 3, 4])
 
             self.gridInitialised = True
             self.locked = False
