@@ -213,31 +213,77 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         feasibility (some changes are not allowed), then changes the name in the QMetaNode, then hands down to the
         QNodes and/or items. This might change some field definitions, if that's the case the Tree.fields will
         send a definition-changed message to their respective QMetaNodes.
+        Checks whether a user-edited name can be used for tree or field. In some cases names need to be unique.
+        If the name is not okay, the user sees a message box, after they click OK this function returns.
         """
 
-        # call change functions
+        # check name
+        changeOk = False    # default for parameter lists
+        message = None
         if self.nodeType == 'data item':
-            self.source.changeName(newName)
-            self.name = newName
-        if self.nodeType == 'tree':
-            self.source.changeName(newName)
-            self.name = newName
+            changeOk = True
+            message = None
+        elif self.nodeType == 'tree':
+            existingNames = [c.name for c in self.forest.children]
+            if newName in existingNames:
+                existingNames = f'{[n for n in existingNames if n != self.name]}'[1:-1]
+                changeOk = False
+                message = (f'Tree names must be unique. '
+                           f'New tree name cannot be one of {existingNames}.')
+            else:
+                changeOk = True
         elif self.nodeType == 'tree field':
-            changedFields = self.forest.changeTreeFieldName(self.parentName, self.name, newName)
-            self.name = newName
-            self.parent().updateChildren()
+            existingNames = self.forest.listFieldNames(self.parent().name)
+            if newName in existingNames:
+                existingNames = f'{[n for n in existingNames if n != self.name]}'[1:-1]
+                changeOk = False
+                message = (f'A tree field names cannot be identical to another tree field in the same tree, nor a data'
+                           f'field. New tree field name cannot be one of {existingNames}.')
+            else:
+                changeOk = True
         elif self.nodeType == 'data field':
-            self.forest.changeDataFieldName(self.name, newName)
-            root = self.parent().parent()
-            self.name = newName
-            for c in range(1, root.childCount()):
-                root.child(c).updateChildren()
-        else:
-            print(f"Name changing not implemented yet for type {self.nodeType}.")
+            existingNames = self.forest.listFieldNames()
+            if newName in existingNames:
+                existingNames = f'{[n for n in existingNames if n != self.name]}'[1:-1]
+                changeOk = False
+                message = (f'A data field cannot be identical to another data or tree field. '
+                           f'New data field name cannot be one of {existingNames}.')
+            else:
+                changeOk = True
 
-        # publish main text
-        super().setText(0, newName)
-        return True
+        # if change allowed, change
+        if changeOk:
+            if self.nodeType == 'data item':
+                self.source.changeName(newName)
+                self.name = newName
+            elif self.nodeType == 'tree':
+                self.source.changeName(newName)
+                self.name = newName
+            elif self.nodeType == 'tree field':
+                changedFields = self.forest.changeTreeFieldName(self.parentName, self.name, newName)
+                self.name = newName
+                self.parent().updateChildren()
+            elif self.nodeType == 'data field':
+                self.forest.changeDataFieldName(self.name, newName)
+                root = self.parent().parent()
+                self.name = newName
+                for c in range(1, root.childCount()):
+                    root.child(c).updateChildren()
+            else:
+                print(f"Name changing not implemented yet for type {self.nodeType}.")
+
+            # publish main text
+            super().setText(0, newName)
+
+        # if change not allowed, notify user
+        elif message:
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setText(message)
+            msgBox.setWindowTitle("Change not possible")
+            msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+            result = msgBox.exec()
+
+        return changeOk
 
     def changeType(self, newType):
         self.contentType = newType
@@ -2504,14 +2550,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     if self.editMode == 'content':
                         self.currentItem.changeName(newName)
                     else:
-                        self.currentMetaNode.changeName(newName)
-                        metaType = self.currentMetaNode.nodeType
-                        if metaType == 'tree':
-                            self.notifyTreeNameChange(self.forest.treeIndexFromName(newName))
-                        elif metaType == 'tree field':
-                            t = self.forest.treeIndexFromName(self.currentMetaNode.parentName)
-                            f = self.forest.children[t].fieldIndexFromName(newName)
-                            self.notifyTreeFieldNameChange(t, f)
+                        changeOk = self.currentMetaNode.changeName(newName)
+                        if changeOk:
+                            metaType = self.currentMetaNode.nodeType
+                            if metaType == 'tree':
+                                self.notifyTreeNameChange(self.forest.treeIndexFromName(newName))
+                            elif metaType == 'tree field':
+                                t = self.forest.treeIndexFromName(self.currentMetaNode.parentName)
+                                f = self.forest.children[t].fieldIndexFromName(newName)
+                                self.notifyTreeFieldNameChange(t, f)
+                        else:
+                            self.tableWidget.item(row, column).setText(self.currentMetaNode.name)
 
                 # one of the fields has been changed
                 else:
