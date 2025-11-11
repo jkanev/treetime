@@ -648,46 +648,6 @@ class TimerWidget(QtWidgets.QWidget):
             self.callback()
 
 
-class EntryDialog(QtWidgets.QDialog):
-    """
-    Dialog that is shown when the software is openend for the first time.
-    Contains an informative message, and a button "load file", and a button
-    "new from template".
-    """
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setWindowTitle("Not connected to Data Source")
-
-        buttons = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
-        self.buttonBox = QtWidgets.QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText("Create new Data File from Template")
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText("Open existing Data File")
-
-        self.layout = QtWidgets.QVBoxLayout()
-        message = "To start, please choose to either:"\
-            "<ul>"\
-            "<li>Create a new data file using an existing template file to define your data structure.<br/>"\
-            "Template files are standard <i>TreeTime</i> files (*.empty.trt) without data.<br/>"\
-            "They define your data structure (number of trees, item fields, display fields).<br/>"\
-            "First you will be asked to select a template file,<br/>"\
-            "then you'll be asked for a file name for your new data file.<br/></li>"\
-            "<li>Open an existing data file.<br/>"\
-            "Data files are <i>TreeTime</i> files (*.trt) containing data.</li>"\
-            "</ul>"\
-            "<i>TreeTime</i> saves all changes to its data file on the fly.<br/>"\
-            "Next time you open <i>TreeTime</i> it will be auto-connected to the file used last.<br/><br/>"\
-            "<i>TreeTime</i> comes with several template files and example files.<br/>"\
-            "If you're new to <i>TreeTime</i>, you might want to try the Tutorial first.<br/>"\
-            "Please have a look in the data directory of your installation.<br/><br/>"
-        message = QtWidgets.QLabel(message)
-        self.layout.addWidget(message)
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
-
-
 class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
     Implements the main part of the GUI.
@@ -714,6 +674,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
         self.pushButtonCopyBranchSibling.clicked.connect(lambda: self.createNode("sibling", True, True))
         self.pushButtonNewFromTemplate.clicked.connect(self.pushButtonNewFromTemplateClicked)
+        self.pushButtonNewFile.clicked.connect(self.pushButtonNewFileClicked)
+        self.pushButtonSaveSnapshot.setEnabled(False)
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.pushButtonExport.clicked.connect(self.pushButtonExportClicked)
@@ -753,7 +715,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.currentMetaNode = None
         self.currentColumn = None
         self.gridInitialised = False
-        self.editMode = 'content'     # one of 'content', 'tree', or 'data'
 
         # init application settings
         print("loading system settings...")
@@ -795,17 +756,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         except BaseException:
             fileLoaded = False
 
-        # keep trying
-        while not fileLoaded:
-            try:
-                msg = EntryDialog(self)
-                if msg.exec():
-                    self.pushButtonNewFromTemplateClicked()
-                else:
-                    self.pushButtonLoadFileClicked()
-                fileLoaded = True
-            except BaseException:
-                pass
+        # disable all buttons
+        if not fileLoaded:
+            self.editMode = 'empty'  # one of 'content', 'tree', or 'data'
+            self.changeEditMode('empty')
 
         # init themes and set last theme
         print("initialising fonts and colours...")
@@ -900,29 +854,52 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._web_service.shutdown()
         self._web_thread.join()
 
-    def endisableButtons(self, state):
+    def endisableButtons(self, mode):
         """
-        Enables all buttons if state==True, disables them otherwise
+        Enables all edit buttons if state==True, disables them except the new file buttons
         :param state: the button state to set
         """
-        self.pushButtonNewChild.setEnabled(state)
-        self.pushButtonNewSibling.setEnabled(state)
-        self.pushButtonNewParent.setEnabled(state)
-        self.pushButtonCopyNodeChild.setEnabled(state)
-        self.pushButtonCopyNodeSibling.setEnabled(state)
-        self.pushButtonCopyNodeParent.setEnabled(state)
-        self.pushButtonCopyBranchSibling.setEnabled(state)
-        self.pushButtonCopyChildrenSiblings.setEnabled(state)
-        self.comboBoxCopyDepth.setEnabled(state)
-        self.label_6.setEnabled(state)
-        self.pushButtonNewFromTemplate.setEnabled(state)
-        self.pushButtonLoadFile.setEnabled(state)
-        self.pushButtonSaveToFile.setEnabled(state)
-        self.pushButtonExport.setEnabled(state)
-        self.pushButtonRemoveNode.setEnabled(state)
-        self.pushButtonDeleteNode.setEnabled(state)
-        self.pushButtonRemoveBranch.setEnabled(state)
-        self.pushButtonDeleteBranch.setEnabled(state)
+
+        if mode == 'content':
+            contentState = True
+            fileState = True
+            metaState = True
+        elif mode == 'empty':
+            contentState = False
+            fileState = True
+            metaState = False
+        else:
+            contentState = False
+            fileState = False
+            metaState = True
+
+        # new/load file buttons
+        self.pushButtonNewFromTemplate.setEnabled(fileState)
+        self.pushButtonNewFile.setEnabled(fileState)
+        self.pushButtonLoadFile.setEnabled(fileState)
+
+        # edit/export buttons
+        self.pushButtonNewChild.setEnabled(contentState)
+        self.pushButtonNewSibling.setEnabled(contentState)
+        self.pushButtonNewParent.setEnabled(contentState)
+        self.pushButtonCopyNodeChild.setEnabled(contentState)
+        self.pushButtonCopyNodeSibling.setEnabled(contentState)
+        self.pushButtonCopyNodeParent.setEnabled(contentState)
+        self.pushButtonCopyBranchSibling.setEnabled(contentState)
+        self.pushButtonCopyChildrenSiblings.setEnabled(contentState)
+        self.comboBoxCopyDepth.setEnabled(contentState)
+        self.label_6.setEnabled(contentState)
+        self.pushButtonSaveToFile.setEnabled(contentState)
+        self.pushButtonExport.setEnabled(contentState)
+        self.pushButtonRemoveNode.setEnabled(contentState)
+        self.pushButtonDeleteNode.setEnabled(contentState)
+        self.pushButtonRemoveBranch.setEnabled(contentState)
+        self.pushButtonDeleteBranch.setEnabled(contentState)
+
+        # meta tab
+        self.toolBox.setItemEnabled(1, metaState)
+        self.toolBox.setItemEnabled(2, metaState)
+        self.toolBox.setItemEnabled(3, metaState)
 
     def endisableMetaButtons(self, metaType, state):
         """
@@ -1139,6 +1116,19 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.setWindowTitle("TreeTime - " + file)
             self.settings.setValue('fileDir', os.path.dirname(file))
             self.settings.setValue('lastFile', file)
+
+    def pushButtonNewFileClicked(self):
+        """
+        Callback for the load-file button. Loads new file and keeps that file connected.
+        """
+        fileDir = self.settings.value('fileDir') or ''
+        file = QtWidgets.QFileDialog.getSaveFileName(self, "New Data File", fileDir, 'TreeTime Files (*.trt)')[0]
+        if file != '':
+            self.newFile(file)
+            self.setWindowTitle("TreeTime - " + file)
+            self.settings.setValue('fileDir', os.path.dirname(file))
+            self.settings.setValue('lastFile', file)
+            self.labelCurrentFile.setText(file)
 
     def pushButtonLoadFileClicked(self):
         """
@@ -1808,7 +1798,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         print(f'{mode} editing mode enabled.')
 
         # set button states and texts
-        self.endisableButtons(mode == 'content' and True or False)
+        self.endisableButtons(mode)
 
         # clear data view
         self.tableWidget.clear()
@@ -1829,8 +1819,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.tabWidget.setCurrentIndex(len(self.forest.children))
 
             # if not active, select meta structure toolbar tab
-            if self.toolBox.currentIndex() != 2:
-                self.toolBox.setCurrentIndex(2)
+            if self.toolBox.currentIndex() != 3:
+                self.toolBox.setCurrentIndex(3)
 
             self.itemSelectionChanged()
 
@@ -1843,7 +1833,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.tabWidget.setCurrentIndex(0)
 
             # if meta toolbar tab active, select second tab (edit content)
-            if self.toolBox.currentIndex() == 2:
+            if self.toolBox.currentIndex() == 3:
                 self.toolBox.setCurrentIndex(1)
 
             # enable tabs
@@ -1854,6 +1844,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tableWidget.clear()
             self.gridInitialised = False
             self.itemSelectionChanged()
+
+        # entering empty editmode
+        else:
+            self.mode = mode
 
     def loadFile(self, filename):
         self.removeBranchTabs()
@@ -1892,6 +1886,27 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         else:
             self.pushButtonLoadFileClicked()
+
+    def newFile(self, filename):
+        if filename is not None and filename != '':
+
+            # write empty file
+            with open(filename, "w") as f:
+                f.write('--trees--\n\n')
+                f.write('tree "Tree"\n\n')
+                f.write('--item-types--\n\n')
+                f.write('item Entry\n')
+                f.write('    fields {}\n')
+                f.write('    trees [[]]\n\n')
+                f.write('--item-pool--\n\n')
+                f.write('item Entry\n')
+                f.write('    fields {}\n')
+                f.write('    trees [[0]]\n\n')
+
+            self.loadFile(filename)
+
+        else:
+            self.pushButtonNewFileClicked()
 
     def delayedWriteToFile(self, countdown=False):
         """
@@ -2466,10 +2481,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         '''Called when the user selects another tree in the tab widget.
         '''
 
-        if page == 2:     # select the meta structure page
+        if page == 3:     # select the meta structure page
             self.changeEditMode('meta')
-        elif page in (0,1):    # no change when "Settings" tab is selected
-            self.changeEditMode('content')
+        elif page in (0,1,2):    # no change when "Settings" tab is selected
+            if self.editMode == 'meta':
+                self.changeEditMode('content')
 
     def tableWidgetCellChanged(self, row, column):
         """
