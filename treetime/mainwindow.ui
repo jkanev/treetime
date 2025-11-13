@@ -177,15 +177,15 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="pageFile">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>251</width>
-         <height>762</height>
+         <width>250</width>
+         <height>728</height>
         </rect>
        </property>
        <attribute name="label">
@@ -209,6 +209,149 @@
          </spacer>
         </item>
         <item row="1" column="0" colspan="2">
+         <widget class="QLabel" name="label_11">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>New</string>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::TextInteractionFlag::NoTextInteraction</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewFile">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start a new file&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;• TreeTime needs a file to store data in&lt;/p&gt;&lt;p&gt;• Lets you choose a location, then stores data in that file until you decide to use a different file&lt;/p&gt;&lt;p&gt;• The empty file will contain one tree, one data item, no tree fields and no data fields.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>New empty File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewFromTemplate">
+          <property name="toolTip">
+           <string>&lt;b&gt;Create a new tree sheet from a template file&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• Lets you choose a template in a file dialog, then choose a file location for your new file.&lt;br/&gt;• Changes are silently written to the new file.</string>
+          </property>
+          <property name="text">
+           <string>New from Template</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="2">
+         <spacer name="verticalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="5" column="0" colspan="2">
+         <widget class="QLabel" name="label_5">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Load</string>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonLoadFile">
+          <property name="toolTip">
+           <string>&lt;b&gt;Load an existing tree sheet&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Subsequent changes will be written silently to the loaded file.</string>
+          </property>
+          <property name="text">
+           <string>Load File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0" colspan="2">
+         <spacer name="verticalSpacer_20">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="8" column="0" colspan="2">
+         <widget class="QLabel" name="label_16">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Save</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonSaveToFile">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Change the current file to a new location&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;Saves the current data to a new file, then stays with this file. All new changes will be written to this file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Save As</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonSaveSnapshot">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save a new snapshot&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Saves the current data to a file, appending the date to the file name:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;   filename_YYYY-MM-DD_hh-mm-ss.trt&lt;/span&gt;&lt;/p&gt;&lt;p&gt;writing proceeds in the current file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Save Snapshot</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0" colspan="2">
+         <spacer name="verticalSpacer_14">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="12" column="0" colspan="2">
          <widget class="QLabel" name="label_8">
           <property name="text">
            <string>Connected to Data File:</string>
@@ -221,7 +364,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0" colspan="2">
+        <item row="13" column="0" colspan="2">
          <widget class="QLabel" name="labelCurrentFile">
           <property name="enabled">
            <bool>true</bool>
@@ -257,96 +400,51 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0" colspan="2">
-         <spacer name="verticalSpacer_8">
+        <item row="14" column="0" colspan="2">
+         <spacer name="verticalSpacer_19">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>20</height>
+            <height>40</height>
            </size>
           </property>
          </spacer>
         </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QLabel" name="label_5">
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Load and Save</string>
-          </property>
-          <property name="scaledContents">
-           <bool>false</bool>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonNewFromTemplate">
-          <property name="toolTip">
-           <string>&lt;b&gt;Create a new tree sheet from a template file&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• Lets you choose a template in a file dialog, then choose a file location for your new file.&lt;br/&gt;• Changes are silently written to the new file.</string>
-          </property>
-          <property name="text">
-           <string>New from Template</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonLoadFile">
-          <property name="toolTip">
-           <string>&lt;b&gt;Load an existing tree sheet&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Subsequent changes will be written silently to the loaded file.</string>
-          </property>
-          <property name="text">
-           <string>Load File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonSaveToFile">
-          <property name="toolTip">
-           <string>&lt;b&gt;Save the current file to a new location&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Subsequent changes will be written silently to the new location.</string>
-          </property>
-          <property name="text">
-           <string>Save As</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0" colspan="2">
-         <spacer name="verticalSpacer_14">
+       </layout>
+      </widget>
+      <widget class="QWidget" name="pageExport">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>251</width>
+         <height>614</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>Export</string>
+       </attribute>
+       <layout class="QFormLayout" name="formLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+        </property>
+        <item row="0" column="0" colspan="2">
+         <spacer name="verticalSpacer_17">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>20</height>
+            <height>40</height>
            </size>
           </property>
          </spacer>
         </item>
-        <item row="9" column="0" colspan="2">
-         <widget class="QLabel" name="label_11">
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Export</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="0" colspan="2">
+        <item row="1" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBoxExportSource">
           <property name="flat">
            <bool>true</bool>
@@ -397,7 +495,7 @@
           </layout>
          </widget>
         </item>
-        <item row="11" column="0" colspan="2">
+        <item row="2" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBoxExportContent">
           <property name="flat">
            <bool>true</bool>
@@ -436,7 +534,7 @@
           </layout>
          </widget>
         </item>
-        <item row="12" column="0" colspan="2">
+        <item row="3" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBoxExportTarget">
           <property name="flat">
            <bool>true</bool>
@@ -475,7 +573,7 @@
           </layout>
          </widget>
         </item>
-        <item row="14" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="label_6">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -491,7 +589,7 @@
           </property>
          </widget>
         </item>
-        <item row="14" column="1">
+        <item row="4" column="1">
          <widget class="QComboBox" name="comboBoxExportDepth">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -559,14 +657,14 @@
           </item>
          </widget>
         </item>
-        <item row="15" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label_15">
           <property name="text">
            <string>Format</string>
           </property>
          </widget>
         </item>
-        <item row="15" column="1">
+        <item row="5" column="1">
          <widget class="QComboBox" name="comboBoxExportFormat">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -639,7 +737,7 @@
           </item>
          </widget>
         </item>
-        <item row="17" column="0" colspan="2">
+        <item row="6" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBoxExportContinuous">
           <property name="title">
            <string/>
@@ -668,14 +766,37 @@
           </layout>
          </widget>
         </item>
-        <item row="18" column="0" colspan="2">
+        <item row="7" column="0" colspan="2">
+         <spacer name="verticalSpacer_22">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="8" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonExport">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export.&lt;/span&gt;&lt;br/&gt;Starts the export to a file after showing a file selection dialog, or to the clipboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Export</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0" colspan="2">
          <widget class="QLabel" name="labelExportFileDescription">
           <property name="text">
            <string>Last exported file:</string>
           </property>
          </widget>
         </item>
-        <item row="19" column="0" colspan="2">
+        <item row="11" column="0" colspan="2">
          <widget class="QLabel" name="labelCurrentExportFile">
           <property name="font">
            <font>
@@ -700,25 +821,28 @@
           </property>
          </widget>
         </item>
-        <item row="20" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonExport">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Export.&lt;/span&gt;&lt;br/&gt;Starts the export to a file after showing a file selection dialog, or to the clipboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Export</string>
-          </property>
-         </widget>
-        </item>
-        <item row="21" column="0" colspan="2">
-         <spacer name="verticalSpacer_18">
+        <item row="12" column="0" colspan="2">
+         <spacer name="verticalSpacer_21">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>20</height>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="9" column="0" colspan="2">
+         <spacer name="verticalSpacer_16">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
            </size>
           </property>
          </spacer>
@@ -730,8 +854,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>200</width>
+         <height>716</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -1109,92 +1233,22 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="pageStructure">
+      <widget class="QWidget" name="pageMeta">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>760</height>
+         <height>728</height>
         </rect>
        </property>
        <attribute name="label">
-        <string>View Form</string>
+        <string>Edit Meta Structure</string>
        </attribute>
        <layout class="QFormLayout" name="formLayout">
         <property name="fieldGrowthPolicy">
          <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
         </property>
-        <item row="1" column="0" colspan="2">
-         <widget class="QLabel" name="label_13">
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Data Fields</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonDataFields">
-          <property name="text">
-           <string>View Data Fields</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QLabel" name="label_14">
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Tree Fields</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignmentFlag::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButtonTreeFields">
-          <property name="text">
-           <string>View Tree Fields</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0" colspan="2">
-         <spacer name="verticalSpacer_15">
-          <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="3" column="0" colspan="2">
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="0" colspan="2">
          <spacer name="verticalSpacer_13">
           <property name="orientation">
@@ -1208,8 +1262,68 @@
           </property>
          </spacer>
         </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QLabel" name="label_13">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Insert New Elements&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewDataField">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>New Data Field</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewTreeField">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>New Tree Field</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonNewTree">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>New Tree</string>
+          </property>
+         </widget>
+        </item>
         <item row="6" column="0" colspan="2">
-         <spacer name="verticalSpacer_16">
+         <widget class="QLabel" name="label_14">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Remove Elements</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="2">
+         <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
           </property>
@@ -1222,7 +1336,37 @@
          </spacer>
         </item>
         <item row="7" column="0" colspan="2">
-         <spacer name="verticalSpacer_17">
+         <widget class="QPushButton" name="pushButtonDeleteDataField">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Delete Data Field</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonDeleteTreeField">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Delete Tree Field</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButtonDeleteTree">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Delete Tree</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0" colspan="2">
+         <spacer name="verticalSpacer_15">
           <property name="orientation">
            <enum>Qt::Orientation::Vertical</enum>
           </property>
@@ -1241,8 +1385,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>760</height>
+         <width>233</width>
+         <height>411</height>
         </rect>
        </property>
        <attribute name="label">
@@ -1330,7 +1474,7 @@ hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: &quot;\2610&quot;; }
 li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     TreeTime 2025.2&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     TreeTime 2025.2+  (Development)&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     Official website:&lt;br /&gt;     &lt;a href=&quot;https://tree-time.info&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;tree-time.info&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;     Updates and source code:&lt;br /&gt;     &lt;a href=&quot;https://github.com/jkanev/treetime&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;github.com/jkanev/treetime&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;    Documentation:&lt;br /&gt;     &lt;a href=&quot;https://treetime-data-manager.readthedocs.io&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;treetime-data-manager.&lt;/span&gt;&lt;/a&gt;&lt;br /&gt;     &lt;a href=&quot;https://treetime-data-manager.readthedocs.io&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;readthedocs.io&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

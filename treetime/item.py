@@ -21,10 +21,12 @@ import copy
 import json
 from threading import Timer
 
+
 class Item:
     """
     The list/forest item containing the actual data
     """
+    FieldTypes = ('string', 'text', 'longtext', 'url', 'integer', 'timer')
 
     def __init__(self, name, fieldstring='{}', treestring='[]'):
         self.name = name
@@ -34,6 +36,7 @@ class Item:
         self.viewNodes = []
         self.nameChangeCallbacks = []
         self.fieldChangeCallbacks = []
+        self.fieldNameChangeCallbacks = []
         self.deletionCallbacks = []
         self.moveCallbacks = []
         self.selectionCallbacks = []
@@ -78,22 +81,55 @@ class Item:
         self.viewNodes = []
         self.nameChangeCallbacks = []
         self.fieldChangeCallbacks = []
+        self.fieldNameChangeCallbacks = []
         self.deletionCallbacks = []
         self.moveCallbacks = []
         self.selectionCallbacks = []
         for t in self.trees:
-            self.viewNodes += [None]
-            self.nameChangeCallbacks += [None]
-            self.fieldChangeCallbacks += [None]
-            self.deletionCallbacks += [None]
-            self.moveCallbacks += [None]
-            self.selectionCallbacks += [None]
+            for p in (self.viewNodes,
+                      self.nameChangeCallbacks,
+                      self.fieldChangeCallbacks,
+                      self.fieldNameChangeCallbacks,
+                      self.deletionCallbacks,
+                      self.moveCallbacks,
+                      self.selectionCallbacks):
+                p += [None]
 
     def addField(self, name, content):
         self.fields[name] = content
 
-    def removeField(self, name, content):
-        del self.fields[name]
+    def addTree(self):
+        """ Appends a new tree at the end of the tree list
+        :return: void
+        """
+        self.trees += [[]]
+        for p in (self.viewNodes,
+                  self.nameChangeCallbacks,
+                  self.fieldChangeCallbacks,
+                  self.fieldNameChangeCallbacks,
+                  self.deletionCallbacks,
+                  self.moveCallbacks,
+                  self.selectionCallbacks):
+            p += [None]
+
+    def deleteField(self, name):
+        self.fields.pop(name)
+        self.notifyFieldNameChange(name, None)
+
+    def deleteTree(self, n):
+        """ Removed a tree from the item
+        :param n: The tree index
+        :return:
+        """
+        self.trees.pop(n)
+        for p in (self.viewNodes,
+                  self.nameChangeCallbacks,
+                  self.fieldChangeCallbacks,
+                  self.fieldNameChangeCallbacks,
+                  self.deletionCallbacks,
+                  self.moveCallbacks,
+                  self.selectionCallbacks):
+            p.pop(n)
 
     def writeToString(self):
         string = self.name + "\n"
@@ -127,6 +163,9 @@ class Item:
 
     def registerFieldChangeCallback(self, tree, callback):
         self.fieldChangeCallbacks[tree] = callback
+
+    def registerFieldNameChangeCallback(self, tree, callback):
+        self.fieldNameChangeCallbacks[tree] = callback
 
     def registerDeletionCallback(self, tree, callback):
         self.deletionCallbacks[tree] = callback
@@ -203,6 +242,51 @@ class Item:
         for f in self.fieldChangeCallbacks:
             if f is not None:
                 f(fieldName)
+
+    def changeFieldName(self, oldName, newName):
+        """
+        Change the name of a field.
+        """
+
+        if oldName not in self.fields:
+            return "A field with name " + oldName + " does not exist in node " + self.name + "."
+        else:
+            # update field content
+            self.fields[newName] = self.fields.pop(oldName)
+            # notify changes
+            self.notifyFieldNameChange(oldName, newName)
+        return True
+
+    def changeFieldType(self, field, newType):
+        """
+        Change the type of a field
+        """
+
+        if field not in self.fields:
+            return "A field with name " + field + " does not exist in node " + self.name + "."
+        else:
+            # update field content
+            self.fields[field]['type'] = newType
+            if newType in ('string', 'text', 'longtext', 'url'):
+                self.fields[field]['content'] = str(self.fields[field]['content'])
+            elif newType in ('integer', 'timer'):
+                try:
+                    self.fields[field]['content'] = float(self.fields[field]['content'])
+                except ValueError:
+                    self.fields[field]['content'] = 0.0
+            if newType == 'timer':
+                self.fields[field]['running_since'] = None
+            elif 'running_since' in self.fields[field].keys():
+                self.fields[field].pop('running_since')
+        return True
+
+    def notifyFieldNameChange(self, oldName, newName):
+        """
+        Notify the tree that a field name has changed. The tree will then re-define the fields that contain this field.
+        """
+        for f in self.fieldNameChangeCallbacks:
+            if f is not None:
+                f(oldName, newName)
 
     def removeFromTree(self, treeIndex):
         """
@@ -326,3 +410,48 @@ class ItemPool:
         for i, t in enumerate(item.trees):
             item.removeFromTree(i)
         self.items.remove(item)
+
+    def changeFieldName(self, oldName, newName):
+        """ Changes the name of a field in all items
+        :param oldName: Previous field name
+        :param newName: New field name
+        :return: void
+        """
+        for it in self.items:
+            it.changeFieldName(oldName, newName)
+
+    def changeFieldType(self, field, newType):
+        """ Changes the type of a field in all items
+        :param field: Field name
+        :param newType: New field type
+        :return: void
+        """
+        for it in self.items:
+            it.changeFieldType(field, newType)
+        for it in self.items:
+            it.notifyFieldChange(field)     # necessary because some changes might cause errors
+
+    def addField(self, name, field):
+        for it in self.items:
+            it.addField(name, copy.deepcopy(field))
+
+    def addTree(self):
+        """ Add one empty tree at the end of the tree list of each item
+        :return: void
+        """
+        for it in self.items:
+            it.addTree()
+            it.clearCallbacks()
+
+    def deleteField(self, name):
+        for it in self.items:
+            it.deleteField(name)
+
+    def deleteTree(self, n):
+        """ Delete a empty from the tree list of each item
+        :param n: The index of the tree to delete
+        :return: void
+        """
+        for it in self.items:
+            it.deleteTree(n)
+

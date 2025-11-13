@@ -27,6 +27,25 @@ After this, the lines ``own-fields [...]``, ``child-fields [...]``, ``sibling-fi
   
 The tree field "Progress" is a ratio, defined as parameter1 / (parameter2 + parameter3 + ...). In the tree view it will be displayed as a percentage. It shows the ratio of the tree fields "Spent Hours" / "Planned Hours".
 
+Hidden Fields
+-------------
+
+Sometimes calculations are more complex than mere ratios, products or sums. The result of any field can be the input of
+any other field, provided there are no circular dependencies. If chained calculations are needed but intermediate
+values not interesting, intermediate field can be made *hidden*.
+
+        field "_sum(x)"
+            field-type "ratio-percent"
+            own-fields ["Spent Hours", "Planned Hours"]
+            child-fields []
+            sibling-fields []
+            parent-fields []
+            hidden
+
+Using the keyword `hidden` after the other field definitions creates a "hidden" field. It can be used for calculations
+in the tree, but will neither be visible in the GUI, nor in the export.
+
+
 string
 ------
 
@@ -186,6 +205,23 @@ Syntax::
 were "field1", "field2", "field3", ..., are the names of data or tree fields.
 
 Result: The value *field1 * field2 * field3 * ...*, where *N* is the number of fields.
+
+reciprocal
+-----
+
+The reciprocal of one input field value (or, if you enter several parameters, of the sum).
+Syntax::
+
+        field "Name"
+            field-type "reciprocal"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
+Result: The value *1.0 / (field1 + field2 + field3 + ...)*.
 
 ratio
 -----
