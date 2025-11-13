@@ -65,10 +65,8 @@ class QNode(QtWidgets.QTreeWidgetItem):
         super().__init__(displayStrings)
         
         # build reverse field order dictionary
-        self.fieldOrder = {}
-        for i,f in enumerate(fieldOrder):
-            self.fieldOrder[f] = i+1     # plus one because column 0 is the node name
-        
+        self.notifyFieldOrderChange(fieldOrder)
+
         # recurse
         for c in sourceNode.children:
             child = QNode(c, fieldOrder)
@@ -93,6 +91,8 @@ class QNode(QtWidgets.QTreeWidgetItem):
         self.sourceNode.registerSelectionCallback(lambda x: self.notifySelection(x))
         self.sourceNode.registerMoveCallback(self.notifyMove)
         self.sourceNode.registerViewNode(self)
+        self.sourceNode.registerFieldNameChangeCallback(self.notifyFieldNameChange)
+        self.sourceNode.registerFieldOrderChangeCallback(self.notifyFieldOrderChange)
 
     def notifyNameChange(self, newName):
         super().setText(0, newName)
@@ -120,6 +120,343 @@ class QNode(QtWidgets.QTreeWidgetItem):
 
     def notifySelection(self, select):
         self.setSelected(select)
+
+    def notifyFieldNameChange(self, n, newName):
+        """ Updates the name of a field in the reverse-field-order dict and in the main window
+        :param n: Field index
+        :param newName: New name of field with index n
+        :return: void
+        """
+        [oldName] = [n for n, i in self.fieldOrder.items() if i==n] or [False]
+        if oldName:
+            self.fieldOrder.pop(oldName)
+        self.fieldOrder[newName] = n
+
+    def notifyFieldOrderChange(self, fieldOrder):
+        """ Updates the reverse-field-order dict
+        :param n: Field index
+        :param newName: New name of field with index n
+        :return: void
+        """
+        self.fieldOrder = {}
+        for i, f in enumerate(fieldOrder):
+            self.fieldOrder[f] = i+1     # plus one because column 0 is the node name
+
+
+class QMetaNode(QtWidgets.QTreeWidgetItem):
+    """
+    The GUI object for displaying definitions of trees, fields, data items.
+    Each node has a pointer to its source (central tree field, default data item field, etc) and changes them directly,
+    then calls appropriate functions in the forest to update all other nodes/items.
+    """
+
+    def __init__(self, source, forest, name='', parentName='', grandParentName='', nodeType=''):
+
+        # initialise display
+        self.source = source
+        self.forest = forest
+        self.nodeType = nodeType
+        self.name = name
+        self.parentName = parentName
+        self.grandParentName = grandParentName
+        if nodeType == 'tree':
+            self.contentType = nodeType
+            displayStrings = [source.name, 'Tree']
+        elif nodeType == 'tree field':
+            self.contentType = source.fieldType
+            displayStrings = [name, source.hidden and source.fieldType  + ' (hidden)' or source.fieldType]
+        elif nodeType == 'data field':
+            self.contentType = source['type']
+            displayStrings = [name, source['type']]
+        elif nodeType=='parameter list':
+            self.contentType = nodeType
+            displayStrings = [name, f'{source}'[1:-1]]
+        else:
+            self.contentType = nodeType
+            displayStrings = [name or source.name, nodeType]
+        super().__init__(displayStrings)
+
+        # recurse
+        if nodeType=='tree':
+            for name, field in source.fields.items():
+                [index] = [n for n,x in enumerate(source.fieldOrder) if x==name] or [-1]
+                child = QMetaNode(field, self.forest,
+                                  name=name, parentName=self.name, grandParentName=self.parentName,
+                                  nodeType='tree field')
+                super().addChild(child)
+        elif nodeType=='tree field':
+            child1 = QMetaNode(source.ownFields, self.forest,
+                               name='own-fields', parentName=self.name, grandParentName=self.parentName,
+                               nodeType='parameter list')
+            super().addChild(child1)
+            child2 = QMetaNode(source.childFields, self.forest,
+                               name='child-fields', parentName=self.name, grandParentName=self.parentName,
+                               nodeType='parameter list')
+            super().addChild(child2)
+            child3 = QMetaNode(source.siblingFields, self.forest,
+                               name='sibling-fields', parentName=self.name, grandParentName=self.parentName,
+                               nodeType='parameter list')
+            super().addChild(child3)
+            child4 = QMetaNode(source.parentFields, self.forest,
+                               name='parent-fields', parentName=self.name, grandParentName=self.parentName,
+                               nodeType='parameter list')
+            super().addChild(child4)
+        elif nodeType=='data item':
+            for nm, fld in source.fields.items():
+                child = QMetaNode(fld, self.forest, name=nm, parentName=self.name, grandParentName=self.parentName,
+                                  nodeType='data field')
+                super().addChild(child)
+
+    def changeName(self, newName):
+        """
+        The name of the field or tree has been changed in the GUI. The GUI calls this function, which checks for
+        feasibility (some changes are not allowed), then changes the name in the QMetaNode, then hands down to the
+        QNodes and/or items. This might change some field definitions, if that's the case the Tree.fields will
+        send a definition-changed message to their respective QMetaNodes.
+        Checks whether a user-edited name can be used for tree or field. In some cases names need to be unique.
+        If the name is not okay, the user sees a message box, after they click OK this function returns.
+        """
+
+        # check name
+        changeOk = False    # default for parameter lists
+        message = None
+        if self.nodeType == 'data item':
+            changeOk = True
+            message = None
+        elif self.nodeType == 'tree':
+            existingNames = [c.name for c in self.forest.children]
+            if newName in existingNames:
+                existingNames = f'{[n for n in existingNames if n != self.name]}'[1:-1]
+                changeOk = False
+                message = (f'Tree names must be unique. '
+                           f'New tree name cannot be one of {existingNames}.')
+            else:
+                changeOk = True
+        elif self.nodeType == 'tree field':
+            existingNames = self.forest.listFieldNames(self.parent().name)
+            if newName in existingNames:
+                existingNames = f'{[n for n in existingNames if n != self.name]}'[1:-1]
+                changeOk = False
+                message = (f'A tree field names cannot be identical to another tree field in the same tree, nor a data'
+                           f'field. New tree field name cannot be one of {existingNames}.')
+            else:
+                changeOk = True
+        elif self.nodeType == 'data field':
+            existingNames = self.forest.listFieldNames()
+            if newName in existingNames:
+                existingNames = f'{[n for n in existingNames if n != self.name]}'[1:-1]
+                changeOk = False
+                message = (f'A data field cannot be identical to another data or tree field. '
+                           f'New data field name cannot be one of {existingNames}.')
+            else:
+                changeOk = True
+
+        # if change allowed, change
+        if changeOk:
+            if self.nodeType == 'data item':
+                self.source.changeName(newName)
+                self.name = newName
+            elif self.nodeType == 'tree':
+                self.source.changeName(newName)
+                self.name = newName
+            elif self.nodeType == 'tree field':
+                changedFields = self.forest.changeTreeFieldName(self.parentName, self.name, newName)
+                self.name = newName
+                self.parent().updateChildren()
+            elif self.nodeType == 'data field':
+                self.forest.changeDataFieldName(self.name, newName)
+                root = self.parent().parent()
+                self.name = newName
+                for c in range(1, root.childCount()):
+                    root.child(c).updateChildren()
+            else:
+                print(f"Name changing not implemented yet for type {self.nodeType}.")
+
+            # publish main text
+            super().setText(0, newName)
+
+        # if change not allowed, notify user
+        elif message:
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setText(message)
+            msgBox.setWindowTitle("Change not possible")
+            msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+            result = msgBox.exec()
+
+        return changeOk
+
+    def changeType(self, newType):
+        self.contentType = newType
+        if self.nodeType == 'tree field':
+            self.source.fieldType = newType
+            self.forest.updateTreeFieldType(self.parentName, self.name)
+            super().setText(1, self.source.hidden and newType + ' (hidden)' or newType)
+        else:
+            self.source['type'] = newType
+            self.forest.updateDataFieldType(self.name)
+            super().setText(1, newType)
+        return True
+
+    def changeContent(self, newContent, index=-1):
+        if self.nodeType == 'data field':
+            self.source['content'] = newContent     # this is silent, no need to signal anyone
+        elif self.nodeType == 'parameter list':
+            currentEntries = len(self.source)
+            if newContent:
+                if index >= currentEntries:
+                    self.source += [newContent]
+                else:
+                    self.source[index] = newContent
+            else:
+                self.source.pop(index)
+            self.forest.updateTreeFieldParameters(self.grandParentName, self.parentName, self.name)
+            super().setText(1, f'{self.source}'[1:-1])
+        else:
+            print(f"Content change to {newContent} at index {index} not implemented yet for type {self.nodeType}.")
+        return True
+
+    def changeVisibility(self, newVisibility):
+        """ Change the visibility of a node. Changes the visiblilty in the tree field directly, then notifies the
+        forest to update all nodes
+        :param newVisibility: Checkbox state (True/False)
+        :return: True
+        """
+        if self.nodeType == 'tree field':
+            self.source.hidden = (newVisibility == QtCore.Qt.CheckState.Checked)
+            self.forest.updateTreeFieldVisibility(self.parentName, self.name)
+        else:
+            print(f"Visibility change to hidden={newVisibility and True} not implemented yet for type {self.nodeType}.")
+        super().setText(1, self.source.hidden and self.source.fieldType + ' (hidden)' or self.source.fieldType)
+        return True
+
+    def newDataField(self):
+        """ Add a new data field by calling the forest and then adding a new child/sibling node
+        :return: void
+        """
+        name, field = self.forest.newDataField()
+        if self.nodeType == 'data item':
+            parent = self
+        else:
+            parent = self.parent()
+        child = QMetaNode(field, self.forest, name=name, parentName=parent.name,
+                          grandParentName=parent.parentName, nodeType='data field')
+        parent.addChild(child)
+        parent.setExpanded(True)
+        return child
+
+    def newTreeField(self):
+        if self.nodeType == 'parameter list':
+            parent = self.parent().parent()
+        elif self.nodeType == 'tree field':
+            parent = self.parent()
+        else:
+            parent = self
+        name, field = self.forest.newTreeField(parent.name)
+        child = QMetaNode(field, self.forest, name=name, parentName=parent.name,
+                          grandParentName=parent.parentName, nodeType='tree field')
+        parent.addChild(child)
+        parent.setExpanded(True)
+        return parent.name, child
+
+    def newTree(self):
+        if self.nodeType == 'parameter list':
+            root = self.parent().parent().parent()
+        elif self.nodeType == 'tree field':
+            root = self.parent().parent()
+        elif self.nodeType == 'tree':
+            root = self.parent()
+        tree = self.forest.newTree()
+        node = QMetaNode(tree, self.forest, name=tree.name, parentName=tree.name,
+                          grandParentName=tree.name, nodeType='tree')
+        root.addChild(node)
+        return tree, node
+
+    def deleteDataField(self):
+        """ Remove the current data field
+        :return:
+        """
+        self.forest.deleteDataField(self.name)
+        root = self.parent().parent()
+        for c in range(1, root.childCount()):
+            root.child(c).updateChildren()
+        self.parent().removeChild(self)
+
+    def deleteTreeField(self):
+        fieldName = self.nodeType == 'tree field' and self.name or self.parentName
+        treeName = self.nodeType == 'tree field' and self.parentName or self.grandParentName
+        self.forest.deleteTreeField(treeName, fieldName)
+        if self.nodeType == 'tree field':
+            field = self
+        else:
+            field = self.parent()
+        for c in range(0, field.childCount()):
+            field.removeChild(self.child(c))
+        field.parent().removeChild(self)
+        return treeName
+
+    def deleteTree(self):
+        """ Delete a tree. This function is always called from the tree node, we disabled it from the param list and
+        from the field node, because it can be too easily clicked and will remove quite some data.
+        :return:
+        """
+
+        # get tree name
+        treeName = self.name
+
+        # remove parameters and fields
+        for f in range(0, self.childCount()):
+            field = self.child(f)
+            for p in range(0, field.childCount()):
+                plist = field.child(p)
+                field.removeChild(plist)
+        for f in range(0, self.childCount()):
+            self.removeChild(self.child(f))
+
+        # delete the tree structure and data
+        n = self.forest.deleteTree(treeName)
+
+        # remove myself
+        self.parent().removeChild(self)
+        return n
+
+    def availableFields(self):
+        """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
+        :return: Get
+        """
+        fields = ['']
+        if self.nodeType == 'tree':
+            dataItem = self.parent().child(0).source
+            fields += [f for f in dataItem.fields.keys()]
+            fields += [f for f in self.source.fields.keys()]
+        return fields
+
+    def updateChildren(self):
+        """
+        Redisplays all children and adjusts changed names
+        :return:
+        """
+        if self.nodeType in ('tree', 'tree field'):
+            for c in range(self.childCount()):
+                self.child(c).parentName = self.name
+                self.child(c).grandParentName = self.parentName
+                print(f'changed names to: parent:"{self.name}" and grandParent:"{self.parentName}" for meta node child '
+                      f'{self.child(c).name} of {self.name}')
+                self.child(c).updateChildren()
+        elif self.nodeType == "parameter list":
+            super().setText(1, f'{self.source}'[1:-1])
+
+    def parent(self):
+        """
+        Returns the parent of a node
+        """
+        return super().parent() or self.treeWidget().invisibleRootItem() or None
+
+    def notifyDefinitionChange(self):
+        if self.nodeType == "parameter list":
+            super().setText(1, f'{self.source}'[1:-1])
+        else:
+            for c in range(self.childCount()):
+                self.child(c).notifyDefinitionChange()
 
 
 class UrlWidget(QtWidgets.QWidget):
@@ -357,46 +694,6 @@ class TimerWidget(QtWidgets.QWidget):
             self.callback()
 
 
-class EntryDialog(QtWidgets.QDialog):
-    """
-    Dialog that is shown when the software is openend for the first time.
-    Contains an informative message, and a button "load file", and a button
-    "new from template".
-    """
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setWindowTitle("Not connected to Data Source")
-
-        buttons = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
-        self.buttonBox = QtWidgets.QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setText("Create new Data File from Template")
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Cancel).setText("Open existing Data File")
-
-        self.layout = QtWidgets.QVBoxLayout()
-        message = "To start, please choose to either:"\
-            "<ul>"\
-            "<li>Create a new data file using an existing template file to define your data structure.<br/>"\
-            "Template files are standard <i>TreeTime</i> files (*.empty.trt) without data.<br/>"\
-            "They define your data structure (number of trees, item fields, display fields).<br/>"\
-            "First you will be asked to select a template file,<br/>"\
-            "then you'll be asked for a file name for your new data file.<br/></li>"\
-            "<li>Open an existing data file.<br/>"\
-            "Data files are <i>TreeTime</i> files (*.trt) containing data.</li>"\
-            "</ul>"\
-            "<i>TreeTime</i> saves all changes to its data file on the fly.<br/>"\
-            "Next time you open <i>TreeTime</i> it will be auto-connected to the file used last.<br/><br/>"\
-            "<i>TreeTime</i> comes with several template files and example files.<br/>"\
-            "If you're new to <i>TreeTime</i>, you might want to try the Tutorial first.<br/>"\
-            "Please have a look in the data directory of your installation.<br/><br/>"
-        message = QtWidgets.QLabel(message)
-        self.layout.addWidget(message)
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
-
-
 class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
     Implements the main part of the GUI.
@@ -423,6 +720,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonCopyNodeParent.clicked.connect(lambda: self.createNode("parent", True))
         self.pushButtonCopyBranchSibling.clicked.connect(lambda: self.createNode("sibling", True, True))
         self.pushButtonNewFromTemplate.clicked.connect(self.pushButtonNewFromTemplateClicked)
+        self.pushButtonNewFile.clicked.connect(self.pushButtonNewFileClicked)
+        self.pushButtonSaveSnapshot.setEnabled(False)
         self.pushButtonLoadFile.clicked.connect(self.pushButtonLoadFileClicked)
         self.pushButtonSaveToFile.clicked.connect(self.pushButtonSaveToFileClicked)
         self.pushButtonExport.clicked.connect(self.pushButtonExportClicked)
@@ -430,8 +729,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonDeleteNode.clicked.connect(self.pushButtonDeleteNodeClicked)
         self.pushButtonRemoveBranch.clicked.connect(lambda: self.moveCurrentItemToNewParent(self.currentTree, None))
         self.pushButtonDeleteBranch.clicked.connect(self.pushButtonDeleteBranchClicked)
-        self.pushButtonDataFields.clicked.connect(self.pushButtonDataFieldsClicked)
-        self.pushButtonTreeFields.clicked.connect(self.pushButtonTreeFieldsClicked)
+        self.pushButtonNewDataField.clicked.connect(self.pushButtonNewDataFieldClicked)
+        self.pushButtonNewTreeField.clicked.connect(self.pushButtonNewTreeFieldClicked)
+        self.pushButtonNewTree.clicked.connect(self.pushButtonNewTreeClicked)
+        self.pushButtonDeleteDataField.clicked.connect(self.pushButtonDeleteDataFieldClicked)
+        self.pushButtonDeleteTreeField.clicked.connect(self.pushButtonDeleteTreeFieldClicked)
+        self.pushButtonDeleteTree.clicked.connect(self.pushButtonDeleteTreeClicked)
         self.sliderZoom.valueChanged.connect(self.sliderZoomChanged)
         self.tableWidget.cellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
@@ -442,6 +745,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tableWidget.horizontalHeader().setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeMode.Stretch)     # column 3: stretch
         self.tableWidget.horizontalHeader().setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeMode.Fixed)     # column 4: fixed
         self.tabWidget.currentChanged.connect(self.tabWidgetCurrentChanged)
+        self.toolBox.currentChanged.connect(self.toolBoxCurrentChanged)
         self.write_delay = 0
         self.write_timer = False
         self.locked = True
@@ -454,9 +758,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.treeWidgets = []
         self.currentTree = 0
         self.currentItem = None
+        self.currentMetaNode = None
         self.currentColumn = None
         self.gridInitialised = False
-        self.editMode = 'content'     # one of 'content', 'tree', or 'data'
 
         # init application settings
         print("loading system settings...")
@@ -498,17 +802,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         except BaseException:
             fileLoaded = False
 
-        # keep trying
-        while not fileLoaded:
-            try:
-                msg = EntryDialog(self)
-                if msg.exec():
-                    self.pushButtonNewFromTemplateClicked()
-                else:
-                    self.pushButtonLoadFileClicked()
-                fileLoaded = True
-            except BaseException:
-                pass
+        # disable all buttons
+        if not fileLoaded:
+            self.editMode = 'empty'  # one of 'content', 'tree', or 'data'
+            self.changeEditMode('empty')
 
         # init themes and set last theme
         print("initialising fonts and colours...")
@@ -603,28 +900,73 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._web_service.shutdown()
         self._web_thread.join()
 
-    def endisableButtons(self, state):
+    def endisableButtons(self, mode):
         """
-        Enables all buttons if state==True, disables them otherwise
+        Enables all edit buttons if state==True, disables them except the new file buttons
         :param state: the button state to set
         """
-        self.pushButtonNewChild.setEnabled(state)
-        self.pushButtonNewSibling.setEnabled(state)
-        self.pushButtonNewParent.setEnabled(state)
-        self.pushButtonCopyNodeChild.setEnabled(state)
-        self.pushButtonCopyNodeSibling.setEnabled(state)
-        self.pushButtonCopyNodeParent.setEnabled(state)
-        self.pushButtonCopyBranchSibling.setEnabled(state)
-        self.pushButtonNewFromTemplate.setEnabled(state)
-        self.pushButtonLoadFile.setEnabled(state)
-        self.pushButtonSaveToFile.setEnabled(state)
-        self.pushButtonExport.setEnabled(state)
-        self.pushButtonRemoveNode.setEnabled(state)
-        self.pushButtonDeleteNode.setEnabled(state)
-        self.pushButtonRemoveBranch.setEnabled(state)
-        self.pushButtonDeleteBranch.setEnabled(state)
-        self.pushButtonDataFields.setEnabled(state)
-        self.pushButtonTreeFields.setEnabled(state)
+
+        if mode == 'content':
+            contentState = True
+            fileState = True
+            metaState = True
+        elif mode == 'empty':
+            contentState = False
+            fileState = True
+            metaState = False
+        else:
+            contentState = False
+            fileState = False
+            metaState = True
+
+        # new/load file buttons
+        self.pushButtonNewFromTemplate.setEnabled(fileState)
+        self.pushButtonNewFile.setEnabled(fileState)
+        self.pushButtonLoadFile.setEnabled(fileState)
+
+        # edit/export buttons
+        self.pushButtonNewChild.setEnabled(contentState)
+        self.pushButtonNewSibling.setEnabled(contentState)
+        self.pushButtonNewParent.setEnabled(contentState)
+        self.pushButtonCopyNodeChild.setEnabled(contentState)
+        self.pushButtonCopyNodeSibling.setEnabled(contentState)
+        self.pushButtonCopyNodeParent.setEnabled(contentState)
+        self.pushButtonCopyBranchSibling.setEnabled(contentState)
+        self.pushButtonCopyChildrenSiblings.setEnabled(contentState)
+        self.comboBoxCopyDepth.setEnabled(contentState)
+        self.label_6.setEnabled(contentState)
+        self.pushButtonSaveToFile.setEnabled(contentState)
+        self.pushButtonExport.setEnabled(contentState)
+        self.pushButtonRemoveNode.setEnabled(contentState)
+        self.pushButtonDeleteNode.setEnabled(contentState)
+        self.pushButtonRemoveBranch.setEnabled(contentState)
+        self.pushButtonDeleteBranch.setEnabled(contentState)
+
+        # meta tab
+        self.toolBox.setItemEnabled(1, metaState)
+        self.toolBox.setItemEnabled(2, metaState)
+        self.toolBox.setItemEnabled(3, metaState)
+
+    def endisableMetaButtons(self, metaType, state):
+        """
+        Enables state related buttons if state==True, disables them otherwise
+        Disabling (old state) should be called before enabling (new state)
+        :param state: the button state to set
+        """
+        if metaType in ('tree'):
+            self.pushButtonNewTree.setEnabled(state)
+            self.pushButtonDeleteTree.setEnabled(state)
+            self.pushButtonNewTreeField.setEnabled(state)
+        if metaType in ('parameter list', 'tree field'):
+            self.pushButtonNewTreeField.setEnabled(state)
+            self.pushButtonDeleteTreeField.setEnabled(state)
+        if metaType == 'data item':
+            self.pushButtonNewDataField.setEnabled(state)
+        if metaType == 'data field':
+            self.pushButtonNewDataField.setEnabled(state)
+            self.pushButtonDeleteDataField.setEnabled(state)
+        if len(self.forest.children) == 1:     # Prohibit deleting of the last tree
+            self.pushButtonDeleteTree.setEnabled(False)
 
     def closeEvent(self, event):
         """
@@ -821,6 +1163,19 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.settings.setValue('fileDir', os.path.dirname(file))
             self.settings.setValue('lastFile', file)
 
+    def pushButtonNewFileClicked(self):
+        """
+        Callback for the load-file button. Loads new file and keeps that file connected.
+        """
+        fileDir = self.settings.value('fileDir') or ''
+        file = QtWidgets.QFileDialog.getSaveFileName(self, "New Data File", fileDir, 'TreeTime Files (*.trt)')[0]
+        if file != '':
+            self.newFile(file)
+            self.setWindowTitle("TreeTime - " + file)
+            self.settings.setValue('fileDir', os.path.dirname(file))
+            self.settings.setValue('lastFile', file)
+            self.labelCurrentFile.setText(file)
+
     def pushButtonLoadFileClicked(self):
         """
         Callback for the load-file button. Loads new file and keeps that file connected.
@@ -833,24 +1188,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.settings.setValue('fileDir', os.path.dirname(file))
             self.settings.setValue('lastFile', file)
             self.labelCurrentFile.setText(file)
-
-    def pushButtonDataFieldsClicked(self):
-        """
-        Callback for the data field edit button. Toggles the tree-field edit mode.
-        """
-        if self.editMode == 'data':
-            self.changeEditMode('content')
-        else:
-            self.changeEditMode('data')
-
-    def pushButtonTreeFieldsClicked(self):
-        """
-        Callback for the data field edit button. Toggles the tree-field edit mode.
-        """
-        if self.editMode == 'tree':
-            self.changeEditMode('content')
-        else:
-            self.changeEditMode('tree')
 
     def pushButtonExportClicked(self):
 
@@ -1408,6 +1745,95 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.forest.itemPool.deleteItem(i)
                 self.delayedWriteToFile()
 
+    def pushButtonNewDataFieldClicked(self):
+        if self.currentMetaNode:
+            self.locked = True
+            node = self.currentMetaNode.newDataField()
+
+            # select and unfold new node
+            node.setExpanded(True)
+            self.currentMetaNode.setSelected(False)
+            self.locked = False
+            node.setSelected(True)
+            self.delayedWriteToFile()
+
+    def pushButtonNewTreeFieldClicked(self):
+        if self.currentMetaNode:
+            self.locked = True
+            treeName, node = self.currentMetaNode.newTreeField()
+            self.notifyTreeColumnChange(self.forest.treeIndexFromName(treeName))
+
+            # select and unfold new node
+            node.setExpanded(True)
+            self.currentMetaNode.setSelected(False)
+            self.locked = False
+            node.setSelected(True)
+            self.delayedWriteToFile()
+
+    def pushButtonNewTreeClicked(self):
+        if self.currentMetaNode:
+            self.locked = True
+
+            # create tree
+            tree, node = self.currentMetaNode.newTree()
+
+            # insert new tab
+            n = len(self.treeWidgets)-1
+            self.createBranchTab(n, 'tabX', tree.name, 0)
+            root = self.fillTreeWidget(n, [])
+            tree.viewNode = root
+
+            # select and unfold new node
+            node.setExpanded(True)
+            self.currentMetaNode.setSelected(False)
+            self.locked = False
+            node.setSelected(True)
+            self.delayedWriteToFile()
+
+    def pushButtonDeleteDataFieldClicked(self):
+        if self.currentMetaNode:
+
+            # warning message
+            message = ("You are about the delete a data field. This will remove data.")
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setText(message)
+            msgBox.setWindowTitle("TreeTime Message")
+            msgBox.setStandardButtons(
+                QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+            result = msgBox.exec()
+
+            # continue
+            if result == QtWidgets.QMessageBox.StandardButton.Ok:
+
+                self.currentMetaNode.deleteDataField()
+                self.delayedWriteToFile()
+
+    def pushButtonDeleteTreeFieldClicked(self):
+        if self.currentMetaNode:
+            treeName = self.currentMetaNode.deleteTreeField()
+            self.notifyTreeColumnChange(self.forest.treeIndexFromName(treeName))
+            self.delayedWriteToFile()
+
+    def pushButtonDeleteTreeClicked(self):
+        if self.currentMetaNode:
+
+            # warning message
+            message = ("You are about the delete an entire tree. This will remove the tree structure and delete all "
+                       "data items that are only in this tree.")
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setText(message)
+            msgBox.setWindowTitle("TreeTime Message")
+            msgBox.setStandardButtons(
+                QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel)
+            result = msgBox.exec()
+
+            # continue to remove tree and tab
+            if result == QtWidgets.QMessageBox.StandardButton.Ok:
+                n = self.currentMetaNode.deleteTree()
+                self.tabWidget.removeTab(n)
+                self.treeWidgets.pop(n)
+                self.delayedWriteToFile()
+
     def changeEditMode(self, mode):
         """
         Changes the current editing mode to the mode in the parameters.
@@ -1415,42 +1841,46 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         :param mode: The new mode
         """
 
+        print(f'{mode} editing mode enabled.')
+
         # set button states and texts
-        self.endisableButtons(mode == 'content' and True or False)
-        self.pushButtonTreeFields.setText(mode != 'tree' and "View Tree Fields" or "Finished")
-        self.pushButtonDataFields.setText(mode != 'data' and "View Data Fields" or "Finished")
-        self.pushButtonTreeFields.setEnabled(mode != 'data' and True or False)
-        self.pushButtonDataFields.setEnabled(mode != 'tree' and True or False)
+        self.endisableButtons(mode)
 
         # clear data view
         self.tableWidget.clear()
         self.gridInitialised = False
 
         # entering tree field mode
-        if mode == 'tree' and self.editMode != 'tree':
-
-            # set selection type
-            for tree in self.treeWidgets:
-                tree.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectColumns)
-                tree.clearSelection()
-
-            # fold tree and select first item
-            currentTree = self.treeWidgets[self.currentTree]
-            rootItem = currentTree.invisibleRootItem()
-            for c in range(0, rootItem.childCount()):
-                currentTree.collapseItem(rootItem.child(c))
+        if mode == 'meta' and self.editMode != 'meta':
+            self.editMode = mode
 
             # init display
             self.tableWidget.clear()
             self.gridInitialised = False
+            if not len(self.treeWidgets[-1].selectedItems()):
+                self.treeWidgets[-1].topLevelItem(0).setSelected(True)
+
+            # if not active, select meta tab
+            if self.tabWidget.currentIndex() != len(self.forest.children):
+                self.tabWidget.setCurrentIndex(len(self.forest.children))
+
+            # if not active, select meta structure toolbar tab
+            if self.toolBox.currentIndex() != 3:
+                self.toolBox.setCurrentIndex(3)
+
+            self.itemSelectionChanged()
 
         # entering content edit mode
-        elif mode != 'tree' and self.editMode == 'tree':
+        elif mode != 'meta' and self.editMode == 'meta':
+            self.editMode = mode
 
-            # set selection type
-            for tree in self.treeWidgets:
-                tree.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-                tree.clearSelection()
+            # if meta tab active, select first tab
+            if self.tabWidget.currentIndex() == len(self.forest.children):
+                self.tabWidget.setCurrentIndex(0)
+
+            # if meta toolbar tab active, select second tab (edit content)
+            if self.toolBox.currentIndex() == 3:
+                self.toolBox.setCurrentIndex(1)
 
             # enable tabs
             for tab in self.tabWidgets:
@@ -1459,12 +1889,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # init display
             self.tableWidget.clear()
             self.gridInitialised = False
+            self.itemSelectionChanged()
 
-        # entering data field edit mode
-        elif mode == 'data':
-            self.showDataFieldsInDataView()
-
-        self.editMode = mode
+        # entering empty editmode
+        else:
+            self.mode = mode
 
     def loadFile(self, filename):
         self.removeBranchTabs()
@@ -1473,7 +1902,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.currentTree = 0
         self.currentItem = None
         self.gridInitialised = False
-        self.editMode = 'content'     # one of 'content', 'tree', or 'data'
+        self.editMode = 'content'     # one of 'content', 'meta', or 'data'
         if filename is not None and filename != '':
             try:
                 # load file
@@ -1503,6 +1932,27 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         else:
             self.pushButtonLoadFileClicked()
+
+    def newFile(self, filename):
+        if filename is not None and filename != '':
+
+            # write empty file
+            with open(filename, "w") as f:
+                f.write('--trees--\n\n')
+                f.write('tree "Tree"\n\n')
+                f.write('--item-types--\n\n')
+                f.write('item Entry\n')
+                f.write('    fields {}\n')
+                f.write('    trees [[]]\n\n')
+                f.write('--item-pool--\n\n')
+                f.write('item Entry\n')
+                f.write('    fields {}\n')
+                f.write('    trees [[0]]\n\n')
+
+            self.loadFile(filename)
+
+        else:
+            self.pushButtonNewFileClicked()
 
     def delayedWriteToFile(self, countdown=False):
         """
@@ -1540,31 +1990,67 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.tabWidget.clear()
             self.tabWidgets = []
 
+    def createBranchTab(self, index, tabName, tabText, nColumns):
+        newTab = QtWidgets.QWidget()
+        newTab.setObjectName(tabName)
+        newGridLayout = QtWidgets.QGridLayout(newTab)
+        self.tabWidget.insertTab(index, newTab, "")
+        self.tabWidgets += [newTab]
+        self.tabWidget.setTabText(index, tabText)
+        newTree = QtWidgets.QTreeWidget(newTab)
+        newTree.setGeometry(QtCore.QRect(0, 0, 731, 751))
+        newTree.setAllColumnsShowFocus(True)
+        newTree.setWordWrap(True)
+        newTree.headerItem().setText(0, "1")
+        newTree.setColumnCount(nColumns)
+        newGridLayout.addWidget(newTree, 0, 0, 1, 1)
+        self.treeWidgets.insert(index, newTree)
+
     def createBranchTabs(self):
         
         self.locked = True
         
         # create tabs and tree widgets
         for n,c in enumerate(self.forest.children):
-            newTab = QtWidgets.QWidget()
-            newTab.setObjectName("tab"+str(n))
-            newGridLayout = QtWidgets.QGridLayout(newTab)
-            self.tabWidget.addTab(newTab, "")
-            self.tabWidgets += [newTab]
-            self.tabWidget.setTabText(n, c.name)
-            newTree = QtWidgets.QTreeWidget(newTab)
-            newTree.setGeometry(QtCore.QRect(0, 0, 731, 751))
-            newTree.setAllColumnsShowFocus(True)
-            newTree.setWordWrap(True)
-            newTree.headerItem().setText(0, "1")
-            newTree.setColumnCount(len(c.fieldOrder))
-            newGridLayout.addWidget(newTree, 0, 0, 1, 1)
-            self.treeWidgets += [newTree]
-        
+            self.createBranchTab(len(self.tabWidgets), "tab" + str(n), c.name, len(c.fieldOrder))
+
+        # create meta tabs and widget
+        self.createBranchTab(n+1, "tabM", "[Meta Structure]", 2)
+
         self.locked = False
 
+    def notifyTreeNameChange(self, n):
+        self.tabWidget.setTabText(n, self.forest.children[n].name)
+
+    def notifyTreeFieldNameChange(self, n, m):
+        newName = self.forest.children[n].fieldOrder[m]
+        self.treeWidgets[n].headerItem().setText(m+1, newName)
+
+    def notifyTreeColumnChange(self, n):
+        """
+        Re-reads the column information from tree n and adapts the display.
+        :param n: Tree index
+        :return: void
+        """
+        fieldOrder = self.forest.children[n].fieldOrder
+        treeWidget = self.treeWidgets[n]
+        treeWidget.setColumnCount(len(fieldOrder)+1)
+        for f, field in enumerate(fieldOrder):
+            treeWidget.headerItem().setText(f+1, field)
+        return True
+
     def resizeNameColumn(self):
-        self.treeWidgets[self.currentTree].resizeColumnToContents(0)
+        if self.editMode == 'content':
+            self.treeWidgets[self.currentTree].resizeColumnToContents(0)
+        else:
+            self.treeWidgets[-1].resizeColumnToContents(0)
+
+    def fillTreeWidget(self, n, labels):
+        self.treeWidgets[n].itemSelectionChanged.connect(self.itemSelectionChanged)
+        self.treeWidgets[n].itemCollapsed.connect(self.resizeNameColumn)
+        self.treeWidgets[n].itemExpanded.connect(self.resizeNameColumn)
+        self.treeWidgets[n].setHeaderLabels(labels)
+        return self.treeWidgets[n].invisibleRootItem()
 
     def fillTreeWidgets(self):
         """
@@ -1573,11 +2059,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # for each tree in the forest
         for n, c in enumerate(self.forest.children):
-            self.treeWidgets[n].itemSelectionChanged.connect(self.itemSelectionChanged)
-            self.treeWidgets[n].itemCollapsed.connect(self.resizeNameColumn)
-            self.treeWidgets[n].itemExpanded.connect(self.resizeNameColumn)
-            self.treeWidgets[n].setHeaderLabels([""] + c.fieldOrder)
-            root = self.treeWidgets[n].invisibleRootItem()
+            root = self.fillTreeWidget(n, [""] + c.fieldOrder)
             c.viewNode = root
 
             # add branch
@@ -1592,6 +2074,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # expand name column so all names are readable
             self.treeWidgets[n].resizeColumnToContents(0)
 
+        # for the meta tree
+        m = len(self.forest.children)
+        root = self.fillTreeWidget(m, ["Name", "Type / Content"])
+
+        # add items
+        for it in self.forest.itemTypes.items:
+            parent = QMetaNode(it, self.forest, name=it.name, nodeType='data item')
+            root.addChild(parent)
+
+        # add trees
+        for t, tree in enumerate(self.forest.children):
+            parent = QMetaNode(self.forest.children[t], self.forest, name=tree.name, nodeType='tree')
+            root.addChild(parent)
+
+        # expand name column so all names are readable
+        self.treeWidgets[m].resizeColumnToContents(0)
 
     def _protectCells(self, row, columns):
 
@@ -1610,8 +2108,11 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if self.editMode == 'content':
             self.showContentInDataView(self.currentTree)
-        elif self.editMode == 'tree':
-            self.showTreeFieldInDataView(self.currentTree)
+        elif self.editMode == 'meta':
+            if self.currentMetaNode:
+                self.endisableMetaButtons(self.currentMetaNode.nodeType, False)   # disable old
+            self.showTreeFieldInDataView()   # display content and set currentMetaNode
+            self.endisableMetaButtons(self.currentMetaNode.nodeType, True)    # enable new
 
     def showContentInDataView(self, treeIndex):
         if not self.locked:
@@ -1660,15 +2161,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 n += 1
 
                 # add name
-                name = QtWidgets.QTableWidgetItem("")
-                name.setFlags(nonEditFlags)
-                value = QtWidgets.QTableWidgetItem(self.currentItem.name)
+                name = QtWidgets.QTableWidgetItem(self.currentItem.name)
                 font = name.font()
                 font.setPointSize(self._dataFontPointSize + 3)
-                value.setFont(font)
+                name.setFont(font)
                 font.setPointSize(self._dataFontPointSize)
-                self.tableWidget.setItem(n, 1, name)
-                self.tableWidget.setItem(n, 3, value)
+                self.tableWidget.setItem(n, 3, name)
                 self._protectCells(n, [0, 2, 4])
                 n += 1
                 
@@ -1787,7 +2285,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.gridInitialised = True
             self.locked = False
 
-    def showTreeFieldInDataView(self, treeIndex):
+    def showTreeFieldInDataView(self):
         """ Shows the content of the tree field indicated by the current column
         :param treeIndex: The ID of the tree
         :return: None
@@ -1797,10 +2295,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.locked = True
 
             # init
-            self.currentColumn = self.treeWidgets[treeIndex].currentColumn()
-
-            # we have something to write
-            if self.currentColumn > 0:
+            selection = self.treeWidgets[-1].selectedItems()
+            if len(selection):
+                [currentNode] = selection
+                [self.currentMetaNode] = selection
 
                 # create non-edit flags
                 nonEditFlags = QtCore.Qt.ItemFlag.NoItemFlags
@@ -1812,19 +2310,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self._protectCells(0, [0, 1, 2, 3, 4])
                 n += 1
 
-                # find field
-                fieldname = self.forest.children[treeIndex].fieldOrder[self.currentColumn-1]
-                field = self.forest.children[treeIndex].fields[fieldname]
-
                 # field name plus empty line
-                name = QtWidgets.QTableWidgetItem("")
-                name.setFlags(nonEditFlags)
-                value = QtWidgets.QTableWidgetItem(fieldname)
+                name = QtWidgets.QTableWidgetItem(currentNode.name)
+                #name.setFlags(nonEditFlags)
                 font = name.font()
                 font.setPointSize(self._dataFontPointSize + 3)
-                value.setFont(font)
-                self.tableWidget.setItem(n, 1, name)
-                self.tableWidget.setItem(n, 3, value)
+                name.setFont(font)
+                font.setPointSize(self._dataFontPointSize)
+                self.tableWidget.setItem(n, 3, name)
+                #self._protectCells(n, [0, 1, 2, 4])
+                n += 1
+                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.nodeType))
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
                 self._protectCells(n, [0, 1, 2, 3, 4])
@@ -1832,40 +2328,87 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # field type plus empty line
                 self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Type"))
-                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(field.fieldType))
+                if currentNode.nodeType == 'data field':
+                    widget = QtWidgets.QComboBox()
+                    widget.setFont(font)
+                    widget.addItems(Item.FieldTypes)
+                    widget.setCurrentText(currentNode.contentType)
+                    widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                    self.tableWidget.setCellWidget(n, 3, widget)
+                elif currentNode.nodeType == 'tree field':
+                    widget = QtWidgets.QComboBox()
+                    widget.setFont(font)
+                    widget.addItems(Field.Types)
+                    widget.setCurrentText(currentNode.contentType)
+                    widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
+                    self.tableWidget.setCellWidget(n, 3, widget)
+                else:
+                    self.tableWidget.setCellWidget(n, 3, None)
+                    self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.contentType))
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
                 self._protectCells(n, [0, 1, 2, 3, 4])
                 n += 1
 
-                # own fields, sibling fields, parent fields
-                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Own fields"))
-                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.ownFields)))
-                self._protectCells(n, [0, 1, 2, 3, 4])
-                n += 1
-                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Child fields"))
-                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.childFields)))
-                self._protectCells(n, [0, 1, 2, 3, 4])
-                n += 1
-                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Sibling fields"))
-                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.siblingFields)))
-                self._protectCells(n, [0, 1, 2, 3, 4])
-                n += 1
-                self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parent fields"))
-                self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(str(field.parentFields)))
-                self._protectCells(n, [0, 1, 2, 3, 4])
-                n += 1
+                # display content according to type
+                if currentNode.nodeType == 'data field':
+                    self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Default"))
+                    self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
+                    self.tableWidget.setItem(n, 3, QtWidgets.QTableWidgetItem(currentNode.source['content']))
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
+                    self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
+                elif currentNode.nodeType == 'tree field':
+                    self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Visibility"))
+                    widget = QtWidgets.QCheckBox()
+                    widget.setFont(font)
+                    widget.setText("hidden")
+                    widget.setChecked(currentNode.source.hidden)
+                    treeIndex = self.forest.treeIndexFromName(currentNode.parentName)
+                    widget.checkStateChanged.connect(lambda x, t=treeIndex: currentNode.changeVisibility(x) and self.notifyTreeColumnChange(t))
+                    self.tableWidget.setCellWidget(n, 3, widget)
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
+                    self.tableWidget.setCellWidget(n, 3, None)     # remove possible leftovers from previous fields
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
+                elif currentNode.nodeType == 'parameter list':
+                    self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
+                    if currentNode.parent().contentType not in ('node-path', 'node-name'):
+                        list = currentNode.parent().parent().availableFields()
+                        if currentNode.name == 'own-fields':
+                            list.remove(currentNode.parentName)
+                    else:
+                        list = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
+                    offset = n
+                    for cnt in currentNode.source:
+                        widget = QtWidgets.QComboBox()
+                        widget.setFont(font)
+                        widget.addItems(list)
+                        widget.setCurrentText(str(cnt))
+                        widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
+                                                                                and self.showTreeFieldInDataView())
+                        self.tableWidget.setCellWidget(n, 3, widget)
+                        self._protectCells(n, [0, 1, 2, 3, 4])
+                        n += 1
+                    widget = QtWidgets.QComboBox()
+                    widget.setFont(font)
+                    widget.addItems(list)
+                    widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
+                                                                            and self.showTreeFieldInDataView())
+                    self.tableWidget.setCellWidget(n, 3, widget)
+                    self._protectCells(n, [0, 1, 2, 3, 4])
+                    n += 1
 
-            # an empty page, clear and initialise
-            else:
-                self.tableWidget.clear()
-                self.gridInitialised = False
-                n = 0
-
-            # empty lines to fill the 23 lines in the main view
-            if n < 23:
-                for k in range(n, 23):
-                    self._protectCells(k, [0, 1, 2, 3, 4])
+                # empty lines to fill the 23 lines in the main view
+                if n < 23:
+                    for k in range(n, 23):
+                        self.tableWidget.setItem(k, 1, QtWidgets.QTableWidgetItem(''))
+                        self.tableWidget.setCellWidget(k, 3, None)
+                        self.tableWidget.setItem(k, 3, QtWidgets.QTableWidgetItem(''))
+                        self._protectCells(k, [0, 1, 2, 3, 4])
 
             self.gridInitialised = True
             self.locked = False
@@ -1975,8 +2518,22 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         '''Called when the user selects another tree in the tab widget.
         '''
 
-        self.currentTree = tree
+        if tree == len(self.forest.children):
+            self.changeEditMode('meta')
+        else:
+            self.changeEditMode('content')
+            self.currentTree = tree
         self.itemSelectionChanged()
+
+    def toolBoxCurrentChanged(self, page):
+        '''Called when the user selects another tree in the tab widget.
+        '''
+
+        if page == 3:     # select the meta structure page
+            self.changeEditMode('meta')
+        elif page in (0,1,2):    # no change when "Settings" tab is selected
+            if self.editMode == 'meta':
+                self.changeEditMode('content')
 
     def tableWidgetCellChanged(self, row, column):
         """
@@ -1990,27 +2547,47 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # the node name has been changed
                 if row == 1:
                     newName = self.tableWidget.item(row, column).text()
-                    self.currentItem.changeName(newName)
-                
+                    if self.editMode == 'content':
+                        self.currentItem.changeName(newName)
+                    else:
+                        changeOk = self.currentMetaNode.changeName(newName)
+                        if changeOk:
+                            metaType = self.currentMetaNode.nodeType
+                            if metaType == 'tree':
+                                self.notifyTreeNameChange(self.forest.treeIndexFromName(newName))
+                            elif metaType == 'tree field':
+                                t = self.forest.treeIndexFromName(self.currentMetaNode.parentName)
+                                f = self.forest.children[t].fieldIndexFromName(newName)
+                                self.notifyTreeFieldNameChange(t, f)
+                        else:
+                            self.tableWidget.item(row, column).setText(self.currentMetaNode.name)
+
                 # one of the fields has been changed
                 else:
-                    fieldName = self.tableWidget.item(row, 1).text()
-                    fieldType = self.currentItem.fields[fieldName]['type']
-                    if fieldType in ('longtext', 'text', 'url'):
-                        newValue = self.tableWidget.cellWidget(row, 3).toPlainText()
-                    elif fieldType == 'timer':
-                        newValue = (self.tableWidget.cellWidget(row, 3).toPlainText(),
-                                    self.tableWidget.cellWidget(row, 3).runningSince())
-                    else:
-                        newValue = self.tableWidget.item(row, 3).text()
-                    result = self.currentItem.changeFieldContent(fieldName, newValue)
-                    if result is not True:
-                        message = "Couldn't update field content.\n" + str(result)
-                        result = QtWidgets.QMessageBox.warning(self, message)
+                    if self.editMode == 'content':
+                        fieldName = self.tableWidget.item(row, 1).text()
+                        fieldType = self.currentItem.fields[fieldName]['type']
+                        if fieldType in ('longtext', 'text', 'url'):
+                            newValue = self.tableWidget.cellWidget(row, 3).toPlainText()
+                        elif fieldType == 'timer':
+                            newValue = (self.tableWidget.cellWidget(row, 3).toPlainText(),
+                                        self.tableWidget.cellWidget(row, 3).runningSince())
+                        else:
+                            newValue = self.tableWidget.item(row, 3).text()
+                        result = self.currentItem.changeFieldContent(fieldName, newValue)
+                        if result is not True:
+                            message = "Couldn't update field content.\n" + str(result)
+                            print(message)
 
-                    # add/remove timer to list
-                    if fieldType == 'timer':
-                        self.adjustAutoUpdate(self.currentItem, fieldName)
+                        # add/remove timer to list
+                        if fieldType == 'timer':
+                            self.adjustAutoUpdate(self.currentItem, fieldName)
+                    else:
+                        # change type of data field (all other changes are via dropdown box)
+                        newType = self.tableWidget.item(row, 3).text()
+                        self.currentMetaNode.changeContent(newType)
+                        if self.currentMetaNode.nodeType == 'parameter list':
+                            self.showTreeFieldInDataView()
 
             self.locked = False
             self.delayedWriteToFile()
@@ -2238,6 +2815,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # update table and write to file
             self.itemSelectionChanged()
             self.delayedWriteToFile()
+        return True
 
 
 class TreeTime:

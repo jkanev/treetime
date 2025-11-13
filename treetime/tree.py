@@ -29,18 +29,23 @@ class Field:
     A set of instructions to view/display the content of data items.
     Fields are part of nodes, and are stored in templates.
     """
+    Types = ("string", "url", "text", "sum", "set", "sum-time", "difference", "difference-time", "mean", "mean-percent",
+             "min", "max", "min-string", "max-string", "product", "reciprocal", "ratio", "ratio-percent", "node-name",
+             "node-path")
 
-    def __init__(self, node=None, ownFields=[], childFields=[], siblingFields=[], parentFields=[], fieldType=None):
+    def __init__(self, node=None, ownFields=False, childFields=False, siblingFields=False, parentFields=False,
+                 fieldType=None):
         """Initialises the class, links the source node, field type, and sets the evaluation method."""
         
         self.cache = None
-        self.ownFields = ownFields
-        self.siblingFields = siblingFields
-        self.childFields = childFields
-        self.parentFields = parentFields
+        self.ownFields = ownFields or []
+        self.siblingFields = siblingFields or []
+        self.childFields = childFields or []
+        self.parentFields = parentFields or []
         self.sourceNode = node
         self.getValue = None
         self.getString = None
+        self.hidden = False
         self.fieldType = fieldType
         if (self.fieldType != ""):
             self.initFieldType()
@@ -63,7 +68,8 @@ class Field:
         newField.childFields = copy.deepcopy(self.childFields)
         newField.parentFields = copy.deepcopy(self.parentFields)
         newField.fieldType = copy.deepcopy(self.fieldType)
-        
+        newField.hidden = copy.deepcopy(self.hidden)
+
         # the source node is a link
         newField.sourceNode = self.sourceNode
         
@@ -137,9 +143,9 @@ class Field:
 
             # look in parent fields
             for f in self.parentFields:
-                if f in node.item.fields:
+                if f in node.fields:
                     values += [node.fields[f].getValue()]
-                elif f in node.fields:
+                elif f in node.item.fields:
                     values += [Field.getFieldValue(node.item.fields[f])]
         
         # return
@@ -179,10 +185,10 @@ class Field:
             self.getString = self.getStringPercent
         elif self.fieldType == "min":
             self.getValue = self.getValueMin
-            self.getString = self.getStringUnchanged
+            self.getString = self.getStringRounded
         elif self.fieldType == "max":
             self.getValue = self.getValueMax
-            self.getString = self.getStringUnchanged
+            self.getString = self.getStringRounded
         elif self.fieldType == "min-string":
             self.getValue = self.getValueMinString
             self.getString = self.getStringUnchanged
@@ -191,6 +197,9 @@ class Field:
             self.getString = self.getStringUnchanged
         elif self.fieldType == "product":
             self.getValue = self.getValueProduct
+            self.getString = self.getStringRounded
+        elif self.fieldType == "reciprocal":
+            self.getValue = self.getValueReciprocal
             self.getString = self.getStringRounded
         elif self.fieldType == "ratio":
             self.getValue = self.getValueRatio
@@ -204,19 +213,27 @@ class Field:
         elif self.fieldType == "node-path":
             self.getValue = self.getValueNodePath
             self.getString = self.getStringUnchanged
+        else:
+            if self.fieldType:
+                print(f'... error: field type {self.fieldType} does not exist.')
 
     def getStringPercent(self):
         if self.sourceNode and self.getValue:
             v = self.getValue()
-            if v:
-                whitespace = ""
-                if v < 0.1:
-                    whitespace = "  "
-                elif v < 1.0:
-                    whitespace = " "
-                return whitespace + str(round(100*v)) + " %"
-            else:
-                return ""
+            try:
+                if v:
+                    whitespace = ""
+                    if v < 0.1:
+                        whitespace = "  "
+                    elif v < 1.0:
+                        whitespace = " "
+                    return whitespace + str(round(100*v)) + " %"
+                else:
+                    return ""
+            except (TypeError, ValueError):
+                print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
+                      f"Type mismatch, please check field definition.")
+                return "undefined"
         else:
             return ""
 
@@ -229,18 +246,23 @@ class Field:
     def getStringTime(self):
         if self.sourceNode and self.getValue:
             v = self.getValue()
-            if v:
-                if v < 0:
-                    adjust = 0.49999
+            try:
+                if v:
+                    if v < 0:
+                        adjust = 0.49999
+                    else:
+                        adjust = -0.49999
+                    hours = round(v + adjust)
+                    minutes = round(60.0*(v - hours) + adjust)
+                    seconds = round(3600.0*((v - hours) - minutes/60.0) + adjust)
+                    sign = v < 0.0 and "- " or "  "
+                    return "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
                 else:
-                    adjust = -0.49999
-                hours = round(v + adjust)
-                minutes = round(60.0*(v - hours) + adjust)
-                seconds = round(3600.0*((v - hours) - minutes/60.0) + adjust)
-                sign = v < 0.0 and "- " or "  "
-                return "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
-            else:
-                return ""
+                    return ""
+            except (TypeError, ValueError):
+                print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
+                      f"Type mismatch, please check field definition.")
+                return "undefined"
         else:
             return ""
 
@@ -254,7 +276,12 @@ class Field:
         if self.sourceNode and self.getValue:
             value = self.getValue()
             if value:
-                return str(round(value, 3))
+                try:
+                    return str(round(value, 3))
+                except (TypeError, ValueError):
+                    print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
+                          f"Type mismatch, please check field definition.")
+                    return "undefined"
             else:
                 return ""
         else:
@@ -341,7 +368,10 @@ class Field:
         sum = 0
         for v in values:
             if v:     # either sum up using the value
-                sum += v
+                try:
+                    sum += v
+                except:
+                    pass
             else:     # or the neutral element for addition (0)
                 sum += 0
         return sum
@@ -356,15 +386,17 @@ class Field:
         for v in values:
             if first:
                 if v:
-                    difference = v     # first element is positive
-                else:
-                    difference = 0     # or the neutral element for addition (0)
+                    try:
+                        difference += v     # first element is positive
+                    except:
+                        pass
                 first = False
             else:
                 if v:
-                    difference -= v     # all other elements are negative
-                else:
-                    difference += 0     # or the neutral element for addition (0)
+                    try:
+                        difference -= v     # all other elements are negative
+                    except:
+                        pass
         return difference
 
     def getValueMin(self):
@@ -383,7 +415,6 @@ class Field:
                 maxValue = v
         return maxValue
 
-
     def getValueMinString(self):
         values = self.getFieldValues()
         minValue = ""
@@ -400,18 +431,23 @@ class Field:
             if v > maxValue:
                 maxValue = v
         return maxValue
+
     def getValueMean(self):
         values = self.getFieldValues()
         sum = 0.0
         n = 0.0
         for v in values:
             if v:     # in case of 'None', use neutal elements of 0 for addition, and 1 for multiplication
-                n += 1.0
-                sum += v
+                try:
+                    n += 1.0
+                    sum += v
+                except:
+                    pass
         if n > 0.0:
-            return sum/n
+            sum = sum/n
         else:
-            return None
+            sum = None
+        return sum
 
     def getValueProduct(self):
         """
@@ -426,6 +462,23 @@ class Field:
                 pass    # same as: prod *= 1.0
         return prod
 
+    def getValueReciprocal(self):
+        """
+        Returns the reciprocal 1/(a+b+c+d+...) of field values a,b,c,d...
+        """
+        values = self.getFieldValues()
+        rec = 0.0
+        for v in values:
+            try:
+                rec += v
+            except:
+                pass    # same as: prod *= 1.0
+            try:
+                rec = 1.0/rec
+            except:
+                rec = None
+        return rec
+
     def getValueRatio(self):
         """
         Returns the ratio a/(b+c+d+e+...) of field values a,b,c,d,e,...
@@ -438,7 +491,10 @@ class Field:
             sum = 0
             for v in values[1:]:
                 if v:
-                    sum += v
+                    try:
+                        sum += v
+                    except:
+                        pass
             if sum != 0:
                 return denom/sum
             else:
@@ -450,6 +506,8 @@ class Field:
         string += "        child-fields " + json.dumps(self.childFields) + "\n"
         string += "        sibling-fields " + json.dumps(self.siblingFields) + "\n"
         string += "        parent-fields " + json.dumps(self.parentFields) + "\n"
+        if self.hidden:
+            string += "        hidden\n"
         return string
 
     def readFromString(self, string):
@@ -460,27 +518,29 @@ class Field:
         try:
             self.fieldType = json.loads(s[0])
         except:
-            self.printReadError(name, "field-type", s[0]);
+            self.printReadError(name, "field-type", s[0])
         s = s[1].split("\n        child-fields ")
         try:
             self.ownFields = json.loads(s[0])
         except:
-            self.printReadError(name, "own-fields", s[0]);
+            self.printReadError(name, "own-fields", s[0])
         s = s[1].split("\n        sibling-fields ")
         try:
             self.childFields = json.loads(s[0])
         except:
-            self.printReadError(name, "child-fields", s[0]);
+            self.printReadError(name, "child-fields", s[0])
         s = s[1].split("\n        parent-fields ")
         try:
             self.siblingFields = json.loads(s[0])
         except:
-            self.printReadError(name, "sibling-fields", s[0]);
+            self.printReadError(name, "sibling-fields", s[0])
+        s = s[1].split("\n        hidden")
         try:
-            self.parentFields = json.loads(s[1])
+            self.parentFields = json.loads(s[0])
         except:
-            self.printReadError(name, "parent-fields", s[0]);
-
+            self.printReadError(name, "parent-fields", s[0])
+        if len(s) == 2:
+            self.hidden = True
         self.initFieldType()
         
         return name
@@ -500,7 +560,6 @@ class Node:
         self.item = None
         self.name = ""
         self.fields = {}
-        self.fieldOrder = []
         self.tree = tree
         self.path = path
         self.viewNode = None
@@ -508,6 +567,8 @@ class Node:
         self.fieldChangeCallback = None
         self.deletionCallback = None
         self.moveCallback = None
+        self.fieldNameChangeCallback = None
+        self.fieldOrderChangeCallback = None
 
     @staticmethod
     def _wrap_lines(raw_lines, chars=70):
@@ -586,7 +647,8 @@ class Node:
         # append item content and print
         s += self.name
         for name,field in self.fields.items():
-            s += " [" + name + "] " + str(field.getString())
+            if not field.hidden:
+                s += " [" + name + "] " + str(field.getString())
         print(s)
         
         # recurse
@@ -726,29 +788,30 @@ class Node:
             if fields_local:
                 field_string = ""
                 for name, field in self.fields.items():
-                    content = field.getString().strip()
-                    name_string = (fieldNames and f'<FONT FACE="Helvetica" POINT-SIZE="10">{quote_string(name)}</FONT>'
-                                   or '')
-                    if content:     # wrap field content, larger bits of text start with a newline
-                        lines = [quote_string(l) for l in Node._wrap_lines(content, chars=50)]
-                        if field.fieldType == "url":
-                            link = quote_string(len(content) > 50 and content[:50]+'...' or content)
-                            if fieldContent:
-                                content_string = (f'<TD ALIGN="LEFT" VALIGN="TOP" HREF="{quote_string(content)}">'
-                                                  f'<FONT FACE="Helvetica" COLOR="#0000a0" POINT-SIZE="10">'
-                                                  f'{link}</FONT></TD>')
+                    if not field.hidden:
+                        content = field.getString().strip()
+                        name_string = (fieldNames and f'<FONT FACE="Helvetica" POINT-SIZE="10">{quote_string(name)}</FONT>'
+                                       or '')
+                        if content:     # wrap field content, larger bits of text start with a newline
+                            lines = [quote_string(l) for l in Node._wrap_lines(content, chars=50)]
+                            if field.fieldType == "url":
+                                link = quote_string(len(content) > 50 and content[:50]+'...' or content)
+                                if fieldContent:
+                                    content_string = (f'<TD ALIGN="LEFT" VALIGN="TOP" HREF="{quote_string(content)}">'
+                                                      f'<FONT FACE="Helvetica" COLOR="#0000a0" POINT-SIZE="10">'
+                                                      f'{link}</FONT></TD>')
+                                else:
+                                    content_string = ''
+                                field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
+                                                 f'{name_string}</TD>{content_string}</TR>')
                             else:
-                                content_string = ''
-                            field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
-                                             f'{name_string}</TD>{content_string}</TR>')
-                        else:
-                            content_string = fieldContent and ('<FONT FACE="Helvetica" POINT-SIZE="10">'
-                                                               + '<BR ALIGN="LEFT"/>'.join(lines)
-                                                               + '</FONT>') \
-                                                          or ''
-                            field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
-                                             f'{name_string}</TD>'
-                                             f'<TD ALIGN="LEFT" VALIGN="TOP">{content_string}</TD></TR>')
+                                content_string = fieldContent and ('<FONT FACE="Helvetica" POINT-SIZE="10">'
+                                                                   + '<BR ALIGN="LEFT"/>'.join(lines)
+                                                                   + '</FONT>') \
+                                                              or ''
+                                field_string += ('<TR><TD ALIGN="RIGHT" VALIGN="TOP">'
+                                                 f'{name_string}</TD>'
+                                                 f'<TD ALIGN="LEFT" VALIGN="TOP">{content_string}</TD></TR>')
             else:
                 field_string = ""
 
@@ -923,28 +986,29 @@ class Node:
 
         if fields_local:
             for name, field in self.fields.items():
+                if not field.hidden:
 
-                # wrap field content, larger bits of text start with a newline
-                lines = fieldContent and Node._wrap_lines(field.getString()) or []
+                    # wrap field content, larger bits of text start with a newline
+                    lines = fieldContent and Node._wrap_lines(field.getString()) or []
 
-                # empty array if only whitespace content
-                if lines == ['\n']:
-                    lines = []
+                    # empty array if only whitespace content
+                    if lines == ['\n']:
+                        lines = []
 
-                # start on new line if field content spans multiple lines
-                if fieldNames:
-                    if len(lines) > 1:
-                        lines = [''] + lines
+                    # start on new line if field content spans multiple lines
+                    if fieldNames:
+                        if len(lines) > 1:
+                            lines = [''] + lines
 
-                # assemble final text with tree decorations
-                first = True
-                for line in lines:
-                    line = line == '\n' and line or line + '\n'
-                    if first and fieldNames:
-                        text += line_prefix + name + ": " + line
-                        first = False
-                    else:
-                        text += line_prefix + "    " + line
+                    # assemble final text with tree decorations
+                    first = True
+                    for line in lines:
+                        line = line == '\n' and line or line + '\n'
+                        if first and fieldNames:
+                            text += line_prefix + name + ": " + line
+                            first = False
+                        else:
+                            text += line_prefix + "    " + line
 
         # recurse
         if children and depth:
@@ -982,23 +1046,24 @@ class Node:
 
         if fields_local:
             for name, field in self.fields.items():
+                if not field.hidden:
 
-                if field.sourceNode:
-                    # wrap field content, larger bits of text start with a newline
-                    lines = fieldContent and Node._wrap_lines(field.getString().replace('\n', '\n'), chars=120) or []
+                    if field.sourceNode:
+                        # wrap field content, larger bits of text start with a newline
+                        lines = fieldContent and Node._wrap_lines(field.getString().replace('\n', '\n'), chars=120) or []
 
-                    # empty array if only whitespace content
-                    if lines == ['\n']:
-                        lines = []
+                        # empty array if only whitespace content
+                        if lines == ['\n']:
+                            lines = []
 
-                    # assemble final text only if field is used
-                    first = True
-                    for line in lines:
-                        if first and fieldNames:
-                            text += '*  *' + name.strip() + ':* ' + line + '\n'
-                            first = False
-                        else:
-                            text += '    ' + line.replace('#', '\\#') + '\n'
+                        # assemble final text only if field is used
+                        first = True
+                        for line in lines:
+                            if first and fieldNames:
+                                text += '*  *' + name.strip() + ':* ' + line + '\n'
+                                first = False
+                            else:
+                                text += '    ' + line.replace('#', '\\#') + '\n'
 
         # recurse
         if children and depth:
@@ -1054,6 +1119,7 @@ class Node:
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.reciprocal {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
@@ -1092,6 +1158,7 @@ class Node:
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.reciprocal {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
@@ -1128,6 +1195,7 @@ class Node:
                    'div.mean {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.mean-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.product {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.reciprocal {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.ratio-percent {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.node-name {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
@@ -1165,6 +1233,7 @@ class Node:
                    'div.mean {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.mean-percent {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.product {position: relative; float: left; width: 10%; padding: 1%; }' \
+                   'div.reciprocal {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.ratio {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.ratio-percent {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.node-name {position: relative; float: left; width: 25%; padding: 1%; }' \
@@ -1203,15 +1272,16 @@ class Node:
         if fields_local:
             html += '<div class="fields">'
             for name, field in self.fields.items():
-                content = field.getString().strip()
-                if content or (style == 'list'):   # in tile mode empty fields are hidden, in list mode always displayed
-                    content = fieldContent and content.replace('\n', '<br/>') or ''
-                    name_string = fieldNames and f'<em>{name}</em><br/>' or ''
-                    if field.fieldType == "url":
-                        html += (f'<div class="{field.fieldType}">{name_string}<a href="{content}">'
-                                 f'{len(content) > 40 and content[:37]+"..." or content}</a></div>')
-                    else:
-                        html += f'<div class="{field.fieldType}">{name_string}{content}</div>'
+                if not field.hidden:
+                    content = field.getString().strip()
+                    if content or (style == 'list'):   # in tile mode empty fields are hidden, in list mode always displayed
+                        content = fieldContent and content.replace('\n', '<br/>') or ''
+                        name_string = fieldNames and f'<em>{name}</em><br/>' or ''
+                        if field.fieldType == "url":
+                            html += (f'<div class="{field.fieldType}">{name_string}<a href="{content}">'
+                                     f'{len(content) > 40 and content[:37]+"..." or content}</a></div>')
+                        else:
+                            html += f'<div class="{field.fieldType}">{name_string}{content}</div>'
             html += '</div>'
 
         child_html = ""
@@ -1372,6 +1442,33 @@ class Node:
         node.initFields(self.fields)
         return node
 
+    def addField(self, name, field):
+        """ Adds a new field recursively in the entire tree. Silently, no messages sent. After adding, the visibility
+        still needs to be adapted, and then update messages sent through the tree. . The first call does not create deep
+        copies, only subsequent recursive calls do. This is to not touch existing references when the top-level fields
+        are changed (meta nodes keep pointers to the parameter lists).
+        :param name: The field name
+        :param field: The field itself
+        :return: void
+        """
+        self.fields[name] = field
+        self.fields[name].sourceNode = self
+        for c in self.children:
+            c.addField(name, copy.deepcopy(field))
+
+    def findNodeByName(self, name):
+        """
+        Finds the first node of a given name in the tree.
+        """
+        if self.name == name:
+            return self
+        else:
+            for c in self.children:
+                found = c.findNodeByName(name)
+                if found is not None:
+                    return found
+        return None
+
     def initFields(self, fields):
         self.fields = copy.deepcopy(fields)
         
@@ -1410,6 +1507,12 @@ class Node:
 
     def registerSelectionCallback(self, callback):
         self.selectionCallback = callback
+
+    def registerFieldNameChangeCallback(self, callback):
+        self.fieldNameChangeCallback = callback
+
+    def registerFieldOrderChangeCallback(self, callback):
+        self.fieldOrderChangeCallback = callback
 
     def notifyNameChange(self, newName):
         """
@@ -1509,6 +1612,130 @@ class Node:
         if not self.item:
             self.notifyDeletion()
 
+    def updateFieldOrderEntry(self, n, newName):
+        """ Notifies the QNode of a change in the tree's fieldOrderer in this node (if it is a tree), and in the node's view node, via the
+        callback
+        :param n: Index of node
+        :param newName: New name of node
+        :return: void
+        """
+        if self.fieldNameChangeCallback:
+            self.fieldNameChangeCallback(n, newName)
+        for c in self.children:
+            c.updateFieldOrderEntry(n, newName)
+
+    def updateFieldOrder(self, fieldOrder):
+        """ Updates the field order in this node (if it is a tree), and in the node's view node, via the callback
+        :param fieldOrder: New fieldOrder dict
+        :return: void
+        """
+        if self.fieldOrderChangeCallback:
+            self.fieldOrderChangeCallback(fieldOrder)
+        for c in self.children:
+            c.updateFieldOrder(fieldOrder)
+
+    def changeFieldName(self, oldName, newName):
+        """
+        :param oldName: current field name
+        :param newName: new field name
+        :return: True
+        """
+        if oldName in self.fields.keys():
+            print(f'changing "{oldName}" to "{newName}" in node {self.name}')
+            self.fields[newName] = self.fields.pop(oldName)
+        for c in self.children:
+            c.changeFieldName(oldName, newName)
+        return True
+
+    def changeFieldType(self, field, newType):
+        """
+        Changes the type of a field to the new type, sets the appropriate callbacks, and recurses down all children.
+        Does not update anything (not possible during changing), this has to be done separately by calling the
+        notifyDefinitionChange function.
+        :param field: The field name to update
+        :param newType: The new type of the field
+        :return: void
+        """
+        self.fields[field].fieldType = newType
+        self.fields[field].initFieldType()
+        for c in self.children:
+            c.changeFieldType(field, newType)
+
+    def changeFieldDefinition(self, fieldName, field):
+        """
+        Changing the field definition during meta structure editing. Will apply a deep copy of the field to itself,
+        and recursively, all children.
+        """
+        self.fields[fieldName] = copy.deepcopy(field)
+        self.fields[fieldName].sourceNode = self
+        for c in self.children:
+            c.changeFieldDefinition(fieldName, field)
+
+    def changeFieldOwnParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
+        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
+        changed (meta nodes keep pointers to the parameter lists).
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        self.fields[name].ownFields = params
+        for c in self.children:
+            c.changeFieldOwnParameters(name, copy.deepcopy(params))
+
+    def changeFieldChildParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
+        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
+        changed (meta nodes keep pointers to the parameter lists).
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        self.fields[name].childFields = params
+        for c in self.children:
+            c.changeFieldChildParameters(name, copy.deepcopy(params))
+
+    def changeFieldSiblingParameters(self, name, params):
+        """
+        Recursively changes the sibling-fields parameter list in all fields. The first call does not create deep copies,
+        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
+        changed (meta nodes keep pointers to the parameter lists).
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        self.fields[name].siblingFields = params
+        for c in self.children:
+            c.changeFieldSiblingParameters(name, copy.deepcopy(params))
+
+    def changeFieldParentParameters(self, name, params):
+        """
+        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
+        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
+        changed (meta nodes keep pointers to the parameter lists).
+        :param name: Name of the field
+        :param params: List of parameters
+        :return:
+        """
+        self.fields[name].parentFields = params
+        for c in self.children:
+            c.changeFieldParentParameters(name, copy.deepcopy(params))
+
+    def updateFieldContent(self, fieldName):
+        """
+        Notifying a change of the field definition during meta structure editing. Will call the notify functions on
+        all children, recursively.
+        """
+        for c in self.children:
+            c.updateFieldContent(fieldName)
+        if self.fieldChangeCallback:
+            try:
+                self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
+            except:
+                print("Error in propagating tree field definition change")
+
 
 class Tree(Node):
     """
@@ -1519,6 +1746,7 @@ class Tree(Node):
         """Initialise"""
         
         super().__init__(parent, index, [])
+        self.fieldOrder = []
         self.fields = {}
         self.name = ""
 
@@ -1545,9 +1773,17 @@ class Tree(Node):
 
     def writeToString(self):
         string = "tree " + json.dumps(self.name) + "\n"
+
+        # first write the visible fields in order
+        for name in self.fieldOrder:
+            string += "    field " + json.dumps(name) + "\n"
+            string += "    " + self.fields[name].writeToString()
+
+        # then the hidden fields
         for n,f in self.fields.items():
-            string += "    field " + json.dumps(n) + "\n"
-            string += "    " + f.writeToString()
+            if n not in self.fieldOrder:
+                string += "    field " + json.dumps(n) + "\n"
+                string += "    " + f.writeToString()
         return string
 
     def readFromString(self, string):
@@ -1559,7 +1795,16 @@ class Tree(Node):
                 f = Field()
                 name = f.readFromString(fs)
                 self.fields[name] = f
-                self.fieldOrder += [name]
+                if not f.hidden:
+                    self.fieldOrder += [name]
+
+    def fieldIndexFromName(self, name):
+        """
+        :param name: The name of the tree
+        :return: The tree index of the tree with the given name
+        """
+        [index] = [n for n, field in enumerate(self.fieldOrder) if field==name] or [-1]
+        return index
 
     def removeEmptyNodes(self):
         """
@@ -1568,6 +1813,142 @@ class Tree(Node):
         """
         for c in self.children:
             c.removeEmptyNodes()
+
+    def changeName(self, newName):
+        """
+        Called by a MetaNode. Changes the tree's name and calls all callbacks to propagate that change through the
+        system, including (finally) the MetaNode.
+        :param newName: The new name
+        :return: void
+        """
+        self.name = newName
+
+    def changeFieldName(self, oldName, newName):
+        """
+        Called by a MetaNode. Changes a field's name and calls all callbacks to propagate that change through the
+        system, including (finally) the MetaNode. Calls the changeField() and the notifyFieldsChanges() from the
+        nodes class.
+        :param newName: The new name. If =None, the field is removed from the parameter list.
+        :return: void
+        """
+
+        def renameSingle(paramList):
+            changed = False
+            for n, x in enumerate(paramList):
+                if x == oldName:
+                    if newName:
+                        paramList[n] = newName
+                    else:
+                        paramList.pop(n)
+                    changed = True
+            return changed
+
+        # update field order list, if field in list (for hidden fields and data item fields, do nothing)
+        [index] = [n for n, x in enumerate(self.fieldOrder) if x == oldName] or [-1]
+        if index+1:
+            if newName:
+                self.updateFieldOrderEntry(index, newName)
+                self.fieldOrder[index] = newName
+            else:
+                self.updateFieldOrderEntry(index, newName)
+                self.fieldOrder.pop(index)
+
+        # Change name in field itself, if this is a tree field (for data item fields, do nothing)
+        if oldName in self.fields:
+            field = self.fields.pop(oldName)
+            if newName:
+                self.fields[newName] = field
+
+        # Build new fields if they use the old name in definition
+        changes = []    # list of fields that were changed
+        for fname, field in self.fields.items():
+            changed = False
+            changed |= renameSingle(field.ownFields)
+            changed |= renameSingle(field.childFields)
+            changed |= renameSingle(field.siblingFields)
+            changed |= renameSingle(field.parentFields)
+            if changed:
+                changes += [fname]
+
+        # Replace all fields in tree and update their value
+        for c in self.children:
+            c.changeFieldName(oldName, newName)
+            for fname in changes:
+                c.changeFieldDefinition(fname, self.fields[fname])    # this is the renamed field, replace old name
+
+        # then (when all fields are replaced) send the definition updates
+        for fname in changes:
+            self.updateFieldContent(fname)
+
+    def updateFieldType(self, fieldName):
+        """
+        Sets all fields in the tree to the type in the top-level field
+        :param fieldName:
+        :return:
+        """
+
+        # Change type of all fields
+        newType = self.fields[fieldName].fieldType
+        for c in self.children:
+            c.changeFieldType(fieldName, newType)
+
+        # Notify definition change
+        self.updateFieldContent(fieldName)
+
+    def updateFieldVisibility(self, name):
+        """
+        Called by a MetaNode. A top-level field visibility has changed, update the fieldOrder list, then update all
+        nodes and redisplay.
+        :param name: The field name
+        :param hidden: Whether the field is now hidden or not
+        :return: void
+        """
+
+        field = self.fields[name]
+        inOrder = name in self.fieldOrder
+
+        # Return if nothing to do
+        if (field.hidden and not inOrder) or (not field.hidden and inOrder):
+            return
+
+        # Adapt fieldOrder entry
+        index = -1
+        if inOrder:
+            [index] = [n for n, x in enumerate(self.fieldOrder) if x == name]
+            self.fieldOrder.pop(index)
+        else:
+            self.fieldOrder += [name]
+
+        # Propagate new field order to all QNodes
+        self.updateFieldOrder(self.fieldOrder)
+
+        # Update all field values
+        self.updateFieldContent(name)
+
+    def updateFieldParameters(self, fieldName, listName):
+        """
+        Called by a MetaNode. A top-level field parameter list has changed, update the fieldOrder list, then update all
+        nodes and redisplay.
+        :param name: The field name
+        :param hidden: Whether the field is now hidden or not
+        :return: True if success, False if error
+        """
+        result = True
+        if listName == 'own-fields':
+            self.changeFieldOwnParameters(fieldName, self.fields[fieldName].ownFields)
+        elif listName == 'child-fields':
+            self.changeFieldChildParameters(fieldName, self.fields[fieldName].childFields)
+        elif listName == 'sibling-fields':
+            self.changeFieldSiblingParameters(fieldName, self.fields[fieldName].siblingFields)
+        elif listName == 'parent-fields':
+            self.changeFieldParentParameters(fieldName, self.fields[fieldName].parentFields)
+        else:
+            print(f"Error when replacing parameters for field {fieldName:} list type {listName} does not exist")
+            result = False
+
+        # Update all field values
+        self.updateFieldContent(fieldName)
+        return result
 
 
 class Forest(Node):
@@ -1645,6 +2026,7 @@ class Forest(Node):
             f.write(itemString)
 
     def readFromFile(self, filename):
+        print(f"Reading file {filename}...")
         with open(filename, "r") as f:
 
             # chop up string into trees, types, and items part
@@ -1657,17 +2039,196 @@ class Forest(Node):
             itemString = s[1]
 
         # create item pool
+        print(f"... reading data items ...")
         self.itemTypes = ItemPool()
         self.itemTypes.readFromString(typeString)
 
         # create type pool
+        print(f"... reading data type ...")
         self.itemPool = ItemPool()
         self.itemPool.readFromString(itemString)
         self.createPaths()
 
         # create trees
+        print(f"... reading tree definitions ...")
         self.readFromString(treeString)
         self.createPaths()     # atm we still need this twice. Fix it.
 
+        # link name change function of default item to all trees
+        for t,tree in enumerate(self.children):
+            self.itemTypes.items[0].registerFieldNameChangeCallback(t, lambda old, new: tree.changeFieldName(old, new))
+
         # remove empty nodes
+        print(f"... removing empty nodes ...")
         self.removeEmptyNodes()
+        print(f"... done.")
+
+    def treeIndexFromName(self, name):
+        """
+        :param name: The name of the tree
+        :return: The tree index of the tree with the given name
+        """
+        [index] = [n for n, tree in enumerate(self.children) if tree.name == name] or [-1]
+        return index
+
+    def listFieldNames(self, scope=None):
+        """
+        :param scope: The name of a tree or None. If not None, only tree fields within that tree, and data field
+                      names, are listed. Otherwise, all tree field names and data field names are listed.
+        :return: a list of existing tree field and data item field names
+        """
+        # find name for new field
+        existingNames = [f for f in self.itemTypes.items[0].fields]
+        for tree in self.children:
+            if not scope or tree.name == scope:
+                existingNames += [f for f in tree.fields]
+        return existingNames
+
+    def changeTreeFieldName(self, treeName, fieldName, newName):
+        for c in self.children:
+            if c.name == treeName:
+                c.changeFieldName(fieldName, newName)
+
+    def changeDataFieldName(self, fieldName, newName):
+        self.itemTypes.changeFieldName(fieldName, newName)
+        self.itemPool.changeFieldName(fieldName, newName)
+
+    def updateDataFieldType(self, fieldName):
+        """ Propagets the change of data field type in the governing data item (default type) through the pool
+        :param fieldName: name of field
+        :return:
+        """
+        newType = self.itemTypes.items[0].fields[fieldName]['type']
+        self.itemPool.changeFieldType(fieldName, newType)
+
+    def updateTreeFieldType(self, treeName, fieldName):
+        """
+        Propagates the type that was set in a top-level field through the tree and updates the display
+        :param treeName: p
+        :param fieldName:
+        :return:
+        """
+        for c in self.children:
+            if c.name == treeName:
+                c.updateFieldType(fieldName)
+
+    def updateTreeFieldVisibility(self, treeName, fieldName):
+        for tree in self.children:
+            if tree.name == treeName:
+                tree.updateFieldVisibility(fieldName)
+
+    def newDataField(self):
+        """
+        :return: A pointer to the newly created data field in the default data item
+        """
+
+        # find new name
+        name = 'new field'
+        n = 2
+        while name in self.listFieldNames():
+            name = f'new field {n}'
+            n += 1
+
+        # create default field (string)
+        field = {'type': 'string', 'content': ''}
+        self.itemTypes.addField(name, field)
+        self.itemPool.addField(name, field)
+
+        # return field
+        return name, self.itemTypes.items[0].fields[name]
+
+    def newTreeField(self, treeName):
+        """
+        Creates a new tree field of default type (string)
+        :param tree: the name of the tree to add the field to
+        :param index: the index of the new field in the visible
+        :return: a pointer to the newly created field
+        """
+
+        # find new name
+        name = 'New Field'
+        n = 2
+        while name in self.listFieldNames(treeName):
+            name = f'New Field {n}'
+            n += 1
+
+        # create default field (string)
+        field = Field(fieldType='string')
+
+        # register with trees
+        for tree in self.children:
+            if tree.name == treeName:
+                tree.addField(name, field)
+                tree.updateFieldVisibility(name)
+
+        # return field
+        return name, field
+
+    def newTree(self):
+        """
+        Creates a new tree and append it.
+        :param tree: the name of the tree to add the field to
+        :param index: the index of the new field in the visible
+        :return: a pointer to the newly created field
+        """
+
+        # find new name
+        name = 'New Tree'
+        n = 2
+        while name in (c.name for c in self.children):
+            name = f'New Tree {n}'
+            n += 1
+
+        # add new tree to forest
+        self.addTree()
+        self.itemTypes.addTree()
+        self.itemPool.addTree()
+        tree = self.children[-1]
+        tree.name = name
+
+        # return tree
+        return tree
+
+    def deleteDataField(self, name):
+        self.itemTypes.deleteField(name)
+        self.itemPool.deleteField(name)
+
+    def deleteTreeField(self, treeName, fieldName):
+        """
+        Deletes a tree field
+        :param treeName: the name of the tree to remove the field from
+        :param fieldName: the name of the field in the tree
+        :return: a pointer to the newly created field
+        """
+
+        # register with trees
+        for tree in self.children:
+            if tree.name == treeName:
+                tree.changeFieldName(fieldName, None)    # notifiy the tree
+
+    def deleteTree(self, treeName):
+        """
+        Deletes a tree by removing it from the parent and removing all tree paths from all items.
+        Python takes care of deleting the actual objects. The update of the GUI is handled by the caller.
+        :param treeName: The name of the tree to be deleted
+        :return: The index of the deleted tree
+        """
+        n = self.treeIndexFromName(treeName)
+        self.itemTypes.deleteTree(n)
+        self.itemPool.deleteTree(n)
+        self.children.pop(n)
+        return n
+
+    def updateTreeFieldParameters(self, treeName, fieldName, listName):
+        """
+        Propagates the changed parameter list that was set in a top-level field through the tree and updates the display
+        :param treeName: The name of the tree
+        :param fieldName: The name of the tree field
+        :param listName: The name of the parameter list, one of 'own-fields', 'child-fields', 'sibling-fields',
+        'parent-fields'.
+        :return:
+        """
+        for c in self.children:
+            if c.name == treeName:
+                c.updateFieldParameters(fieldName, listName)
+
