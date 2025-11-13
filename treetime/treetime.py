@@ -2034,7 +2034,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         fieldOrder = self.forest.children[n].fieldOrder
         treeWidget = self.treeWidgets[n]
-        treeWidget.setColumnCount(len(fieldOrder))
+        treeWidget.setColumnCount(len(fieldOrder)+1)
         for f, field in enumerate(fieldOrder):
             treeWidget.headerItem().setText(f+1, field)
         return True
