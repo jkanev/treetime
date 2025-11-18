@@ -1,0 +1,15 @@
+[submodule "hugo/themes/ananke"]
+	path = hugo/themes/ananke
+	url = https://github.com/theNewDynamic/gohugo-theme-ananke
+[submodule "hugo/themes/osprey-delight"]
+	path = hugo/themes/osprey-delight
+	url = https://github.com/kdevo/osprey-delight
+[submodule "hugo/themes/introduction"]
+	path = hugo/themes/introduction
+	url = https://github.com/victoriadrake/hugo-theme-introduction.git
+[submodule "hugo/themes/hugo-scroll"]
+	path = hugo/themes/hugo-scroll
+	url = https://github.com/zjedi/hugo-scroll.git
+[submodule "hugo/themes/hugo-book"]
+	path = hugo/themes/hugo-book
+	url = https://github.com/alex-shpak/hugo-book

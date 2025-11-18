@@ -100,6 +100,8 @@ Data Files
 
 The data in TreeTime is stored in a plain text file, marked with a 'trt' file ending ('trt' for 'TreeTime').
 
+The button 'New empty File' will start an (almost) empty 'trt' file. More trees, data fields, or tree fields can be added using the meta-structure editor.
+
 The button 'Load File' will open an existing 'trt' file. After this, all changes are written to that file. There is no 'Save' button, changes are written to the file immediately.
 
 The button 'New From Template' opens an existing data file, creates a copy, and saves this copy. A data file can be created by copying the currently open file. All write operations will be performed on that copy. This is to create a new file from a basically empty 'trt' file that has a pre-defined data structure.
@@ -112,7 +114,7 @@ Installation
 Using pre-compiled Binaries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Windows, Linux: Go to [github.com/jkanev/treetime/releases/tag/2025.2](https://github.com/jkanev/treetime/releases/tag/2025.2) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run *TreeTime* or *TreeTime.exe* from the new folder. Unzip the data package too. Add the program folder to your path.
+- Windows, Linux: Go to [codeberg.org/jkanev/treetime/releases/tag/2025.3](https://codeberg.org/jkanev/treetime/releases/tag/2025.3) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there. Unzip it into your program directory and run *TreeTime* or *TreeTime.exe* from the new folder. Unzip the data package too. Add the program folder to your path.
   
   Executable bundles have been created with pyinstaller ([www.pyinstaller.org](http://www.pyinstaller.org)).
 

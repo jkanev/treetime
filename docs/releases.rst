@@ -129,6 +129,15 @@ Past
 - Done June 2025: Implemented flexible export (field names / content / node name)
 - Done July 2025: Implemented web server for continuous sharing
 - Done July 2025: Release **version 2025.2**
+- Done October 2025: Added new calcuation field: product
+- Done October 2025: Enabled running of multiple instances.
+- Done October 2025: Fixed display of max numbers
+- Done October 2025: Implemented hidden tree fields
+- Done October 2025: Added new calculation field: reciprocal
+- Done October 2025: Started structure edit functionality: Implemented type change for data and tree fields, change of visibility for tree fields, changing of data item name and data item field name, editing of tree field names, editing of tree names, parameter list editing for tree fields
+- Done November 2025: Implemented deleting of trees, adding of trees, deletion of tree fields, adding of tree fields, adding and deleting of data fields 
+- Done November 2025: Implemented new-file button, removed first dialog
+- Done November 2025: Release **version 2025.3**
 
 Present
 -------
