@@ -9,7 +9,6 @@ title = 'TreeTime'
   unsafe = true
   
 [params]
+  images = ['treetime-logo-small.png']
+  BookFavicon = 'favicon-96x96.png'
   BookTheme = 'light'
-
-
-
