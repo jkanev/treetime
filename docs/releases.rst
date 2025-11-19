@@ -146,7 +146,6 @@ Present
 - Extend documentation on readthedocs.io
 - Add more fields
 - Add more examples and more template data files
-- Structure editing/viewing in extra tab (editing the structure, number and definitions and trees and tree fields and data fields)
 
 Future
 ------

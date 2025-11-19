@@ -7,7 +7,6 @@ A tree is a hierarchical structure that arranges your data into units and sub-un
 Mathematical functions (sum, difference, mean, ratio) can be calculated recursively.
 Linked trees are distinct trees that share data between them.
 In *TreeTime*, a data object is part of several trees at the same time.
-*TreeTime* is a time planner, a to-do list manager, a test report tool, a project planner, a family ancestry editor, a mind-mapping tool, and similar.
 
 Content
 -------
