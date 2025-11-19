@@ -69,7 +69,7 @@ class Ui_MainWindow(object):
         self.toolBox.setToolTip("")
         self.toolBox.setObjectName("toolBox")
         self.pageFile = QtWidgets.QWidget()
-        self.pageFile.setGeometry(QtCore.QRect(0, 0, 250, 728))
+        self.pageFile.setGeometry(QtCore.QRect(0, 0, 148, 514))
         self.pageFile.setObjectName("pageFile")
         self.formLayout = QtWidgets.QFormLayout(self.pageFile)
         self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -146,7 +146,7 @@ class Ui_MainWindow(object):
         self.formLayout.setItem(14, QtWidgets.QFormLayout.ItemRole.SpanningRole, spacerItem4)
         self.toolBox.addItem(self.pageFile, "")
         self.pageExport = QtWidgets.QWidget()
-        self.pageExport.setGeometry(QtCore.QRect(0, 0, 251, 728))
+        self.pageExport.setGeometry(QtCore.QRect(0, 0, 251, 614))
         self.pageExport.setObjectName("pageExport")
         self.formLayout1 = QtWidgets.QFormLayout(self.pageExport)
         self.formLayout1.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -415,7 +415,7 @@ class Ui_MainWindow(object):
         self.formLayout2.setItem(26, QtWidgets.QFormLayout.ItemRole.SpanningRole, spacerItem14)
         self.toolBox.addItem(self.pageEdit, "")
         self.pageMeta = QtWidgets.QWidget()
-        self.pageMeta.setGeometry(QtCore.QRect(0, 0, 250, 728))
+        self.pageMeta.setGeometry(QtCore.QRect(0, 0, 148, 312))
         self.pageMeta.setObjectName("pageMeta")
         self.formLayout3 = QtWidgets.QFormLayout(self.pageMeta)
         self.formLayout3.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
@@ -526,7 +526,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(-1)
-        self.toolBox.setCurrentIndex(2)
+        self.toolBox.setCurrentIndex(4)
         self.actionQuit.triggered.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -660,7 +660,7 @@ class Ui_MainWindow(object):
 "li.unchecked::marker { content: \"\\2610\"; }\n"
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:\'Noto Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime 2025.3</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     TreeTime 2025.3+ (Development)</p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Official website:<br />     <a href=\"https://tree-time.info\"><span style=\" text-decoration: underline; color:#2980b9;\">tree-time.info</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">     Updates and source code:<br />     <a href=\"https://github.com/jkanev/treetime\"><span style=\" text-decoration: underline; color:#2980b9;\">codeberg.org/jkanev/treetime</span></a></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">    Documentation:<br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">treetime-data-manager.</span></a><br />     <a href=\"https://treetime-data-manager.readthedocs.io\"><span style=\" text-decoration: underline; color:#2980b9;\">readthedocs.io</span></a></p></body></html>"))
