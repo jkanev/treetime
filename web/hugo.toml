@@ -1,0 +1,15 @@
+theme = 'hugo-book'
+baseURL = 'https://tree-time.info'
+disablePathToLower = true
+languageCode = 'en-gb'
+title = 'TreeTime'
+
+[markup]
+[markup.goldmark.renderer]
+  unsafe = true
+  
+[params]
+  BookTheme = 'light'
+
+
+
