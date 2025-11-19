@@ -16,6 +16,7 @@ Content
    :maxdepth: 2
 
    introduction
+   meta-structure
    data-format
    data-fields
    tree-fields

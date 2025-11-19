@@ -1,17 +1,23 @@
 
----
-title: "TreeTime"
-layout: landing
----
++++
+layout = "landing"
+keywords = ['treetime', 'tree-time', 'hierarchical note taking', 'mindmap editor', 'tree editor', 'time tracker', 'time planner', 'to-do list manager', 'presentation tool', 'mind-map editor', 'test report tool', 'project planner', 'hierarchical calculator', 'download', 'source code', 'documentation']
++++
 
 # ![Logo](treetime-logo-small.png) &nbsp;&nbsp;&nbsp; TreeTime
 ## Take notes. Track tasks. Plan projects. Organize knowledge. Using trees —
+{{< button href="https://codeberg.org/jkanev/treetime/releases/">}} Download {{< /button >}}  {{< button href="https://treetime-data-manager.readthedocs.io/">}} Documentation {{< /button >}}  {{< button href="https://codeberg.org/jkanev/treetime/">}} Source {{< /button >}}
 
 {{% columns  %}}
 - ### _TreeTime_ is
-  a time tracker, a time planner, a to-do list manager, a presentation tool, a mind-map editor, a test report generator, a project planner, a family ancestry editor, an accounting software, a hierarchic calculator, and more.
+  a time planner, a to-do list manager, a knowledge base, a mind-map editor, a hierarchical note taker, a project planner, a family ancestry editor, accounting software, a hierarchical calculator, and more.
 - ### _TreeTime_ is like
   a spreadsheet editor on steroids, a mini-database, or an extremely fancy list editor. _TreeTime_ uses trees. Several linked trees.
+- ### _TreeTime_
+  * is OpenSource,
+  * runs locally on your computer, no account needed,
+  * stores data in plain text files, and
+  * needs no admin permissions to run.
 {{% /columns %}}
 
 {{% columns %}}
@@ -21,8 +27,11 @@ layout: landing
   your data, your notes, your plan for an article, some domain knowledge, your todo list, naturally and efficently. Good bye spread sheets and lists, welcome trees.
 {{% /columns %}}
 
-| <a href="shot01.png">![](shot01.png)</a> | <a href="shot02.png">![](shot02.png)</a> | <a href="shot03.png">![](shot03.png)</a> | <a href="shot04.png">![](shot04.png)</a> | <a href="shot05.png">![](shot05.png)</a> | <a href="shot06.png">![](shot06.png)</a> | <a href="shot07.png">![](shot07.png)</a> | <a href="shot08.png">![](shot08.png)</a> | <a href="shot09.png">![](shot09.png)</a> | <a href="shot10.png">![](shot10.png)</a> | <a href="shot11.png">![](shot11.png)</a> | <a href="shot12.png">![](shot12.png)</a> | <a href="shot13.png">![](shot13.png)</a> |
-|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| <a href="shot01.png">![](shot01.png)</a> | <a href="shot05.png">![](shot05.png)</a> | <a href="shot09.png">![](shot09.png)</a> |
+|----|----|----|
+
+| <a href="shot02.png">![](shot02.png)</a> | <a href="shot03.png">![](shot03.png)</a> | <a href="shot04.png">![](shot04.png)</a> | <a href="shot06.png">![](shot06.png)</a> | <a href="shot07.png">![](shot07.png)</a> | <a href="shot08.png">![](shot08.png)</a> | <a href="shot10.png">![](shot10.png)</a> | <a href="shot11.png">![](shot11.png)</a> | <a href="shot13.png">![](shot13.png)</a> | <a href="shot12.png">![](shot12.png)</a> |
+|----|----|----|----|----|----|----|----|----|----|
 
 {{% columns %}}
 - {{< card >}}

@@ -32,7 +32,7 @@ Hidden Fields
 
 Sometimes calculations are more complex than mere ratios, products or sums. The result of any field can be the input of
 any other field, provided there are no circular dependencies. If chained calculations are needed but intermediate
-values not interesting, intermediate field can be made *hidden*.
+values not interesting, intermediate field can be made *hidden*::
 
         field "_sum(x)"
             field-type "ratio-percent"

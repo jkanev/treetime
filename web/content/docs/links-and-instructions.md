@@ -1,6 +1,7 @@
 +++
 title = "Links and Instructions"
 weight = 3
+keywords = ['treetime', 'tree time', 'data manager', 'principles', 'get treetime', 'run treetime', 'source code', 'bugs', 'licensing']
 +++
 
 ## Documentation ##
@@ -50,6 +51,7 @@ Executable bundles have been created with pyinstaller ([www.pyinstaller.org](htt
 {{% /tab %}}
 {{% /tabs %}}
 
+Note: _TreeTime_ has recently moved to [codeberg.org](https://codeberg.org). Releases before Novebmer 2025 are here: [github.com/jkanev/treetime/releases](https://github.com/jkanev/treetime/releases).
 ## Run TreeTime
 
 - Windows: Hit the Windows key and type "TreeTime", then click the "run command treetime" that comes up.

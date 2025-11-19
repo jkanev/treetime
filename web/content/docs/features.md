@@ -1,9 +1,23 @@
 +++
 title = "Features"
-weidht = 2
+weight = 2
+keywords = ['treetime', 'tree time', 'data manager', 'data design', 'files', 'saving', 'export', 'edit', 'analyse']
 +++
 
 ## Features
+
+### TreeTime Principles
+
+* _TreeTime_ is OpenSource
+* _TreeTime_ is local, no account needed
+* Data is stored in text files, readable with any text editor
+* No special permissions needed to run the software, just download and unzip, or install Python package
+
+### Data Design
+
+* Decide what is stored in your data -- text, numbers, time records, links
+* Decide what is calculated in the tree -- concatenated text, sums, ratios, products, differences, using any field from a nodes children, or siblings, or parents as input
+* Create and delete trees
 
 ### Files and Saving
 
