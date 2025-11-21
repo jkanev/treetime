@@ -20,7 +20,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Jacob Kanev',
     author_email='jkanev@zoho.com',
-    url='https://github.com/jkanev/treetime',
+    url='https://tree-time.info',
     packages=['treetime'],
     package_dir={'treetime': 'treetime'},
     include_package_data=True,

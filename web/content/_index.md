@@ -6,7 +6,12 @@ keywords = ['treetime', 'tree-time', 'hierarchical note taking', 'mindmap editor
 
 # ![Logo](treetime-logo-small.png) &nbsp;&nbsp;&nbsp; TreeTime
 ## Take notes. Track tasks. Plan projects. Organize knowledge. Using trees —
-{{< button href="https://codeberg.org/jkanev/treetime/releases/">}} Download {{< /button >}}  {{< button href="https://treetime-data-manager.readthedocs.io/">}} Documentation {{< /button >}}  {{< button href="https://codeberg.org/jkanev/treetime/">}} Source {{< /button >}}
+{{< button href="https://pypi.org/project/TreeTime/">}} Python Package {{< /button >}}
+{{< button href="https://codeberg.org/jkanev/treetime/releases/download/2025.3/treetime_2025-03_windows.zip">}} Download / Windows {{< /button >}}
+{{< button href="https://codeberg.org/jkanev/treetime/releases/download/2025.3/treetime_2025-03_linux.tar.gz">}} Download / Linux {{< /button >}}
+{{< button href="https://treetime-data-manager.readthedocs.io/">}} Documentation {{< /button >}}
+{{< button href="https://codeberg.org/jkanev/treetime/">}} Source Code {{< /button >}}
+{{< button href="https://codeberg.org/jkanev/treetime/issues">}} Report Issues {{< /button >}}
 
 {{% columns  %}}
 - ### _TreeTime_ is
