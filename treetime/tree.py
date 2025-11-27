@@ -2056,7 +2056,7 @@ class Forest(Node):
 
         # link name change function of default item to all trees
         for t,tree in enumerate(self.children):
-            self.itemTypes.items[0].registerFieldNameChangeCallback(t, lambda old, new: tree.changeFieldName(old, new))
+            self.itemTypes.items[0].registerFieldNameChangeCallback(t, lambda old, new, tree=tree: tree.changeFieldName(old, new))
 
         # remove empty nodes
         print(f"... removing empty nodes ...")
