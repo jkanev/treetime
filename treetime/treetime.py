@@ -2611,8 +2611,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # update value and send warning if there's a recursion error
                         if not self.currentItem.changeFieldContent(fieldName, newValue):
-                            message = ("Infinite recursion.\n"
-                                       "Please check your tree definition for circular dependencies.")
+                            message = (f'Infinite recursion caused by field "{fieldName}".\n'
+                                       'Please check your tree definition for circular dependencies.')
                             msgBox = QtWidgets.QMessageBox()
                             msgBox.setText(message)
                             msgBox.setWindowTitle("TreeTime Error")
@@ -2661,8 +2661,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # update all timers that are running
         for item, fieldName in self.auto_updates:
             if not item.changeFieldContent(fieldName, [True]):
-                message = ("Infinite recursion.\n"
-                           "Please check your tree definition for circular dependencies.")
+                message = (f'Infinite recursion caused by field "{fieldName}".\n'
+                           'Please check your tree definition for circular dependencies.')
                 msgBox = QtWidgets.QMessageBox()
                 msgBox.setText(message)
                 msgBox.setWindowTitle("TreeTime Error")
