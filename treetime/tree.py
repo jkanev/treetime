@@ -29,9 +29,12 @@ class Field:
     A set of instructions to view/display the content of data items.
     Fields are part of nodes, and are stored in templates.
     """
-    Types = ("string", "url", "text", "sum", "set", "sum-time", "difference", "difference-time", "mean", "mean-percent",
-             "min", "max", "min-string", "max-string", "product", "reciprocal", "ratio", "ratio-percent", "node-name",
-             "node-path")
+    Types = {'string': 'text', 'url': 'text', 'text': 'text', 'sum': 'numerical',
+             'set': 'any', 'sum-time': 'numerical', 'difference': 'numerical', 'difference-time': 'numerical',
+             'mean': 'numerical', 'mean-percent': 'numerical',
+             'min': 'numerical', 'max': 'numerical', 'min-string': 'text', 'max-string': 'text',
+             'product': 'numerical', 'reciprocal': 'numerical', 'ratio': 'numerical', 'ratio-percent': 'numerical',
+             'node-name': 'any', 'node-path': 'any'}
 
     def __init__(self, node=None, ownFields=False, childFields=False, siblingFields=False, parentFields=False,
                  fieldType=None):

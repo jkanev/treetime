@@ -57,6 +57,34 @@ The input list is split into four parts:
 3. Sibling fields. This is a list of fields taken from the node's siblings. Example: You have a data field "spent time" and want to see the percentage of spent time of all siblings (for example, tasks) of the same parent (for example, the current week), and call it "Relative Effort". The "ratio-percent" field type computes the ratio *y* from its inputs *x1*, *x2*, ... in the following way: *y* = *x1* / (*x2* + *x3* + ... + *xn*). In the "own fields" you select "spent time" (that's your *x1*), then you add another entry and also add "spent time" (that's your *x2*), then in the sibling field list you select one entry "spent time" (that's your *x3*, *x4*, ..., depending on how many siblings the node has). As a result, each node will display a field: "Relativ Effort" = "spent time" of the node / ("spent time" of the node + "spent time" of the first sibling + "spent time" of the next sibling + etc).
 4. Parent fields. These are mainly useful for the "node-path" and "node-name" type fields. When using them with other types, be very careful not to create circular dependencies. With these fields, they work in the same way as the other lists, only they take values from the node's parent. For "node-path" and "node-name", select the id of a tree from the dropdown (count trees starting with 0). The tree field will then display the node's parent name in that other tree. Example: You have a tree "Tasks" and a tree "Priority". The "Priority" tree has all different priorities as branches. If you want to see the priority in the task list, create a field "node-name", and select the ID of the "Priority" tree in the "parent fields" list. You will then, in the task list, see the parent of that node in the priority list.
 
-In general: the *x1*, *x2*, *x3*, ..., parameters are taken in order from the four lists: *x1*, *x2*, *x3*, ..., = [own field] + [child fields] + [sibling fields] + [parent fields].
+In general: the *x1*, *x2*, *x3*, ..., parameters are collected in order they are mentioned from the four lists
+1. own fields,
+2. child fields,
+3. sibling fields,
+4. parent fields.
 
-Note: To avoid circular dependencies, and tell tree fields and data fields apart, it is good practice to name data fields in lower case ("spent time"), and tree fields with capitalisation ("Spent Time").
+Recursion
+---------
+
+If you have a data field *x* and define a tree field *y = sum( children.x )* then the tree field *y* in each node will show the sum of all *x* of each node's children. Only the direct children, grandchildren and everything further down is ignored. In most cases this is not what you want.
+
+Recursion is a method of calculating where a method executes itself. As if you had a piece of paper with some instructions, and one of those instructions reads "do what's on the instruction paper". Or, as someone once phrased it: "Before you can understand recursion, you must first understand recursion". A recursive method consists of two parts:
+
+- A watertight stopping criterion
+- A call to itself
+
+When calculating values in a tree, the first part (stopping criterion) is implicit by calculating values of children ("stop when there are no more children") or parents ("stop when there are no more parents"). The second part (call to itself) is present if the tree field definition contains the tree field itself.
+
+In the above case of the sum over a nodes' childrens' *x* this would be:  
+
+*y = own.x + children.y*.  
+
+The value of *y* of each node is calculated by the node's *x*, adding the node *y* of each child. The value *y* of each child is calculated by adding its own value *x* plus the value *y* of each of that child's children. And so forth.
+
+It is important that the recursion is not defined in own-fields, because then the recursion would not stop: If *y = own.y + children.x* then to calculate that sum, *TreeTime* would calculate a node's *y* field by first collecting the value of the its *y* field, for which in turn it would collect the value of its *y* field, for which in turn it would  firstcollect the value of its *y* field... There's no stopping criterion. That's what's called a "circular dependency". To prevent that, the tree field will not be offered in its own own-fields and sibling-fields drop-down lists.
+
+Recursion can also be defined indirectly, where *a* depends on *b*, *b* depends on *c*, and *c* depends on *a*. *TreeTime* doesn't check this (at this version, we might add a check later).
+
+To avoid circular dependencies, and tell tree fields and data fields apart, it is good practice to name data fields in lower case ("spent time"), and tree fields with capitalisation ("Spent Time"). By then making sure all capitalised fields are only mentioned in child-fields parameter lists you will avoid infinite recursion.
+
+

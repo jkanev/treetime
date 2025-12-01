@@ -286,15 +286,15 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         return changeOk
 
     def changeType(self, newType):
-        self.contentType = newType
+        self.contentType = newType.removesuffix(' [numerical]').removesuffix(' [text]').removesuffix(' [any]')
         if self.nodeType == 'tree field':
-            self.source.fieldType = newType
+            self.source.fieldType = self.contentType
             self.forest.updateTreeFieldType(self.parentName, self.name)
-            super().setText(1, self.source.hidden and newType + ' (hidden)' or newType)
+            super().setText(1, self.source.hidden and self.contentType + ' (hidden)' or self.contentType)
         else:
-            self.source['type'] = newType
+            self.source['type'] = self.contentType
             self.forest.updateDataFieldType(self.name)
-            super().setText(1, newType)
+            super().setText(1, self.contentType)
         return True
 
     def changeContent(self, newContent, index=-1):
@@ -303,10 +303,11 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         elif self.nodeType == 'parameter list':
             currentEntries = len(self.source)
             if newContent:
+                bare = newContent.removesuffix(' [text]').removesuffix(' [numerical]').removesuffix(' [any]')
                 if index >= currentEntries:
-                    self.source += [newContent]
+                    self.source += [bare]
                 else:
-                    self.source[index] = newContent
+                    self.source[index] = bare
             else:
                 self.source.pop(index)
             self.forest.updateTreeFieldParameters(self.grandParentName, self.parentName, self.name)
@@ -419,16 +420,38 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         self.parent().removeChild(self)
         return n
 
-    def availableFields(self):
+    def availableFields(self, exclude=None, datatype='any'):
         """ Get avaiable fields for combo box display. Only delivers data if this is a tree type.
-        :return: Get
+        :param exclude: A field name to not have in the result list (to prevent recursion)
+        :param datatype: Limit the list to a certain datatype. One of 'text', 'numerical', 'any' (default).
+        :return: Two lists and two dictionaries.
+                 1. Bare names
+                 2. Annotated names (with type)
+                 3. Dict bare→annotated
+                 4. Dict annotated→bare
         """
-        fields = ['']
+        fields = []
+        annotated = ['']
+        bare = ['']
+
         if self.nodeType == 'tree':
             dataItem = self.parent().child(0).source
-            fields += [f for f in dataItem.fields.keys()]
-            fields += [f for f in self.source.fields.keys()]
-        return fields
+
+            # tuple for type checking
+            checktype = datatype == 'any' and ('text', 'numerical', 'any') or (datatype, 'any')
+
+            # collect tuples of fields and types, ommitig "exclude" items and matching "datatype"s.
+            fields += [(f[0], Item.FieldTypes[f[1]['type']])
+                       for f in dataItem.fields.items()
+                       if f[0]!=exclude and Item.FieldTypes[f[1]['type']] in checktype]
+            fields += [(f[0], Field.Types[f[1].fieldType])
+                       for f in self.source.fields.items()
+                       if f[0]!=exclude and Field.Types[f[1].fieldType] in checktype]
+
+            # build result lists and dictionaries
+            bare += [f[0] for f in fields]
+            annotated += [f'{f[0]} [{f[1]}]' for f in fields]
+        return bare, annotated, {f[0]:f[1] for f in zip(bare, annotated)}, {f[0]:f[1] for f in zip(annotated, bare)}
 
     def updateChildren(self):
         """
@@ -439,8 +462,6 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             for c in range(self.childCount()):
                 self.child(c).parentName = self.name
                 self.child(c).grandParentName = self.parentName
-                print(f'changed names to: parent:"{self.name}" and grandParent:"{self.parentName}" for meta node child '
-                      f'{self.child(c).name} of {self.name}')
                 self.child(c).updateChildren()
         elif self.nodeType == "parameter list":
             super().setText(1, f'{self.source}'[1:-1])
@@ -2331,15 +2352,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if currentNode.nodeType == 'data field':
                     widget = QtWidgets.QComboBox()
                     widget.setFont(font)
-                    widget.addItems(Item.FieldTypes)
-                    widget.setCurrentText(currentNode.contentType)
+                    widget.addItems([f'{k} [{v}]' for k,v in Item.FieldTypes.items()])
+                    cnt = currentNode.contentType
+                    widget.setCurrentText(f'{cnt} [{Item.FieldTypes[cnt]}]')
                     widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
                     self.tableWidget.setCellWidget(n, 3, widget)
                 elif currentNode.nodeType == 'tree field':
                     widget = QtWidgets.QComboBox()
                     widget.setFont(font)
-                    widget.addItems(Field.Types)
-                    widget.setCurrentText(currentNode.contentType)
+                    cnt = currentNode.contentType
+                    widget.addItems([f'{k} [{v}]' for k,v in Field.Types.items()])
+                    widget.setCurrentText(f'{cnt} [{Field.Types[cnt]}]')
                     widget.currentTextChanged.connect(lambda x: currentNode.changeType(x))
                     self.tableWidget.setCellWidget(n, 3, widget)
                 else:
@@ -2377,25 +2400,36 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 elif currentNode.nodeType == 'parameter list':
                     self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
                     if currentNode.parent().contentType not in ('node-path', 'node-name'):
-                        list = currentNode.parent().parent().availableFields()
-                        if currentNode.name == 'own-fields':
-                            list.remove(currentNode.parentName)
+                        bare, annotated, bareToAnn, annToBare = currentNode.parent().parent().availableFields(
+                            exclude = ((currentNode.name in ('own-fields', 'sibling-fields') and currentNode.parentName)
+                                      or None),
+                            datatype = Field.Types[currentNode.parent().contentType])
                     else:
-                        list = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
+                        bare = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
+                        annoted = bare
+                        bareToAnn = {a[0]:a[1] for a in zip(bare, bare)}
+                        annToBare = bareToAnn
                     offset = n
                     for cnt in currentNode.source:
                         widget = QtWidgets.QComboBox()
                         widget.setFont(font)
-                        widget.addItems(list)
-                        widget.setCurrentText(str(cnt))
+                        if str(cnt) in bareToAnn.keys():
+                            widget.addItems(annotated)
+                            widget.setCurrentText(bareToAnn[str(cnt)])
+                        else:
+                            warningentry = f'Type Mismatch: {cnt}'
+                            widget.addItems(annotated + [warningentry])
+                            widget.setCurrentText(warningentry)
+                            print(f'Type error: field "{cnt}" as defined in tree field has wrong type.')
                         widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
                                                                                 and self.showTreeFieldInDataView())
                         self.tableWidget.setCellWidget(n, 3, widget)
                         self._protectCells(n, [0, 1, 2, 3, 4])
                         n += 1
+
                     widget = QtWidgets.QComboBox()
                     widget.setFont(font)
-                    widget.addItems(list)
+                    widget.addItems(annotated)
                     widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
                                                                             and self.showTreeFieldInDataView())
                     self.tableWidget.setCellWidget(n, 3, widget)
@@ -2585,9 +2619,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     else:
                         # change type of data field (all other changes are via dropdown box)
                         newType = self.tableWidget.item(row, 3).text()
-                        self.currentMetaNode.changeContent(newType)
-                        if self.currentMetaNode.nodeType == 'parameter list':
-                            self.showTreeFieldInDataView()
+                        try:
+                            self.currentMetaNode.changeContent(newType)
+                            if self.currentMetaNode.nodeType == 'parameter list':
+                                self.showTreeFieldInDataView()
+                        except:
+                            pass
 
             self.locked = False
             self.delayedWriteToFile()
