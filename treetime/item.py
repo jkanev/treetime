@@ -189,6 +189,7 @@ class Item:
         """
         Edit the content of a field. The content is expected to be a string and
         will be converted according to the field type.
+        :return: True if all was fine, False if there's a recursion error
         """
 
         if fieldName not in self.fields:
@@ -232,9 +233,14 @@ class Item:
                 field["content"] = None
 
             # notify changes
-            self.notifyFieldChange(fieldName)
+            try:
+                self.notifyFieldChange(fieldName)
+                result = True
+            # warning message
+            except RecursionError:
+                result = False
 
-        return True
+        return result
 
     def notifyFieldChange(self, fieldName):
         """

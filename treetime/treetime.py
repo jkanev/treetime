@@ -2608,10 +2608,16 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         self.tableWidget.cellWidget(row, 3).runningSince())
                         else:
                             newValue = self.tableWidget.item(row, 3).text()
-                        result = self.currentItem.changeFieldContent(fieldName, newValue)
-                        if result is not True:
-                            message = "Couldn't update field content.\n" + str(result)
-                            print(message)
+
+                        # update value and send warning if there's a recursion error
+                        if not self.currentItem.changeFieldContent(fieldName, newValue):
+                            message = ("Infinite recursion.\n"
+                                       "Please check your tree definition for circular dependencies.")
+                            msgBox = QtWidgets.QMessageBox()
+                            msgBox.setText(message)
+                            msgBox.setWindowTitle("TreeTime Error")
+                            msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                            result = msgBox.exec()
 
                         # add/remove timer to list
                         if fieldType == 'timer':
@@ -2654,8 +2660,14 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def updateTimers(self):
         # update all timers that are running
         for item, fieldName in self.auto_updates:
-            result = item.changeFieldContent(fieldName, [True])
-        # remove timers that are problematic
+            if not item.changeFieldContent(fieldName, [True]):
+                message = ("Infinite recursion.\n"
+                           "Please check your tree definition for circular dependencies.")
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText(message)
+                msgBox.setWindowTitle("TreeTime Error")
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                result = msgBox.exec()
 
     def createNode(self, insertas, copy, recurse = False, srcItem = None, destItem = None):
         
