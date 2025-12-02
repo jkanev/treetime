@@ -991,11 +991,16 @@ class Node:
                 text += first_line_prefix + line
                 first = False
             else:
-                text += first_line_prefix + "    " + line
+                text += line_prefix + line
 
         if fields_local:
+            first_field = True
             for name, field in self.fields.items():
                 if not field.hidden:
+
+                    if first_field:
+                        text += line_prefix + "-"*(70 - len(line_prefix)) + "\n"  # empty line after title
+                        first_field = False
 
                     # wrap field content, larger bits of text start with a newline
                     lines = fieldContent and Node._wrap_lines(field.getString()) or []
