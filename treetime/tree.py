@@ -234,8 +234,8 @@ class Field:
                 else:
                     return ""
             except (TypeError, ValueError):
-                message = (f'Error in propagating tree field definition change for field "{fieldName}".\n'
-                           'Please check your tree definition for circular dependencies and type errors.')
+                message = (f'Error in calculating value for field "{self.name}".\n'
+                           'Please check your tree definition for type errors.')
                 print(message)
                 msgBox = QtWidgets.QMessageBox()
                 msgBox.setText(message)
@@ -1904,7 +1904,7 @@ class Tree(Node):
         :return:
         """
 
-        # Change type of all fields
+        # Change type of all fields, using a loop to leave the metanode-node-array links on the top level unchanged
         newType = self.fields[fieldName].fieldType
         for c in self.children:
             c.changeFieldType(fieldName, newType)
