@@ -45,6 +45,17 @@ from werkzeug.serving import make_server
 # Use only for debugging purposes (to cause an error on purpose, if you feel there might be loops), can cause segfaults
 # sys.setrecursionlimit(50)
 
+def errorMessage(message):
+    """ Helper function for displaying error message box
+    :param message: The text to display in the box
+    """
+    print(message)
+    msgBox = QtWidgets.QMessageBox()
+    msgBox.setText(message)
+    msgBox.setWindowTitle("TreeTime Error")
+    msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+    result = msgBox.exec()
+
 
 class QNode(QtWidgets.QTreeWidgetItem):
     """
@@ -277,11 +288,7 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
 
         # if change not allowed, notify user
         elif message:
-            msgBox = QtWidgets.QMessageBox()
-            msgBox.setText(message)
-            msgBox.setWindowTitle("Change not possible")
-            msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-            result = msgBox.exec()
+            errorMessage("Name change is not possible.")
 
         return changeOk
 
@@ -438,7 +445,7 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
             dataItem = self.parent().child(0).source
 
             # tuple for type checking
-            checktype = datatype == 'any' and ('text', 'numerical', 'any') or (datatype, 'any')
+            checktype = datatype == 'any' and ('text', 'numerical', 'any') or (datatype)
 
             # collect tuples of fields and types, ommitig "exclude" items and matching "datatype"s.
             fields += [(f[0], Item.FieldTypes[f[1]['type']])
@@ -1943,11 +1950,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # in case of failure, show user message and reload
             except KeyError as e:
 
-                msgBox = QtWidgets.QMessageBox()
-                msgBox.setText(str(e))
-                msgBox.setWindowTitle("TreeTime Message")
-                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-                result = msgBox.exec()
+                errorMessage("File loading failed. Retrying.")
                 self.pushButtonLoadFileClicked()
 
         else:
@@ -2412,14 +2415,19 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     for cnt in currentNode.source:
                         widget = QtWidgets.QComboBox()
                         widget.setFont(font)
+
+                        # if in list, translate field to annoated version
                         if str(cnt) in bareToAnn.keys():
                             widget.addItems(annotated)
                             widget.setCurrentText(bareToAnn[str(cnt)])
+
+                        # if not in list, type must be wrong. show warning and proceed
                         else:
                             warningentry = f'Type Mismatch: {cnt}'
                             widget.addItems(annotated + [warningentry])
                             widget.setCurrentText(warningentry)
-                            print(f'Type error: field "{cnt}" as defined in tree field has wrong type.')
+                            errorMessage(f'Type error: field "{cnt}" as defined in tree field has wrong type.')
+
                         widget.currentTextChanged.connect(lambda x, p=n-offset: currentNode.changeContent(x, p)
                                                                                 and self.showTreeFieldInDataView())
                         self.tableWidget.setCellWidget(n, 3, widget)
@@ -2610,13 +2618,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # update value and send warning if there's a recursion error
                         if not self.currentItem.changeFieldContent(fieldName, newValue):
-                            message = (f'Infinite recursion caused by field "{fieldName}".\n'
+                            errorMessage(f'Infinite recursion caused by field "{fieldName}".\n'
                                        'Please check your tree definition for circular dependencies.')
-                            msgBox = QtWidgets.QMessageBox()
-                            msgBox.setText(message)
-                            msgBox.setWindowTitle("TreeTime Error")
-                            msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-                            result = msgBox.exec()
 
                         # add/remove timer to list
                         if fieldType == 'timer':
@@ -2660,13 +2663,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # update all timers that are running
         for item, fieldName in self.auto_updates:
             if not item.changeFieldContent(fieldName, [True]):
-                message = (f'Infinite recursion caused by field "{fieldName}".\n'
+                errorMessage(f'Infinite recursion caused by field "{fieldName}".\n'
                            'Please check your tree definition for circular dependencies.')
-                msgBox = QtWidgets.QMessageBox()
-                msgBox.setText(message)
-                msgBox.setWindowTitle("TreeTime Error")
-                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-                result = msgBox.exec()
 
     def createNode(self, insertas, copy, recurse = False, srcItem = None, destItem = None):
         
@@ -2780,12 +2778,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # error message if recursion is tried
             if newParent and (newParent.item == item):
-                message = "You are trying to set\n" + item.name + "\nto be its own parent. This is not supported."
-                msgBox = QtWidgets.QMessageBox()
-                msgBox.setText(message)
-                msgBox.setWindowTitle("TreeTime Message")
-                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-                return msgBox.exec()
+                return errorMessage("You are trying to set\n" + item.name + "\nto be its own parent. This is not supported.")
 
             # find old parent
             oldParent = item.viewNodes[treeIndex]

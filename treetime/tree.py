@@ -234,8 +234,14 @@ class Field:
                 else:
                     return ""
             except (TypeError, ValueError):
-                print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
-                      f"Type mismatch, please check field definition.")
+                message = (f'Error in propagating tree field definition change for field "{fieldName}".\n'
+                           'Please check your tree definition for circular dependencies and type errors.')
+                print(message)
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText(message)
+                msgBox.setWindowTitle("TreeTime Error")
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                result = msgBox.exec()
                 return "undefined"
         else:
             return ""
@@ -1736,8 +1742,16 @@ class Node:
         if self.fieldChangeCallback:
             try:
                 self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
-            except:
-                print("Error in propagating tree field definition change")
+            except BaseException as e:
+                message = (f'Error when applying new definition for field "{fieldName}:".\n'
+                           f'{e}\n'
+                           'Please check for circular dependencies and type errors.')
+                print(message)
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText(message)
+                msgBox.setWindowTitle("TreeTime Error")
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                result = msgBox.exec()
 
 
 class Tree(Node):
