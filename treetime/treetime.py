@@ -953,7 +953,6 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButtonCopyNodeSibling.setEnabled(contentState)
         self.pushButtonCopyNodeParent.setEnabled(contentState)
         self.pushButtonCopyBranchSibling.setEnabled(contentState)
-        self.pushButtonCopyChildrenSiblings.setEnabled(contentState)
         self.comboBoxCopyDepth.setEnabled(contentState)
         self.label_6.setEnabled(contentState)
         self.pushButtonSaveToFile.setEnabled(contentState)
