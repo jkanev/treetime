@@ -22,6 +22,7 @@ from textwrap import wrap
 import datetime
 from math import floor, ceil, inf
 import graphviz as gv
+# todo: We're only including these for two error messages. Change them into exceptions and remove this dependency. It breaks the design.
 from PyQt6 import QtCore, QtWidgets
 
 class Field:
@@ -34,7 +35,7 @@ class Field:
              'mean': 'numerical', 'mean-percent': 'numerical',
              'min': 'numerical', 'max': 'numerical', 'min-string': 'text', 'max-string': 'text',
              'product': 'numerical', 'reciprocal': 'numerical', 'ratio': 'numerical', 'ratio-percent': 'numerical',
-             'node-name': 'any', 'node-path': 'any'}
+             'node-name': 'text', 'node-path': 'text'}
 
     def __init__(self, node=None, ownFields=False, childFields=False, siblingFields=False, parentFields=False,
                  fieldType=None):

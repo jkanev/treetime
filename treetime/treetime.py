@@ -310,7 +310,11 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
         elif self.nodeType == 'parameter list':
             currentEntries = len(self.source)
             if newContent:
-                bare = newContent.removesuffix(' [text]').removesuffix(' [numerical]').removesuffix(' [any]')
+                if self.parent().contentType in ('node-name', 'node-path'):
+                    bare = newContent.removesuffix(' [tree]')
+                    [bare] = [n for n,t in enumerate(self.forest.children) if t.name==bare]     # find index
+                else:
+                    bare = newContent.removesuffix(' [text]').removesuffix(' [numerical]').removesuffix(' [any]')
                 if index >= currentEntries:
                     self.source += [bare]
                 else:
@@ -2401,16 +2405,27 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     n += 1
                 elif currentNode.nodeType == 'parameter list':
                     self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
+
+                    # for standard fields, get list of node names, excluding forbidden ones (avoid recursion)
                     if currentNode.parent().contentType not in ('node-path', 'node-name'):
                         bare, annotated, bareToAnn, annToBare = currentNode.parent().parent().availableFields(
                             exclude = ((currentNode.name in ('own-fields', 'sibling-fields') and currentNode.parentName)
                                       or None),
                             datatype = Field.Types[currentNode.parent().contentType])
-                    else:
+
+                    # for node-name and node-path fields, create tree list (for parent field)
+                    elif currentNode.name == 'parent-fields':
                         bare = [''] + [str(c) for c in range(0, currentNode.parent().parent().parent().childCount() - 1)]
-                        annoted = bare
-                        bareToAnn = {a[0]:a[1] for a in zip(bare, bare)}
-                        annToBare = bareToAnn
+                        annotated = [''] + [f'{t.name} [tree]' for n, t in enumerate(self.forest.children)]
+                        bareToAnn = {a[0]:a[1] for a in zip(bare, annotated)}
+
+                    # for node-name and node-path fields, for non-parent lists, nothing's defined
+                    else:
+                        bare = ['']
+                        annotated = ['']
+                        bareToAnn = {'': ''}
+
+                    # create drow-down box for each parameter in list
                     offset = n
                     for cnt in currentNode.source:
                         widget = QtWidgets.QComboBox()
@@ -2434,6 +2449,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self._protectCells(n, [0, 1, 2, 3, 4])
                         n += 1
 
+                    # add additional drop-down box for new entry
                     widget = QtWidgets.QComboBox()
                     widget.setFont(font)
                     widget.addItems(annotated)
