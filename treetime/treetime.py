@@ -1927,6 +1927,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.mode = mode
 
     def loadFile(self, filename):
+        self.locked = True
         self.removeBranchTabs()
         self.tabWidgets = []
         self.treeWidgets = []
@@ -1951,13 +1952,17 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     if items:
                         firstTree.topLevelItem(0).setSelected(True)
 
+                self.locked = False
+
             # in case of failure, show user message and reload
             except KeyError as e:
 
                 errorMessage("File loading failed. Retrying.")
+                self.locked = False
                 self.pushButtonLoadFileClicked()
 
         else:
+            self.locked = False
             self.pushButtonLoadFileClicked()
 
     def newFile(self, filename):
