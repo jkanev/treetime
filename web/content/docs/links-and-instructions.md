@@ -22,7 +22,7 @@ keywords = ['treetime', 'tree time', 'data manager', 'principles', 'get treetime
 {{% /tab %}}
 {{% tab "Precompiled Binaries" %}}
 {{% steps %}}
-1. Go to [codeberg.org/jkanev/treetime/releases/tag/2025.3](https://codeberg.org/jkanev/treetime/releases/tag/2025.3) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there.
+1. Go to [codeberg.org/jkanev/treetime/releases/tag/2025.4](https://codeberg.org/jkanev/treetime/releases/tag/2025.4) and download a zipped package for Windows 10, 64 bit, or for Linux 64 bit from there.
 2. Unzip it into your program directory (or wherever you like).
 3. Unzip the data package too. Add the program folder to your path.
 4. Run _TreeTime_ or _TreeTime.exe_ from the new folder.

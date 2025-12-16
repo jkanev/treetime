@@ -50,6 +50,9 @@ string
 ------
 
 The simple display of the content of one or multiple data fields or tree fields.
+
+Input has to be of type "text".
+
 Syntax::
 
         field "Name"
@@ -75,6 +78,9 @@ sum
 ---
 
 The sum of all input fields.
+
+Input has to be of type "numerical".
+
 Syntax::
 
         field "Name"
@@ -92,6 +98,9 @@ set
 ---
 
 A list of unique occurrences of values of all input fields.
+
+Input can be any type, output will be of type "any".
+
 Syntax::
 
         field "Name"
@@ -110,10 +119,15 @@ sum-time
 
 Same as "sum", but will show the result as hour format, e.g. the value *1.5* will be displayed and exported as *1:30:00*.
 
+Input has to be of type "text".
+
 difference
 ----------
 
 Difference of numbers.
+
+Input has to be of type "numerical".
+
 Syntax::
 
         field "Name"
@@ -136,6 +150,9 @@ mean
 ----
 
 The statistical mean of all input fields.
+
+Input has to be of type "numerical".
+
 Syntax::
 
         field "Name"
@@ -158,6 +175,9 @@ min
 ---
 
 The minimum.
+
+Input has to be of type "numerical".
+
 Syntax::
 
         field "Name"
@@ -181,6 +201,9 @@ min-string
 ----------
 
 The smallest of a list of strings.
+
+Input has to be of type "text".
+
 Same as min, but can be used for text, e.g., names of branches collected by a *node-name* field (see below). Comparison is alphabetically, "aaaab" is smaller than "bc".
 
 max-string
@@ -193,6 +216,9 @@ product
 -----
 
 The product of all input fields.
+
+Input has to be of type "numerical".
+
 Syntax::
 
         field "Name"
@@ -210,6 +236,9 @@ reciprocal
 -----
 
 The reciprocal of one input field value (or, if you enter several parameters, of the sum).
+
+Input has to be of type "numerical".
+
 Syntax::
 
         field "Name"
@@ -227,6 +256,9 @@ ratio
 -----
 
 The ratio between the first and the sum of all following input fields.
+
+Input has to be of type "numerical".
+
 Syntax::
 
         field "Name"
@@ -249,6 +281,9 @@ node-name
 ---------
 
 The name of the node's parent in another tree.
+
+Input is of type "tree", either a number (in the file), or an annotated number in the meta editor.
+
 Syntax::
 
         field "Name"
