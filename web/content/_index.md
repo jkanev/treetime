@@ -6,8 +6,8 @@ keywords = ['treetime', 'tree-time', 'hierarchical note taking', 'mindmap editor
 
 # ![Logo](treetime-logo-small.png) &nbsp;&nbsp;&nbsp; TreeTime
 ## Linked Trees for Notes, Tasks, and Structured Data
-**TreeTime is a tool for organizing information into linked hierarchical trees.**
-Unlike flat lists, spread sheets, or single-view apps, the same data item can appear in multiple trees at the same time — giving you flexible, multi-perspective organization without duplication.
+**TreeTime is a tool for keeping, organizing and analyzing information using separate cross-linked hierarchies.**
+Unlike flat lists, spread sheets, or single-view apps, the same data item can appear in multiple trees at the same time — giving you flexible, multi-perspective sorting, categorising, and calculation.
 
 {{< button href="https://pypi.org/project/TreeTime/">}} Python Package {{< /button >}}
 {{< button href="https://codeberg.org/jkanev/treetime/releases/download/2025.4/treetime_2025-04_windows.zip">}} Download / Windows {{< /button >}}
@@ -19,8 +19,8 @@ Unlike flat lists, spread sheets, or single-view apps, the same data item can ap
 {{% columns  %}}
 
 - ### What is *TreeTime*?
-  TreeTime is a light-weight data manager that arranges your data in trees — that is units and sub-units.  
-  Each data object can belong to several trees simultaneously, allowing nested mathematical operations and exports to different graphic formats.  
+  TreeTime is a light-weight data manager that arranges your data in trees — units and sub-units.  
+  Each data object can belong to several trees at the same time, allowing nested mathematical operations and exports to different graphic formats.  
   → Read an explanation: [What is a Tree?](docs/what-is-a-tree)
 
 - ### Why linked trees?
@@ -36,14 +36,14 @@ Unlike flat lists, spread sheets, or single-view apps, the same data item can ap
 
 {{% columns %}}
 
-- ### Use TreeTime to organize
-  - notes and domain knowledge,
-  - tasks, projects, and timelines,
-  - structured data, reports, and calculations.  
+- ### Use TreeTime to
+  - Take notes, create mind-maps, plan tasks, projects, timelines, trace time,
+  - Categorize items and calculate totals and subtotals, ratios and subratios,
+  - Export to web pages and images, present live using a web server.  
   → See the [Full Documentation.](https://treetime-data-manager.readthedocs.io/en/latest/)
   ### TreeTime
   * is Open Source and free in every sense,
-  * runs offline, either from a non-install program file, or via Python/PiPy,
+  * runs offline, either from a non-install program file, or via Python/PyPi,
   * stores data in plain text files.  
   → See [Links and Instructions.](docs/links-and-instructions)
 
