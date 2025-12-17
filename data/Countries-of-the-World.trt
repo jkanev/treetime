@@ -1,10 +1,10 @@
 --trees--
 
 tree "Geographical"
-    field "Area (thousand km^2)"
+    field "Area (1000 km\u00b2)"
         field-type "sum"
         own-fields ["2 area"]
-        child-fields ["Area (thousand km^2)"]
+        child-fields ["Area (1000 km\u00b2)"]
         sibling-fields []
         parent-fields []
     field "Population (million people)"
@@ -13,15 +13,15 @@ tree "Geographical"
         child-fields ["Population (million people)"]
         sibling-fields []
         parent-fields []
-    field "Population Density (thousand people per km^2)"
+    field "Population Density (thousand / km\u00b2)"
         field-type "ratio"
-        own-fields ["Population (million people)", "Area (thousand km^2)"]
+        own-fields ["Population (million people)", "Area (1000 km\u00b2)"]
         child-fields []
         sibling-fields []
         parent-fields []
-    field "Personal Space (thousand m^2 per person)"
+    field "Personal Space (thousand m\u00b2 / person)"
         field-type "ratio"
-        own-fields ["Area (thousand km^2)", "Population (million people)"]
+        own-fields ["Area (1000 km\u00b2)", "Population (million people)"]
         child-fields []
         sibling-fields []
         parent-fields []
@@ -39,10 +39,10 @@ tree "Geographical"
         parent-fields []
 
 tree "First Language"
-    field "First language for (million people)"
+    field "Speakers (million)"
         field-type "sum"
         own-fields ["1 population"]
-        child-fields ["First language for (million people)"]
+        child-fields ["Speakers (million)"]
         sibling-fields []
         parent-fields []
     field "Information"
@@ -580,7 +580,7 @@ item Hungary
 
 item Liechtenstein
     fields {"2 area": {"content": 0.1605, "type": "integer"}, "1 population": {"content": 0.041232, "type": "integer"}, "3 information": {"content": "Liechtenstein (/\u02c8l\u026akt\u0259nsta\u026an/ \u24d8, LIK-t\u0259n-styne;[13] German: [\u02c8l\u026a\u00e7tn\u0329\u0283ta\u026an] \u24d8), officially the Principality of Liechtenstein (German: F\u00fcrstentum Liechtenstein, [\u02c8f\u028f\u0281stn\u0329tu\u02d0m \u02c8l\u026a\u00e7tn\u0329\u02cc\u0283ta\u026a\u032fn] \u24d8),[14] is a doubly landlocked German-speaking microstate in the Central European Alps, between Austria in the east and north and Switzerland in the west and south.[15] Liechtenstein is a semi-constitutional monarchy headed by the prince of Liechtenstein of the House of Liechtenstein, currently led by Hans-Adam II. It is Europe's fourth-smallest country, with an area of just over 160 square kilometres (62 square miles) and a population of 40,023.[16] It is the world's smallest country to border two countries,[17] and is one of the few countries with no debt.", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Liechtenstein", "type": "url"}}
-    trees [[0, 1, 6], [2, 1, 0, 1, 0, 2]]
+    trees [[0, 1, 6], []]
 
 item Lithuania
     fields {"2 area": {"content": 65.3, "type": "integer"}, "1 population": {"content": 2.89743, "type": "integer"}, "3 information": {"content": "Lithuania,[b] officially the Republic of Lithuania,[c] is a country in the Baltic region of Europe.[d] It is one of three Baltic states and lies on the eastern shore of the Baltic Sea, bordered by Latvia to the north, Belarus to the east and south, Poland to the south, and the Russian semi-exclave of Kaliningrad Oblast to the southwest, with a maritime border with Sweden to the west. Lithuania covers an area of 65,300 km2 (25,200 sq mi), with a population of 2.89 million. Its capital and largest city is Vilnius; other major cities include Kaunas, Klaip\u0117da, \u0160iauliai and Panev\u0117\u017eys. Lithuanians who are the titular nation and form the majority of the country's population, belong to the ethnolinguistic group of Balts and speak Lithuanian. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Lithuania", "type": "url"}}
@@ -595,8 +595,8 @@ item Slovenia
     trees [[0, 1, 9], [2, 0, 0, 0, 0, 1, 0]]
 
 item Switzerland
-    fields {"2 area": {"content": 41.285, "type": "integer"}, "1 population": {"content": 9.060598, "type": "integer"}, "3 information": {"content": "Switzerland,[d] officially the Swiss Confederation,[e] is a landlocked country located in west-central Europe.[f][13] It is bordered by Italy to the south, France to the west, Germany to the north, and Austria and Liechtenstein to the east. Switzerland is geographically divided among the Swiss Plateau, the Alps and the Jura; the Alps occupy the greater part of the territory, whereas most of the country's nearly 9 million people are concentrated on the plateau, which hosts its largest cities and economic centres, including Zurich, Geneva, and Lausanne.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Switzerland", "type": "url"}}
-    trees [[0, 1, 10], [2, 1, 0, 1, 0, 3]]
+    fields {"2 area": {"content": 41.285, "type": "integer"}, "1 population": {"content": 9.060598, "type": "integer"}, "3 information": {"content": "Switzerland, officially the Swiss Confederation, is a landlocked country located in west-central Europe. It is bordered by Italy to the south, France to the west, Germany to the north, and Austria and Liechtenstein to the east. Switzerland is geographically divided among the Swiss Plateau, the Alps and the Jura; the Alps occupy the greater part of the territory, whereas most of the country's nearly 9 million people are concentrated on the plateau, which hosts its largest cities and economic centres, including Zurich, Geneva, and Lausanne.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Switzerland", "type": "url"}}
+    trees [[0, 1, 10], [2, 1, 0, 1, 0, 2]]
 
 item Eastern Europe
     fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Eastern Europe is a subregion of the European continent. As a largely ambiguous term, it has a wide range of geopolitical, geographical, ethnic, cultural, and socio-economic connotations. Its eastern boundary is marked by the Ural Mountains, whilst its western boundary is defined in various ways.[1] Narrow definitions, in which Central and Southeast Europe are counted as separate regions, include the countries of Belarus, Russia and Ukraine.[2] In contrast, broader definitions include Moldova and Romania, but also some or all of the Balkans, the Baltic states, the Caucasus, and the Visegr\u00e1d group.", "type": "longtext"}, "wikipedia": {"content": "https://en.wikipedia.org/wiki/Eastern_Europe", "type": "url"}}
@@ -674,21 +674,21 @@ item Belgium
     fields {"2 area": {"content": 30.689, "type": "integer"}, "1 population": {"content": 11.812354, "type": "integer"}, "3 information": {"content": "Belgium, officially the Kingdom of Belgium, is a country in Northwestern Europe. Situated in a coastal lowland region known as the Low Countries, it is bordered by the Netherlands to the north, Germany to the east, Luxembourg to the southeast, France to the south, and the North Sea to the west. Belgium covers an area of 30,689 km2 (11,849 sq mi)[4] and has a population of more than 11.7 million; its population density of 383/km2 (990/sq mi) ranks 22nd in the world and sixth in Europe. The capital and largest metropolitan region is Brussels;[d] other major cities are Antwerp, Ghent, Charleroi, Li\u00e8ge, Bruges, Namur, and Leuven. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Belgium", "type": "url"}}
     trees [[0, 4, 2], [2, 1, 0, 2, 0, 0, 0]]
 
-item Luxembourg
-    fields {"2 area": {"content": 2.5864, "type": "integer"}, "1 population": {"content": 0.67205, "type": "integer"}, "3 information": {"content": "Luxembourg, officially named the Grand Duchy of Luxembourg, is a landlocked country in Western Europe. It is bordered by Belgium to the west and north, Germany to the east, and France on the south. Its capital and most populous city, Luxembourg City, is one of the four institutional seats of the European Union and hosts several EU institutions, notably the Court of Justice of the European Union, the highest judicial authority in the EU.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Luxembourg", "type": "url"}}
-    trees [[0, 4, 3], [2, 1, 0, 2, 1, 0, 0, 0, 0, 0]]
-
 item Monaco
     fields {"2 area": {"content": 0.000208, "type": "integer"}, "1 population": {"content": 3.8367e-05, "type": "integer"}, "3 information": {"content": "Monaco,[a] officially the Principality of Monaco, is a sovereign city-state and microstate on the French Riviera a few kilometres west of the Italian region of Liguria, in Western Europe, on the Mediterranean Sea. It is a semi-enclave bordered by France to the north, east and west. The principality is home to nearly 39,000 residents as of the 2020s, of whom about 9,500 are Mon\u00e9gasque nationals. It is recognised as one of the wealthiest and most expensive places in the world. The official language of Monaco is French. Mon\u00e9gasque, English and Italian are also spoken and understood by many residents.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Monaco", "type": "url"}}
-    trees [[0, 4, 4], [2, 3, 0, 0, 0, 0, 1, 0, 0, 2]]
+    trees [[0, 4, 3], [2, 3, 0, 0, 0, 0, 1, 0, 0, 2]]
 
 item Netherlands
     fields {"2 area": {"content": 41.865, "type": "integer"}, "1 population": {"content": 18.3093, "type": "integer"}, "3 information": {"content": "The Netherlands, informally Holland, is a country in Northwestern Europe, with overseas territories in the Caribbean. It is the largest of the four constituent countries of the Kingdom of the Netherlands. The Netherlands consists of twelve provinces; it borders Germany to the east and Belgium to the south, with a North Sea coastline to the north and west. It shares maritime borders with the United Kingdom, Germany, and Belgium. The official language is Dutch, with West Frisian as a secondary official language in the province of Friesland. Dutch, English, and Papiamento are official in the Caribbean territories.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Netherlands", "type": "url"}}
-    trees [[0, 4, 5], [2, 1, 0, 2, 0, 0, 1]]
+    trees [[0, 4, 4], [2, 1, 0, 2, 0, 0, 1]]
 
 item Ireland
     fields {"2 area": {"content": 70.273, "type": "integer"}, "1 population": {"content": 5.3803, "type": "integer"}, "3 information": {"content": "Ireland (Irish: \u00c9ire [\u02c8e\u02d0\u027e\u02b2\u0259] \u24d8), also known as the Republic of Ireland (Poblacht na h\u00c9ireann), is a country in Northwestern Europe consisting of 26 of the 32 counties of the island of Ireland, with a population of about 5.4 million.[4] Its capital and largest city is Dublin, on the eastern side of the island, with a population of over 1.5 million.[4] The sovereign state shares its only land border with Northern Ireland, which is part of the United Kingdom. It is otherwise surrounded by the Atlantic Ocean, with the Celtic Sea to the south, St George's Channel to the south-east and the Irish Sea to the east. It is a unitary, parliamentary republic.[9] The legislature, the Oireachtas, consists of a lower house, D\u00e1il \u00c9ireann; an upper house, Seanad \u00c9ireann; and an elected president (Uachtar\u00e1n) who serves as the largely ceremonial head of state, but with some important powers and duties. The head of government is the Taoiseach (prime minister, lit.\u2009'chief'), elected by the D\u00e1il and appointed by the president, who appoints other government ministers. ", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Ireland", "type": "url"}}
-    trees [[0, 4, 6], [2, 1, 0, 0, 0, 0, 0, 1]]
+    trees [[0, 4, 5], [2, 1, 0, 0, 0, 0, 0, 1]]
+
+item Luxembourg
+    fields {"2 area": {"content": 2.5864, "type": "integer"}, "1 population": {"content": 0.67205, "type": "integer"}, "3 information": {"content": "Luxembourg, officially named the Grand Duchy of Luxembourg, is a landlocked country in Western Europe. It is bordered by Belgium to the west and north, Germany to the east, and France on the south. Its capital and most populous city, Luxembourg City, is one of the four institutional seats of the European Union and hosts several EU institutions, notably the Court of Justice of the European Union, the highest judicial authority in the EU.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/Luxembourg", "type": "url"}}
+    trees [[0, 4, 6], [2, 1, 0, 2, 1, 0, 0, 0, 0, 0]]
 
 item Southern Europe
     fields {"2 area": {"content": 0, "type": "integer"}, "1 population": {"content": 0, "type": "integer"}, "3 information": {"content": "Southern Europe[1] is also known as Mediterranean Europe, as its geography is marked by the Mediterranean Sea. Definitions of southern Europe include some or all of these countries and regions: Albania, Andorra, Bosnia and Herzegovina, Bulgaria,[note 1] Croatia, Cyprus,[note 2] Gibraltar,[note 3] Greece,[note 4] Italy,[note 5] Malta,[note 6] Monaco,[note 7] Montenegro, North Macedonia, Portugal, San Marino, Serbia, Slovenia, southern France,[note 8] Spain, Turkey,[note 9] and Vatican City.", "type": "longtext"}, "wikipedia": {"content": "https://www.wikipedia.org/wiki/", "type": "url"}}
