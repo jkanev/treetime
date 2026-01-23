@@ -2412,11 +2412,12 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.tableWidget.setItem(n, 1, QtWidgets.QTableWidgetItem("Parameters"))
 
                     # for standard fields, get list of node names, excluding forbidden ones (avoid recursion)
-                    if currentNode.parent().contentType not in ('node-path', 'node-name'):
+                    ctype = currentNode.parent().contentType
+                    if ctype not in ('node-path', 'node-name'):
                         bare, annotated, bareToAnn, annToBare = currentNode.parent().parent().availableFields(
                             exclude = ((currentNode.name in ('own-fields', 'sibling-fields') and currentNode.parentName)
                                       or None),
-                            datatype = Field.Types[currentNode.parent().contentType])
+                            datatype = ctype != 'count' and Field.Types[currentNode.parent().contentType] or 'any')    # you can count anything
 
                     # for node-name and node-path fields, create tree list (for parent field)
                     elif currentNode.name == 'parent-fields':

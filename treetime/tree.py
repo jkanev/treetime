@@ -30,7 +30,7 @@ class Field:
     A set of instructions to view/display the content of data items.
     Fields are part of nodes, and are stored in templates.
     """
-    Types = {'string': 'text', 'url': 'text', 'text': 'text', 'sum': 'numerical',
+    Types = {'string': 'text', 'url': 'text', 'text': 'text', 'sum': 'numerical', 'count': 'numerical',
              'set': 'any', 'sum-time': 'numerical', 'difference': 'numerical', 'difference-time': 'numerical',
              'mean': 'numerical', 'mean-percent': 'numerical',
              'min': 'numerical', 'max': 'numerical', 'min-string': 'text', 'max-string': 'text',
@@ -166,12 +166,15 @@ class Field:
         elif self.fieldType == "text":
             self.getValue = self.getValueString
             self.getString = self.getStringUnchanged
-        elif self.fieldType == "sum":
-            self.getValue = self.getValueSum
+        elif self.fieldType == "count":
+            self.getValue = self.getValueCount
             self.getString = self.getStringRounded
         elif self.fieldType == "set":
             self.getValue = self.getValueSet
             self.getString = self.getStringSet
+        elif self.fieldType == "sum":
+            self.getValue = self.getValueSum
+            self.getString = self.getStringRounded
         elif self.fieldType == "sum-time":
             self.getValue = self.getValueSum
             self.getString = self.getStringTime
@@ -372,6 +375,16 @@ class Field:
             elif v:     # either sum up using the value
                 result_set.add(v)
         return result_set
+
+    def getValueCount(self):
+        values = self.getFieldValues()
+        sum = 0
+        for v in values:
+            if v:     # ignore missing value
+                sum += 1
+            else:     # or the neutral element for addition (0)
+                sum += 0
+        return sum
 
     def getValueSum(self):
         values = self.getFieldValues()
@@ -1125,6 +1138,7 @@ class Node:
                    'div.set {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.count {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -1164,6 +1178,7 @@ class Node:
                    'div.set {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 40em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.count {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -1201,6 +1216,7 @@ class Node:
                    'div.set {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.count {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
                    'div.sum-time {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.difference {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -1239,6 +1255,7 @@ class Node:
                    'div.set {position: relative; float: left; width: 25%; padding: 1%; }' \
                    'div.text {position: relative; float: left; width: 100%; padding: 1%; }' \
                    'div.url {position: relative; float: left; width: 45%; padding: 1%; }' \
+                   'div.count {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.sum {position: relative; float: left; width: 10%; padding: 1%; }' \
                    'div.sum-time {position: relative; float: left; width: 25%; padding: 1%; }' \
                    'div.difference {position: relative; float: left; width: 10%; padding: 1%; }' \
