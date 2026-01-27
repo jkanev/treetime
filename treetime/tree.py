@@ -1013,7 +1013,7 @@ class Node:
                 if not field.hidden:
 
                     if first_field:
-                        text += line_prefix + "-"*(70 - len(line_prefix)) + "\n"  # empty line after title
+                        text += line_prefix + "—"*(80 - len(line_prefix)) + "\n"  # empty line after title
                         first_field = False
 
                     # wrap field content, larger bits of text start with a newline
