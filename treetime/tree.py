@@ -1135,7 +1135,7 @@ class Node:
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.min-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.max-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.set {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.set {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.count {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -1175,7 +1175,7 @@ class Node:
                    'div.string {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.min-string {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.max-string {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.set {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.set {position: relative; float: left; width: 40em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 40em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.count {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -1213,7 +1213,7 @@ class Node:
                    'div.string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.min-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
                    'div.max-string {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
-                   'div.set {position: relative; float: left; width: 10em; margin: 0.3em; padding: 0.3em; }' \
+                   'div.set {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
                    'div.text {position: relative; float: left; width: 30em; margin: 0.3em; padding: 0.3em; }' \
                    'div.url {position: relative; float: left; width: 20em; margin: 0.3em; padding: 0.3em; }' \
                    'div.count {position: relative; float: left; width: 5em; margin: 0.3em; padding: 0.3em; }' \
@@ -1252,7 +1252,7 @@ class Node:
                    'div.string {position: relative; float: left; width: 25%; padding: 1%; }' \
                    'div.min-string {position: relative; float: left; width: 25%; padding: 1%; }' \
                    'div.max-string {position: relative; float: left; width: 25%; padding: 1%; }' \
-                   'div.set {position: relative; float: left; width: 25%; padding: 1%; }' \
+                   'div.set {position: relative; float: left; width: 100%; padding: 1%; }' \
                    'div.text {position: relative; float: left; width: 100%; padding: 1%; }' \
                    'div.url {position: relative; float: left; width: 45%; padding: 1%; }' \
                    'div.count {position: relative; float: left; width: 10%; padding: 1%; }' \
