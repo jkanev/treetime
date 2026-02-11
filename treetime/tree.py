@@ -1669,12 +1669,16 @@ class Node:
     def changeFieldName(self, oldName, newName):
         """
         :param oldName: current field name
-        :param newName: new field name
+        :param newName: new field name, or False (if field is removed)
         :return: True
         """
         if oldName in self.fields.keys():
             print(f'changing "{oldName}" to "{newName}" in node {self.name}')
-            self.fields[newName] = self.fields.pop(oldName)
+            if newName:
+                self.fields[newName] = self.fields.pop(oldName)
+            else:
+                self.item.notifyFieldNameChange(oldName, newName)
+                self.fields.pop(oldName)
         for c in self.children:
             c.changeFieldName(oldName, newName)
         return True
