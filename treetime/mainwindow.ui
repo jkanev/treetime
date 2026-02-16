@@ -177,7 +177,7 @@
        <string/>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="pageFile">
        <property name="geometry">
@@ -420,8 +420,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>251</width>
-         <height>614</height>
+         <width>253</width>
+         <height>728</height>
         </rect>
        </property>
        <attribute name="label">
@@ -673,7 +673,7 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select export file format&lt;/span&gt;&lt;/p&gt;&lt;p&gt;• HTML (Tiles) — html file, nodes are tiles within tiles&lt;br/&gt;• HTML (List) — html file, nodes are list lines&lt;br/&gt;• Text/Unicode — pure text file with text graphics&lt;br/&gt;• CSV — csv file with heading, first column is the tree structure, next are name and fields&lt;p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select export file format&lt;/span&gt;&lt;/p&gt;&lt;p&gt;• HTML (Tiles) — html file, nodes are tiles within tiles&lt;br/&gt;• HTML (List) — html file, nodes are list lines&lt;br/&gt;• HTML (Documnet) — html file, nodes chapters in a text&lt;br/&gt;• Text (Line art) — pure text file with text graphics&lt;br/&gt;• Text (Markdown) — markdown format for later creation of PDF/HTML documents&lt;br/&gt;• PNG (top-down) — image of top down tree diagram in PNG format&lt;br/&gt;• SVG (top-down) — image of top down tree diagram in SVG format, clickable links&lt;br/&gt;• PNG (circular) — tree diagram in PNG format, nodes are arranged in a circle&lt;br/&gt;• SVG (circular) — tree diagram in SVG format, clickable links, nodes in circle&lt;br/&gt;• PNG (Spread-out) — tree diagram in PNG format, nodes are arranged in a circle&lt;br/&gt;• SVG (spread-out) — tree diagram in SVG format, clickable links, nodes in circle&lt;br/&gt;• CSV+ — comma separated values, first column is tree structure, next are name and fields&lt;br/&gt;• CSV — comma separated values, no tree structure column&lt;br/&gt;• TSV+ — tab separated values for pasting into spread sheets like LibreOffice Calc or Excel, with tree structure column&lt;br/&gt;• TSV — tab separated values, no tree structure column&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <item>
            <property name="text">
@@ -732,7 +732,22 @@
           </item>
           <item>
            <property name="text">
-            <string>CSV</string>
+            <string>CSV+ (incl tree info)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CSV (Names/values only)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>TSV+ (incl tree info)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>TSV (Names/values only)</string>
            </property>
           </item>
          </widget>
@@ -1375,8 +1390,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>728</height>
+         <width>230</width>
+         <height>411</height>
         </rect>
        </property>
        <attribute name="label">

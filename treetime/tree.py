@@ -678,7 +678,8 @@ class Node:
         for i in range(len(self.children)):
             self.children[i].printForest(indent + 1)
 
-    def to_csv(self, nodeNames=True, fieldNames=True, fieldContent=True , context=False, first=True, depth=-1):
+    def to_csv(self, nodeNames=True, fieldNames=True, fieldContent=True , context=False, sep=',', treeColumn=True,
+               first=True, depth=-1):
         """
         Create a csv representation of the current branch.
         :fieldOrder: The order of fields in the tree
@@ -697,7 +698,7 @@ class Node:
 
         def clean_field(text):
             text.replace('"', '""')
-            if '"' in text or '\n' in text or ',' in text:
+            if '"' in text or '\n' in text or sep in text:
                 text = '"' + text + '"'
             return text
 
@@ -711,40 +712,44 @@ class Node:
             tree = tree.parent
 
         # add title line
-        if first:
-            csv = 'Tree,Name'
+        if first and fieldNames:
+            csv = 'Tree'+sep+'Name'
             for f in tree.fieldOrder:
-                csv += ','
+                csv += sep
                 if fieldNames:
                     csv += clean_field(f)
             csv += '\n'
 
         # add node path
-        field = ''
-        pipe = False
-        if len(self.path) > 1:
-            for n in range(1, len(self.path)):
-                field += pipe and ' | ' or ''
-                field += tree.findNode(self.path[:n]).name
-                pipe = True
-        field += pipe and ' | ' or ''
-        field += self.name
-        csv += clean_field(field) + ','
+        if treeColumn:
+            field = ''
+            pipe = False
+            if len(self.path) > 1:
+                for n in range(1, len(self.path)):
+                    field += pipe and ' | ' or ''
+                    field += tree.findNode(self.path[:n]).name
+                    pipe = True
+            field += pipe and ' | ' or ''
+            field += self.name
+            csv += clean_field(field)
+            if nodeNames:
+                csv += sep
 
         # add node name
-        csv += self.name
+        if nodeNames:
+            csv += self.name
 
         # add fields
         if fields_local and fieldContent:
             for f in tree.fieldOrder:
-                csv += ',' + clean_field(self.fields[f].getString())
+                csv += sep + clean_field(self.fields[f].getString())
         csv += '\n'
 
         # add children
         if depth and children:
             for c in sorted(self.children, key=lambda x: x.name):
                 csv += c.to_csv(first=False, nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
-                                context=context, depth=depth - 1)
+                                context=context, sep=sep, treeColumn=treeColumn, depth=depth - 1)
 
         # return
         return csv

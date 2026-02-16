@@ -1263,7 +1263,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         "Image/SVG (circular)": "Image Files (*.svg)",
                         "Image/PNG (spread-out)": "Image Files (*.png)",
                         "Image/SVG (spread-out)": "Image Files (*.svg)",
-                        "CSV": "CSV (Comma-separated Values) Files (*.csv)"
+                        "CSV+ (incl tree info)": "CSV (Comma-separated Values) Files (*.csv)",
+                        "CSV (Names/values only)":  "CSV (Comma-separated Values) Files (*.csv)",
+                        "TSV+ (incl tree info)": "TSV (Tab-separated Values) Files (*.tsv)",
+                        "TSV (Mames/values only)": "TSV (Tab-separated Values) Files (*.tsv)"
                     }
                     fileDir = self.settings.value('exportFile') and os.path.dirname(self.settings.value('exportFile')) or ''
                     file = QtWidgets.QFileDialog.getSaveFileName(self, "Export to " + exportFormat, fileDir,
@@ -1386,10 +1389,26 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if currentNode:
 
                     # write to data string
-                    if exportFormat == "CSV":
+                    if exportFormat == "CSV+ (incl tree info)":
                         webtype = 'text/csv'
                         data = currentNode.to_csv(depth=depth,
-                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent)
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  sep=',', treeColumn=True)
+                    elif exportFormat == "CSV (Names/values only)":
+                        webtype = 'text/csv'
+                        data = currentNode.to_csv(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  sep=',', treeColumn=False)
+                    elif exportFormat == "TSV+ (incl tree info)":
+                        webtype = 'text/csv'
+                        data = currentNode.to_csv(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  sep='\t', treeColumn=True)
+                    elif exportFormat == "TSV (Names/values only)":
+                        webtype = 'text/csv'
+                        data = currentNode.to_csv(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  sep='\t', treeColumn=False)
                     elif exportFormat == "Text (Line Art)":
                         webtype = 'text/plain'
                         data = currentNode.to_txt(depth=depth,
@@ -1470,6 +1489,34 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         data += c.to_csv(first=first, depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
                                          fieldContent=fieldContent)
                         first = False
+                if exportFormat == "CSV+ (incl tree info)":
+                    webtype = 'text/csv'
+                    first = True
+                    for c in children:
+                        data += c.to_csv(first=first, depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                         fieldContent=fieldContent, sep=',', treeColumn=True)
+                        first = False
+                elif exportFormat == "CSV (Names/values only)":
+                    webtype = 'text/csv'
+                    first = True
+                    for c in children:
+                        data += c.to_csv(first=first, depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                         fieldContent=fieldContent, sep = ',', treeColumn=False)
+                        first = False
+                elif exportFormat == "TSV+ (incl tree info)":
+                    webtype = 'text/csv'
+                    first = True
+                    for c in children:
+                        data += c.to_csv(first=first, depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                         fieldContent=fieldContent, sep='\t', treeColumn=True)
+                        first = False
+                elif exportFormat == "TSV (Names/values only)":
+                    webtype = 'text/csv'
+                    first = True
+                    for c in children:
+                        data += c.to_csv(first=first, depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
+                                         fieldContent=fieldContent, sep='\t', treeColumn=False)
+                        first = False
                 elif exportFormat == "Text (Line Art)":
                     webtype = 'text/plain'
                     for c in children:
@@ -1540,10 +1587,26 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if currentNode:
 
                     # write to data string
-                    if exportFormat == "CSV":
+                    if exportFormat == "CSV+ (incl tree info)":
                         webtype = 'text/csv'
-                        data = currentNode.to_csv(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
-                                                  fieldContent=fieldContent, context=path)
+                        data = currentNode.to_csv(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  sep=',', treeColumn=True)
+                    elif exportFormat == "CSV (Names/values only)":
+                        webtype = 'text/csv'
+                        data = currentNode.to_csv(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  sep=',', treeColumn=False)
+                    elif exportFormat == "TSV+ (incl tree info)":
+                        webtype = 'text/csv'
+                        data = currentNode.to_csv(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  sep='\t', treeColumn=True)
+                    elif exportFormat == "TSV (Names/values only)":
+                        webtype = 'text/csv'
+                        data = currentNode.to_csv(depth=depth,
+                                                  nodeNames=nodeNames, fieldNames=fieldNames, fieldContent=fieldContent,
+                                                  sep='\t', treeColumn=False)
                     elif exportFormat == "Text (Line Art)":
                         webtype = 'text/plain'
                         data = currentNode.to_txt(depth=depth, nodeNames=nodeNames, fieldNames=fieldNames,
@@ -1637,8 +1700,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # decide on clipboard function (setText/setImage) and data preparation (leave as string or QImage)
                 clipboard = QGuiApplication.clipboard()
-                if exportFormat in ("CSV", "Text (Line Art)", "Text (Markdown)", "HTML (List)",
-                                    "HTML (Tiles)", "HTML (Document)"):
+                if exportFormat in ("CSV+ (incl tree info)", "CSV (Names/values only)",
+                                    "TSV+ (incl tree info)", "TSV (Names/values only)", "Text (Line Art)",
+                                    "Text (Markdown)", "HTML (List)", "HTML (Tiles)", "HTML (Document)"):
                     toClipboard = clipboard.setText
                 elif exportFormat in ("Image/PNG (top-down)", "Image/SVG (top-down)",
                                       "Image/PNG (circular)", "Image/SVG (circular)",
