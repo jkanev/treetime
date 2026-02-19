@@ -167,6 +167,12 @@ class QNode(QtWidgets.QTreeWidgetItem):
         :return: void
         """
         self.fieldOrder = {}
+
+        # set to -1 to hide hidden fields
+        for k in self.fieldOrder.keys():
+            self.fieldOrder[k] = -1
+
+        # re-enumerate, leaving hidden fields hidden
         for i, f in enumerate(fieldOrder):
             self.fieldOrder[f] = i+1     # plus one because column 0 is the node name
 

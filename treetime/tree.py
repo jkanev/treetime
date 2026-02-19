@@ -1576,7 +1576,9 @@ class Node:
 
     def notifyFieldChange(self, fieldName, recursion):
         """
-        Callback, called whenever a field in a related item has changed.
+        Callback, called whenever a field in a related item has changed. Updates all fields of all children (but
+        stops at first layer), and all siblings.
+        :fieldName: A dummy, but needed in order to have the correct number of parameters when used in callbacks
         """
 
         if self.fieldChangeCallback is not None:
@@ -1670,6 +1672,14 @@ class Node:
             self.fieldOrderChangeCallback(fieldOrder)
         for c in self.children:
             c.updateFieldOrder(fieldOrder)
+
+    def updateFieldVisibility(self, field, hidden):
+        """ Propagates a new state of the visibility flag of a field down. Nothing else, just the flag.
+        The flag is later used in exports.
+        """
+        self.fields[field].hidden = hidden
+        for c in self.children:
+            c.updateFieldVisibility(field, hidden)
 
     def changeFieldName(self, oldName, newName):
         """
@@ -1768,12 +1778,18 @@ class Node:
         """
         Notifying a change of the field definition during meta structure editing. Will call the notify functions on
         all children, recursively.
+        :fieldName: name of field, if False updates all fields
         """
         for c in self.children:
             c.updateFieldContent(fieldName)
         if self.fieldChangeCallback:
             try:
-                self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
+                if fieldName:
+                    self.fieldChangeCallback(fieldName, self.fields[fieldName].getString())
+                else:
+                    for f in self.fields:
+                        self.fieldChangeCallback(f, self.fields[f].getString())
+
             except BaseException as e:
                 message = (f'Error when applying new definition for field "{fieldName}:".\n'
                            f'{e}\n'
@@ -1968,11 +1984,15 @@ class Tree(Node):
         else:
             self.fieldOrder += [name]
 
+        # change visibilty in field, for export function (everything else is done by fieldOrder)
+        for c in self.children:
+            c.updateFieldVisibility(name, field.hidden)
+
         # Propagate new field order to all QNodes
         self.updateFieldOrder(self.fieldOrder)
 
         # Update all field values
-        self.updateFieldContent(name)
+        self.updateFieldContent(None)
 
     def updateFieldParameters(self, fieldName, listName):
         """
