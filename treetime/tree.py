@@ -1124,7 +1124,7 @@ class Node:
         if header and style == 'tiles' and not context:
             html = '<!DOCTYPE html><html lang="en">' \
                    + f'<meta charset="utf-8"><title>{self.name} — TreeTime</title><style>' \
-                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em;} '\
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 0.9em; width: fit-content; height: fit-content; margin: auto;} '\
                    'em {color: #555;}' \
                    'div.red {background-color: #fff9ff;}' \
                    'div.orange {background-color: #fffdf7;}' \
@@ -1162,7 +1162,7 @@ class Node:
         elif header and style == 'tiles' and context:
             html = '<!DOCTYPE html><html lang="en">' \
                    + f'<meta charset="utf-8"><title>{self.name} – TreeTime</title><style>' \
-                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em;} ' \
+                   'body {font-family: sans-serif; color: black; background-color: white; font-size: 1.2em; width: fit-content; height: fit-content; margin: auto;} ' \
                    'em {color: #555;}' \
                    'div.red {background-color: #fff9ff;}' \
                    'div.orange {background-color: #fffdf7;}' \
