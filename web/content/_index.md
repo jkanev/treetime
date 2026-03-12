@@ -4,10 +4,11 @@ layout = "landing"
 keywords = ['treetime', 'tree-time', 'hierarchical note taking', 'mindmap editor', 'tree editor', 'time tracker', 'time planner', 'to-do list manager', 'presentation tool', 'mind-map editor', 'test report tool', 'project planner', 'hierarchical calculator', 'download', 'source code', 'documentation']
 +++
 
-# ![Logo](treetime-logo-small.png) &nbsp;&nbsp;&nbsp; TreeTime
-## Linked Trees for Notes, Tasks, and Structured Data
-**TreeTime is a tool for keeping, organizing and analyzing information using separate cross-linked hierarchies.**
-Unlike flat lists, spread sheets, or single-view apps, the same data item can appear in multiple trees at the same time — giving you flexible, multi-perspective sorting, categorising, and calculation.
+{{< center >}}
+# ![Logo](treetime-logo-small.png) &nbsp; TreeTime
+## Information shouldn't be trapped in a grid—it should grow in a tree.
+{{< /center >}}
+**Stop forcing your life into a list.** Organise your information into nested perspectives—a more natural way to see the big picture and the details all at once.  
 
 {{< button href="https://pypi.org/project/TreeTime/">}} Python Package {{< /button >}}
 {{< button href="https://codeberg.org/jkanev/treetime/releases/download/2025.4/treetime_2025-04_windows.zip">}} Download / Windows {{< /button >}}
@@ -18,19 +19,20 @@ Unlike flat lists, spread sheets, or single-view apps, the same data item can ap
 
 {{% columns  %}}
 
-- ### What is *TreeTime*?
-  TreeTime is a light-weight data manager that arranges your data in trees — units and sub-units.  
-  Each data object can belong to several trees at the same time, allowing nested mathematical operations and exports to different graphic formats.  
+- ### *TreeTime* is a personal organizer
+  that connects your notes, numbers, and dates into fluid, branching perspectives.  
+  Instead of arranging in flat lists, use a more natural way of thinking and arrange in boxes of boxes, or branches of leaves. Sort more naturally into catergories and sub-categories.  
   → Read an explanation: [What is a Tree?](docs/what-is-a-tree)
 
-- ### Why linked trees?
-  Most planners and note apps force you into one hierarchy.  
-  TreeTime lets you structure the *same data* simultaneously in different hierarchies — combining the power of a database and the graphical ease of spreadsheets.
+- ### *TreeTime* lets your ideas
+  exist in many places at once.  
+  View the same information through different lenses and organize by topic in one tree, by time in another, and by priority in a third—all while looking at the exact same data.  
+  *TreeTime* combines the simplicity of a text file with the power of a multidimensional database.
 
-- ### What can it do?
-  - recursive calculations (sums, ratios, durations),
-  - hierarchical text operations, sorting, and time tracking,
-  - flexible views for planning, analysis, and documentation, with different export options.  
+- ### *TreeTime* lets you
+  - add numbers, durations, or links to your notes to track the details that matter,  
+  - change a small detail and the change ripples across branches and trees—totals, averages, ratios update themselves everywhere,
+  - export graphics, text diagrams and html pages.  
   → See a [List of Features.](docs/features)
 {{% /columns %}}
 
