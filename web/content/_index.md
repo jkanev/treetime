@@ -11,8 +11,8 @@ keywords = ['treetime', 'tree-time', 'hierarchical note taking', 'mindmap editor
 **Stop forcing your life into a list.** Organise your information into nested perspectives—a more natural way to see the big picture and the details all at once.  
 
 {{< button href="https://pypi.org/project/TreeTime/">}} Python Package {{< /button >}}
-{{< button href="https://codeberg.org/jkanev/treetime/releases/download/2025.4/treetime_2025-04_windows.zip">}} Download / Windows {{< /button >}}
-{{< button href="https://codeberg.org/jkanev/treetime/releases/download/2025.4/treetime_2025-04_linux.tar.gz">}} Download / Linux {{< /button >}}
+{{< button href="https://codeberg.org/jkanev/treetime/releases/download/2026.1/treetime_2026-01_windows.zip">}} Download / Windows {{< /button >}}
+{{< button href="https://codeberg.org/jkanev/treetime/releases/download/2026.1/treetime_2026-01_linux.tar.gz">}} Download / Linux {{< /button >}}
 {{< button href="https://treetime-data-manager.readthedocs.io/">}} Documentation {{< /button >}}
 {{< button href="https://codeberg.org/jkanev/treetime/">}} Source Code {{< /button >}}
 {{< button href="https://codeberg.org/jkanev/treetime/issues">}} Report Issues {{< /button >}}

@@ -138,10 +138,19 @@ Past
 - Done November 2025: Implemented deleting of trees, adding of trees, deletion of tree fields, adding of tree fields, adding and deleting of data fields 
 - Done November 2025: Implemented new-file button, removed first dialog
 - Done November 2025: Release **version 2025.3**
-• Done December 2025: Implemented types in meta editor.
+- Done December 2025: Implemented types in meta editor.
 - Done December 2025: Fixed bugs: Non-propagating data field definition, double decorators in text export. Removed empty copy-children button.
-• Done December 2025: Added checks and error messages to meta editor (recursion check). 
+- Done December 2025: Added checks and error messages to meta editor (recursion check). 
 - Done December 2025: Release **version 2025.4**
+
+2026
+^^^^
+
+- Done January 2026: New field type "count".
+- Done February 2026: Improved text and html export.
+- Done March 2026: Implemented TSV export, bugfixes.
+- Done March 2026: Release **version 2026.1**
+
 
 Present
 -------

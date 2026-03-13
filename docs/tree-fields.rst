@@ -277,6 +277,26 @@ ratio-percent
 
 Same as "ratio", but displayed as percentage (e.g., 0.75 is displayed as 75 %).
 
+count
+-----
+
+The number of inputs of all following input fields. Use this to count the number of children, or of siblings, or to count the amount of entries in a set.
+
+Input can be of any type..
+
+Syntax::
+
+        field "Name"
+            field-type "count"
+            own-fields ["field1", "field2", ...]
+            child-fields ["field3", ...]
+            sibling-fields [...]
+            parent-fields [...]
+
+were "field1", "field2", "field3", ..., are the names of data or tree fields.
+
+Result: The amount of data. Example: If input is a numerical field and entered as child field, the result will be the number of children that have a non-zero value in that field.
+
 node-name
 ---------
 
