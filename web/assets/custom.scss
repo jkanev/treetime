@@ -1,0 +1,9 @@
+$font-family-headings: "Optima", "Linux Biolinum", "URW Classico", "Geneva", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", "Verdana", sans-serif;
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: $font-family-headings;
+}
+
+body {
+    font-family: $font-family-headings;
+}
