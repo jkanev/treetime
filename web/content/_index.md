@@ -4,10 +4,6 @@ layout = "landing"
 keywords = ['treetime', 'tree-time', 'hierarchical note taking', 'mindmap editor', 'tree editor', 'time tracker', 'time planner', 'to-do list manager', 'presentation tool', 'mind-map editor', 'test report tool', 'project planner', 'hierarchical calculator', 'download', 'source code', 'documentation']
 +++
 
-{{< center >}}
-# ![Logo](treetime-logo-small.png) &nbsp; TreeTime
-## Information shouldn't be trapped in a grid—it should grow in a tree.
-{{< /center >}}
 **Stop forcing your life into a list.** Organise your information into nested perspectives—a more natural way to see the big picture and the details all at once.  
 
 {{< button href="https://pypi.org/project/TreeTime/">}} Python Package {{< /button >}}

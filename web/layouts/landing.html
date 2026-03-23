@@ -1,0 +1,132 @@
+{{ define "menu-container" }}
+<!-- -->
+{{ end }}
+{{ define "toc-container" }}
+<!-- -->
+{{ end }}
+{{ define "footer" }}
+<!-- -->
+{{ end }}
+
+{{ define "header" }}
+<nav>
+  {{ partial "docs/menu-hugo" (dict "Page" .Page "Menu" .Site.Menus.home) }}
+</nav>
+{{ end }}
+
+{{ define "main" }}
+{{- $logo := resources.Get "treetime-logo.png" -}}
+<div class="banner">
+  <div class="banner-content">
+    {{ if $logo }}
+    <img src="{{ $logo.RelPermalink }}" alt="TreeTime Logo" class="banner-logo" />
+    {{ end }}
+    <div class="banner-text">
+      <h1>TreeTime</h1>
+      <h2>Information shouldn't be trapped in a grid—it should grow in a tree.</h2>
+    </div>
+  </div>
+</div>
+
+<div class="book-article-container">
+  <article class="markdown book-article">
+    {{- .Content -}}
+  </article>
+</div>
+
+<style>
+.banner {
+  background-color: #333;
+  color: #fff;
+  padding: 1.5rem 1rem;
+  margin: 0 0 2rem 0; /* Add bottom margin to space content below */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+@media screen and (min-width: 1280px) {
+  .banner {
+    padding: 2rem 1rem;
+  }
+}
+
+.banner-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 800px;
+  width: 100%;
+  gap: 1.5rem;
+}
+
+.banner-logo {
+  height: 80px;
+  width: auto;
+}
+
+.banner-text h1 {
+  margin: 0;
+  border-bottom: none;
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: bold;
+  line-height: 1.1;
+}
+
+.banner-text h2 {
+  margin: 0.3rem 0 0 0;
+  border-bottom: none;
+  color: #fff;
+  font-weight: normal;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.book-article-container {
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+/* Ensure the banner and container can extend to viewport edges */
+.book-layout-landing .container {
+  max-width: none;
+  margin: 0;
+}
+
+.book-layout-landing .book-page {
+  padding: 0;
+}
+
+.book-layout-landing .book-header {
+  display: none !important;
+}
+
+@media screen and (min-width: 80rem) {
+  .book-layout-landing .book-page {
+    padding: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .banner-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .banner-text h1 {
+    font-size: 1.8rem;
+  }
+  
+  .banner-text h2 {
+    font-size: 1.1rem;
+  }
+
+  .banner-logo {
+    height: 60px;
+  }
+}
+</style>
+{{ end }}
