@@ -1599,16 +1599,17 @@ class Node:
         Callback, called when the underlying item was deleted or removed from this tree.
         Recursion removes the complete child branch in this tree.
         """
-
-        # unlink item
+        print(f"Node.notifyDeletion {self.name}...")
+        # unlink item at the end
         self.item = None
-        
+
         # tell the GUI layer to remove my QNode from its parent
         if self.deletionCallback is not None:
             self.deletionCallback()
             
         # make parent renumber children
         self.parent.removeChild(self)
+        print(f"Node.notifyDeletion {self.name} done.")
 
     def notifyMove(self):
         """

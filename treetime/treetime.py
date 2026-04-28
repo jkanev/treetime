@@ -113,11 +113,14 @@ class QNode(QtWidgets.QTreeWidgetItem):
             self.setText(self.fieldOrder[fieldName], fieldContent)
 
     def notifyDeletion(self):
+
         # unlink node
         self.sourceNode = None
-        
-        # unlink from parent
-        if self.parent() is not None:
+
+        # Unlink from parent
+        if self.parent() is not None and self.parent().child(0): # The call to child(0) prevents stale parents staying
+            # in after deletion. This is a hack that was tested, but is not fully understood. Possibly a Qt problem.
+            # The call must be done before the removeChild() call.
             self.parent().removeChild(self)
         else:
             print("I have no parent, so I'll stay.")
@@ -156,9 +159,6 @@ class QNode(QtWidgets.QTreeWidgetItem):
             # update all subsequent fields by taking them one number down
             for k in range(n+1, len(self.fieldOrder)+1):
                 self.setText(k, self.text(k+1))
-
-
-
 
     def notifyFieldOrderChange(self, fieldOrder):
         """ Updates the reverse-field-order dict
@@ -1790,6 +1790,9 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # delete if the user has confirmed
         if result == QtWidgets.QMessageBox.StandardButton.Ok:
 
+            #for w in self.treeWidgets:
+            #    w.blockSignals(True)
+
             # move all children in all trees to parent node
             for t in range(0, len(self.forest.children)):
                 node = self.currentItem.viewNodes[t]
@@ -1805,6 +1808,10 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # delete item and update file
             self.forest.itemPool.deleteItem(self.currentItem)
+            #for w in self.treeWidgets:
+            #    w.blockSignals(False)
+            #    w.update()
+
             self.delayedWriteToFile()
 
     def pushButtonDeleteBranchClicked(self):
