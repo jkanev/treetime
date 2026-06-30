@@ -311,7 +311,7 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
 
         # if change not allowed, notify user
         elif message:
-            errorMessage("Name change is not possible.")
+            errorMessage("Name change is not possible. " + message)
 
         return changeOk
 

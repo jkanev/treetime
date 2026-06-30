@@ -138,12 +138,7 @@ _TreeTime_'s data is stored in ._trt_ files. These are plain editable text files
 2. Install PyQt6 -- on an elevated command prompt (Windows), or on the standard command line (Mac, Linux), type: `pip install PyQt6`
 3. Download this project from GitHub as a zip file (https://github.com/jkanev/treetime/archive/master.zip) and unzip
 4. Install _TreeTime_: in the command line, cd into the main directory, then type:
-   - Linux:  
-       `python3 setup.py build`  
-       `python3 setup.py install --user`  
-   - Windows:  
-       `py setup.py build`  
-       `py setup.py install`  
+    `pip install .`
 
 ### Execute ###
 
