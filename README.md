@@ -24,6 +24,7 @@ _TreeTime_ is a time planner, a to-do list manager, a test report tool, a projec
 - [Data Files](#id-file-syntax)
 - [Installation](#id-installation)
 - [Road-Map](#id-roadmap)
+- [Testing](#id-testing)
 - [Dependencies](#id-dependencies)
 
 
