@@ -737,7 +737,7 @@ class Node:
 
         # add node name
         if nodeNames:
-            csv += self.name
+            csv += clean_field(self.name)
 
         # add fields
         if fields_local and fieldContent:
