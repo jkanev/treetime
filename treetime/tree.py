@@ -31,16 +31,20 @@ from PyQt6 import QtCore, QtWidgets
 def calculator(func):
     @functools.wraps(func)          # preserves __name__, __doc__, signature metadata
     def wrapper(self, *args, **kwargs):
-        if self.sourceNode.item:     # only calculate things for genuine nodes, not tree or forest
-            oldValue = None
-            if not self.clean or True:
-                self.clean = True
-                oldValue = self.value
-                func(self, *args, **kwargs)
-            # after
+
+        # pre
+        if self.sourceNode.item and self.clean:     # only calculate things for genuine nodes, not tree or forest
+            oldValue = self.value
+
+            # function call
+            func(self, *args, **kwargs)
+
+            # post
             if oldValue != self.value:
                 self.calcString()
-                # Recurse through all nodes that depnend on this node
+
+                # Recurse through all nodes that depend on this node
+                self.clean = False     # cycle block
                 for name in self.fieldsParent:
                     self.sourceNode.parent.fields[name].calcValue()
                 for name in self.fieldsChild:
@@ -51,6 +55,7 @@ def calculator(func):
                         sb.fields[name].calcValue()
                 for name in self.fieldsOwn:
                     self.sourceNode.fields[name].calcValue()
+                self.clean = True
 
     return wrapper
 
@@ -112,7 +117,7 @@ class Field:
         self.fieldType = None     # field type
         self.value = None         # cached value, will be returned by getValue() and created by calcValue()
         self.string = ""          # string representation of value, returned by getString() and updated by calcString()
-        self.clean = False        # flag used in recursion to avoid infinite cycles
+        self.clean = True        # flag used in recursion to avoid infinite cycles
         self.calcValue = None     # pointer to function to calculate my value
         self.calcString = None    # pointer to function to calculate a string repr. of value
         self.hidden = False       # whether this field is visible in the GUI
@@ -140,7 +145,7 @@ class Field:
         newField.fieldsSibling = copy.deepcopy(self.fieldsSibling)
         newField.fieldsParent = copy.deepcopy(self.fieldsParent)
         newField.fieldsChild = copy.deepcopy(self.fieldsChild)
-        newField.clean = False
+        newField.clean = True
         newField.value = self.value
         newField.string = self.string
         newField.name = self.name
@@ -640,30 +645,6 @@ class Field:
                 self.value = denom/sum
             else:
                 self.value = None
-
-    def markCalculationPath(self):
-        """
-        Sets the flag clean=false in each field that depends on this field, which in turn (recurseively) will
-        mark the fields that depend on them, etc. If a mark is already set, the recursion will stop, becuase
-        meeting a clean=false mark means the completion of a cycle.
-        """
-        if self.clean or True:
-
-            # Mark this node as dirty
-            self.clean = False
-
-            # Recurse through all nodes that depnend on this node
-            for name in self.fieldsParent:
-                if self.sourceNode.parent.fields:
-                    self.sourceNode.parent.fields[name].markCalculationPath()
-            for name in self.fieldsChild:
-                for ch in self.sourceNode.children:
-                    ch.fields[name].markCalculationPath()
-            for name in self.fieldsSibling:
-                for sb in self.sourceNode.parent.children:
-                    sb.fields[name].markCalculationPath()
-            for name in self.fieldsOwn:
-                self.sourceNode.fields[name].markCalculationPath()
 
     def writeToString(self):
         string = "    field-type " + json.dumps(self.fieldType) + "\n"
@@ -1749,22 +1730,18 @@ class Node:
         # TODO This moves into the field, calls the fields calc functions, and when there's a change, walks thrrough
         #      the depending fields (and only those)
         if fieldName in self.reverseFields.keys():     # there may be unused item fields
-            toupdate = self.reverseFields[fieldName]
 
             # run the calculation, this will remove the dirty-marks again and call the update functions to the GUI
+            toupdate = self.reverseFields[fieldName]
             for f in toupdate['child']:
                 for c in self.children:
-                    c.fields[f].markCalculationPath()
                     c.fields[f].calcValue()
             for f in toupdate['parent']:
-                self.parent.fields[f].markCalculationPath()
                 self.parent.fields[f].calcValue()
             for f in toupdate['sibling']:
                 for s in self.parent.children:
-                    c.fields[f].markCalculationPath()
                     c.fields[f].calcValue()
             for f in toupdate['own']:
-                self.fields[f].markCalculationPath()
                 self.fields[f].calcValue()
 
     def notifyDeletion(self):
