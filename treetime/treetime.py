@@ -2200,8 +2200,8 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # expand name column so all names are readable
             self.treeWidgets[n].resizeColumnToContents(0)
 
-            # trigger data update
-            self.forest.blanketFieldUpdate()
+        # trigger data update
+        self.forest.blanketFieldUpdate()
 
         # for the meta tree
         m = len(self.forest.children)
