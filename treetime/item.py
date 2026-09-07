@@ -462,3 +462,10 @@ class ItemPool:
         for it in self.items:
             it.deleteTree(n)
 
+    def blanketFieldUpdate(self):
+        """ Sends a field update to all items
+        """
+        for it in self.items:
+            for f in it.fields.keys():
+                it.notifyFieldChange(f)
+

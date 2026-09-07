@@ -21,9 +21,62 @@ from .item import *
 from textwrap import wrap
 import datetime
 from math import floor, ceil, inf
+import functools
 import graphviz as gv
 # todo: We're only including these for two error messages. Change them into exceptions and remove this dependency. It breaks the design.
 from PyQt6 import QtCore, QtWidgets
+
+
+# decorator @calculator for value calculation and for string calculation functions
+def calculator(func):
+    @functools.wraps(func)          # preserves __name__, __doc__, signature metadata
+    def wrapper(self, *args, **kwargs):
+        if self.sourceNode.item:     # only calculate things for genuine nodes, not tree or forest
+            oldValue = None
+            if not self.clean or True:
+                self.clean = True
+                oldValue = self.value
+                func(self, *args, **kwargs)
+            # after
+            if oldValue != self.value:
+                self.calcString()
+                # Recurse through all nodes that depnend on this node
+                for name in self.fieldsParent:
+                    self.sourceNode.parent.fields[name].calcValue()
+                for name in self.fieldsChild:
+                    for ch in self.sourceNode.children:
+                        ch.fields[name].calcValue()
+                for name in self.fieldsSibling:
+                    for sb in self.sourceNode.parent.children:
+                        sb.fields[name].calcValue()
+                for name in self.fieldsOwn:
+                    self.sourceNode.fields[name].calcValue()
+
+    return wrapper
+
+
+# decorator @stringupdate for value calculation and for string calculation functions
+def stringupdate(func):
+    @functools.wraps(func)          # preserves __name__, __doc__, signature metadata
+    def wrapper(self, *args, **kwargs):
+        if self.sourceNode:
+            try:
+                func(self, *args, **kwargs)
+                self.sourceNode.fieldChangeCallback(self.name, self.string)
+            except (TypeError, ValueError):
+                message = (f'Error in calculating value for field "{self.name}".\n'
+                           'Please check your tree definition for type errors.')
+                print(message)
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText(message)
+                msgBox.setWindowTitle("TreeTime Error")
+                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+                result = msgBox.exec()
+                self.string = "undefined"
+        else:
+            self.string = ""
+    return wrapper
+
 
 class Field:
     """
@@ -37,7 +90,7 @@ class Field:
              'product': 'numerical', 'reciprocal': 'numerical', 'ratio': 'numerical', 'ratio-percent': 'numerical',
              'node-name': 'text', 'node-path': 'text'}
 
-    def __init__(self):
+    def __init__(self, node):
         """Initialises the empty class
         """
         
@@ -54,7 +107,8 @@ class Field:
         self.fieldsChild = []
 
         # calculation values
-        self.sourceNode = None    # the node this field is in
+        self.name = ""            # will be written by the string read function
+        self.sourceNode = node    # the node this field is in
         self.fieldType = None     # field type
         self.value = None         # cached value, will be returned by getValue() and created by calcValue()
         self.string = ""          # string representation of value, returned by getString() and updated by calcString()
@@ -62,7 +116,6 @@ class Field:
         self.calcValue = None     # pointer to function to calculate my value
         self.calcString = None    # pointer to function to calculate a string repr. of value
         self.hidden = False       # whether this field is visible in the GUI
-
 
     def __deepcopy__(self, memo):
         ''' Overload of the deepcopy function, to avoid copying the node recursively.'''
@@ -83,6 +136,14 @@ class Field:
         newField.parentFields = copy.deepcopy(self.parentFields)
         newField.fieldType = copy.deepcopy(self.fieldType)
         newField.hidden = copy.deepcopy(self.hidden)
+        newField.fieldsOwn = copy.deepcopy(self.fieldsOwn)
+        newField.fieldsSibling = copy.deepcopy(self.fieldsSibling)
+        newField.fieldsParent = copy.deepcopy(self.fieldsParent)
+        newField.fieldsChild = copy.deepcopy(self.fieldsChild)
+        newField.clean = False
+        newField.value = self.value
+        newField.string = self.string
+        newField.name = self.name
 
         # the source node is a link
         newField.sourceNode = self.sourceNode
@@ -284,82 +345,68 @@ class Field:
             if self.fieldType:
                 print(f'... error: field type {self.fieldType} does not exist.')
 
+    @stringupdate
     def calcStringPercent(self):
-        if self.sourceNode and self.calcValue:
-            v = self.calcValue()
-            try:
-                if v:
-                    whitespace = ""
-                    if v < 0.1:
-                        whitespace = "  "
-                    elif v < 1.0:
-                        whitespace = " "
-                    self.string = whitespace + str(round(100*v)) + " %"
-                else:
-                    self.string = ""
-            except (TypeError, ValueError):
-                message = (f'Error in calculating value for field "{self.name}".\n'
-                           'Please check your tree definition for type errors.')
-                print(message)
-                msgBox = QtWidgets.QMessageBox()
-                msgBox.setText(message)
-                msgBox.setWindowTitle("TreeTime Error")
-                msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-                result = msgBox.exec()
-                self.string = "undefined"
+        """ Calculate perecentage string.
+            Function only gets called by one of the calcValue function, and only if the value has actually changed.
+            Calls the update function of the GUI layer when done.
+        """
+        v = self.value
+        if v:
+            whitespace = ""
+            if v < 0.1:
+                whitespace = "  "
+            elif v < 1.0:
+                whitespace = " "
+            self.string = whitespace + str(round(100*v)) + " %"
         else:
             self.string = ""
 
+    @stringupdate
     def calcStringSet(self):
-        if self.sourceNode and self.calcValue:
-            self.string = ', '.join(sorted([str(n) for n in self.calcValue()]))
-        else:
-            self.string = "[undefined]"
+        """ Calculate string representation of a set.
+            Function only gets called by one of the calcValue function, and only if the value has actually changed.
+            Calls the update function of the GUI layer when done.
+        """
+        self.string = ', '.join(sorted([str(n) for n in self.value]))
 
+    @stringupdate
     def calcStringTime(self):
-        if self.sourceNode and self.calcValue:
-            v = self.calcValue()
-            try:
-                if v:
-                    if v < 0:
-                        adjust = 0.49999
-                    else:
-                        adjust = -0.49999
-                    hours = round(v + adjust)
-                    minutes = round(60.0*(v - hours) + adjust)
-                    seconds = round(3600.0*((v - hours) - minutes/60.0) + adjust)
-                    sign = v < 0.0 and "- " or "  "
-                    self.string = "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
-                else:
-                    self.string = ""
-            except (TypeError, ValueError):
-                print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
-                      f"Type mismatch, please check field definition.")
-                self.string = "undefined"
+        """ Calculate string representation of a set.
+            Function only gets called by one of the calcValue function, and only if the value has actually changed.
+            Calls the update function of the GUI layer when done.
+        """
+        v = self.value
+        if v:
+            if v < 0:
+                adjust = 0.49999
+            else:
+                adjust = -0.49999
+            hours = round(v + adjust)
+            minutes = round(60.0*(v - hours) + adjust)
+            seconds = round(3600.0*((v - hours) - minutes/60.0) + adjust)
+            sign = v < 0.0 and "- " or "  "
+            self.string = "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
         else:
             self.string = ""
 
+    @stringupdate
     def calcStringUnchanged(self):
-        if self.sourceNode and self.calcValue:
-            self.string = str(self.calcValue())
-        else:
-            self.string = "[undefined]"
+        """ Calculate string representation of a string. Like, do nothing.
+            Function only gets called by one of the calcValue function, and only if the value has actually changed.
+            Calls the update function of the GUI layer when done.
+        """
+        self.string = str(self.value)
 
+    @stringupdate
     def calcStringRounded(self):
-        if self.sourceNode and self.calcValue:
-            value = self.calcValue()
-            if value:
-                try:
-                    self.string = str(round(value, 3))
-                except (TypeError, ValueError):
-                    print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
-                          f"Type mismatch, please check field definition.")
-                    self.string = "undefined"
-            else:
-                self.string = ""
-        else:
-            self.string = "[undefined]"
+        """ Calculate string representation of a number, and round first.
+            Function only gets called by one of the calcValue function, and only if the value has actually changed.
+            Calls the update function of the GUI layer when done.
+        """
+        self.string = str(round(self.value, 3))
 
+    @calculator
     def calcValueNodeName(self):
         s = ""
         item = self.sourceNode.item
@@ -384,6 +431,7 @@ class Field:
                         s += parent.name
         self.value = s
 
+    @calculator
     def calcValueNodePath(self):
         s = ""
         item = self.sourceNode.item
@@ -410,6 +458,7 @@ class Field:
                         s = parent.name + " | " + s
         self.value = s
 
+    @calculator
     def calcValueString(self):
         values = self.getFieldValues(sort=True)
         s = ''
@@ -420,6 +469,7 @@ class Field:
                 s += ''
         self.value = s
 
+    @calculator
     def calcValueSet(self):
         values = self.getFieldValues(sort=True)
         result_set = set()
@@ -430,6 +480,7 @@ class Field:
                 result_set.add(v)
         self.value = result_set
 
+    @calculator
     def calcValueCount(self):
         values = self.getFieldValues()
         sum = 0
@@ -440,6 +491,7 @@ class Field:
                 sum += 0
         self.value = sum
 
+    @calculator
     def calcValueSum(self):
         values = self.getFieldValues()
         sum = 0
@@ -453,6 +505,7 @@ class Field:
                 sum += 0
         self.value = sum
 
+    @calculator
     def calcValueDifference(self):
         """
         Calculates different a - b - c - d of values a,b,c,d
@@ -476,6 +529,7 @@ class Field:
                         pass
         self.value = difference
 
+    @calculator
     def calcValueMin(self):
         values = self.getFieldValues()
         minValue = inf
@@ -484,6 +538,7 @@ class Field:
                 minValue = v
         self.value = minValue
 
+    @calculator
     def calcValueMax(self):
         values = self.getFieldValues()
         maxValue = -inf
@@ -492,6 +547,7 @@ class Field:
                 maxValue = v
         self.value = maxValue
 
+    @calculator
     def calcValueMinString(self):
         values = self.getFieldValues()
         minValue = ""
@@ -501,6 +557,7 @@ class Field:
                 minValue = v
         self.value = minValue
 
+    @calculator
     def calcValueMaxString(self):
         values = self.getFieldValues()
         maxValue = ""
@@ -509,6 +566,7 @@ class Field:
                 maxValue = v
         self.value = maxValue
 
+    @calculator
     def calcValueMean(self):
         values = self.getFieldValues()
         sum = 0.0
@@ -524,8 +582,11 @@ class Field:
             sum = sum/n
         else:
             sum = None
-        self.value = sum
+            self.value = sum
+            if oldValue != self.value:
+                self.calcString()
 
+    @calculator
     def calcValueProduct(self):
         """
         Returns the product a*b*c*d*... of field values a,b,c,d...
@@ -539,6 +600,7 @@ class Field:
                 pass    # same as: prod *= 1.0
         self.value = prod
 
+    @calculator
     def calcValueReciprocal(self):
         """
         Returns the reciprocal 1/(a+b+c+d+...) of field values a,b,c,d...
@@ -556,10 +618,12 @@ class Field:
                 rec = None
         self.value = rec
 
+    @calculator
     def calcValueRatio(self):
         """
         Returns the ratio a/(b+c+d+e+...) of field values a,b,c,d,e,...
         """
+        oldValue = self.value
         values = self.getFieldValues()
         if len(values) < 2:
             self.value = None
@@ -576,7 +640,31 @@ class Field:
                 self.value = denom/sum
             else:
                 self.value = None
-    
+
+    def markCalculationPath(self):
+        """
+        Sets the flag clean=false in each field that depends on this field, which in turn (recurseively) will
+        mark the fields that depend on them, etc. If a mark is already set, the recursion will stop, becuase
+        meeting a clean=false mark means the completion of a cycle.
+        """
+        if self.clean or True:
+
+            # Mark this node as dirty
+            self.clean = False
+
+            # Recurse through all nodes that depnend on this node
+            for name in self.fieldsParent:
+                if self.sourceNode.parent.fields:
+                    self.sourceNode.parent.fields[name].markCalculationPath()
+            for name in self.fieldsChild:
+                for ch in self.sourceNode.children:
+                    ch.fields[name].markCalculationPath()
+            for name in self.fieldsSibling:
+                for sb in self.sourceNode.parent.children:
+                    sb.fields[name].markCalculationPath()
+            for name in self.fieldsOwn:
+                self.sourceNode.fields[name].markCalculationPath()
+
     def writeToString(self):
         string = "    field-type " + json.dumps(self.fieldType) + "\n"
         string += "        own-fields " + json.dumps(self.ownFields) + "\n"
@@ -590,37 +678,37 @@ class Field:
     def readFromString(self, string):
         
         s = string.split("\n        field-type ")
-        name = json.loads(s[0])
+        self.name = json.loads(s[0])
         s = s[1].split("\n        own-fields ")
         try:
             self.fieldType = json.loads(s[0])
         except:
-            self.printReadError(name, "field-type", s[0])
+            self.printReadError(self.name, "field-type", s[0])
         s = s[1].split("\n        child-fields ")
         try:
             self.ownFields = json.loads(s[0])
         except:
-            self.printReadError(name, "own-fields", s[0])
+            self.printReadError(self.name, "own-fields", s[0])
         s = s[1].split("\n        sibling-fields ")
         try:
             self.childFields = json.loads(s[0])
         except:
-            self.printReadError(name, "child-fields", s[0])
+            self.printReadError(self.name, "child-fields", s[0])
         s = s[1].split("\n        parent-fields ")
         try:
             self.siblingFields = json.loads(s[0])
         except:
-            self.printReadError(name, "sibling-fields", s[0])
+            self.printReadError(self.name, "sibling-fields", s[0])
         s = s[1].split("\n        hidden")
         try:
             self.parentFields = json.loads(s[0])
         except:
-            self.printReadError(name, "parent-fields", s[0])
+            self.printReadError(self.name, "parent-fields", s[0])
         if len(s) == 2:
             self.hidden = True
         self.initFieldType()
         
-        return name
+        return self.name
 
     def linkReverseFields(self, reverseFields):
         """ Links the content of the reverse field dictionary to the reverse fields
@@ -646,6 +734,7 @@ class Field:
         print('error reading field parameter "' + parameter + '" of field "' + name + '": definition string "' + string + '" cannot be parsed.')
 
 
+
 class Node:
     """
     A tree structure consisting of nodes that are parents of nodes etc. A node is a view-object to display one item.
@@ -666,6 +755,12 @@ class Node:
         self.moveCallback = None
         self.fieldNameChangeCallback = None
         self.fieldOrderChangeCallback = None
+        if parent:
+            self.fields = parent.fields
+            self.reverseFields = parent.reverseFields
+        else:
+            self.fields = []
+            self.reverseFields = {}
 
     @staticmethod
     def _wrap_lines(raw_lines, chars=70):
@@ -1583,14 +1678,10 @@ class Node:
     def initFields(self, fields):
         self.fields = copy.deepcopy(fields)
         
-        # first set all fields to myself
+        # set all fields to myself
         for name, field in self.fields.items():
             field.sourceNode = self
         
-        # and only then send notification
-        for name, field in self.fields.items():
-            self.notifyFieldChange(name, True)
-
     def findNodeByName(self, name):
         """
         Finds the first node of a given name in the tree.
@@ -1657,19 +1748,24 @@ class Node:
 
         # TODO This moves into the field, calls the fields calc functions, and when there's a change, walks thrrough
         #      the depending fields (and only those)
+        if fieldName in self.reverseFields.keys():     # there may be unused item fields
+            toupdate = self.reverseFields[fieldName]
 
-        if self.fieldChangeCallback is not None:
-            for f in self.fields:
-                self.fieldChangeCallback(f, self.fields[f].getString())
-        
-        if recursion:
-            if self.parent is not None:
-                # notify all siblings, non-recursive
-                for c in self.parent.children:
-                    if c is not self:
-                        c.notifyFieldChange(fieldName, False)
-                # notify all parents, recursive
-                self.parent.notifyFieldChange(fieldName, True)
+            # run the calculation, this will remove the dirty-marks again and call the update functions to the GUI
+            for f in toupdate['child']:
+                for c in self.children:
+                    c.fields[f].markCalculationPath()
+                    c.fields[f].calcValue()
+            for f in toupdate['parent']:
+                self.parent.fields[f].markCalculationPath()
+                self.parent.fields[f].calcValue()
+            for f in toupdate['sibling']:
+                for s in self.parent.children:
+                    c.fields[f].markCalculationPath()
+                    c.fields[f].calcValue()
+            for f in toupdate['own']:
+                self.fields[f].markCalculationPath()
+                self.fields[f].calcValue()
 
     def notifyDeletion(self):
         """
@@ -1943,15 +2039,15 @@ class Tree(Node):
             if n==0:
                 self.name = json.loads(fs)
             else:
-                f = Field()                    # create empty field
+                f = Field(self)                    # create empty field
                 name = f.readFromString(fs)    # fill the fields and get the name
                 self.fields[name] = f
                 if not f.hidden:
                     self.fieldOrder += [name]
 
         # build reverse field dictionary,
-        self.reverseFields = {name: {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
-                              for name in self.fields}
+        self.reverseFields.update({name: {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
+                                         for name in self.fields})
         for name, field in self.fields.items():
 
             # add parent relations as reverse child fields, children as reverse parents, etc
@@ -2181,6 +2277,7 @@ class Forest(Node):
         n = 0
         for s in string:
             if s != "":
+                self.children.append(Tree(self, n))
                 self.children[n].readFromString(s)
                 n += 1
 
@@ -2218,12 +2315,11 @@ class Forest(Node):
         print(f"... reading data type ...")
         self.itemPool = ItemPool()
         self.itemPool.readFromString(itemString)
-        self.createPaths()
 
         # create trees
         print(f"... reading tree definitions ...")
         self.readFromString(treeString)
-        self.createPaths()     # atm we still need this twice. Fix it.
+        self.createPaths()
 
         # link name change function of default item to all trees
         for t,tree in enumerate(self.children):
@@ -2324,9 +2420,10 @@ class Forest(Node):
             n += 1
 
         # create default field (string)
-        field = Field((
-            f'    field {name}\n'
-            '        field-type "string"'
+        field = Field(None)
+        name = field.readFromString((
+            f'"{name}"\n'
+            '        field-type "string"\n'
             '        own-fields []\n'
             '        child-fields []\n'
             '        sibling-fields []\n'
@@ -2410,3 +2507,7 @@ class Forest(Node):
             if c.name == treeName:
                 c.updateFieldParameters(fieldName, listName)
 
+    def blanketFieldUpdate(self):
+        """ Sends a field update to all items
+        """
+        self.itemPool.blanketFieldUpdate()
