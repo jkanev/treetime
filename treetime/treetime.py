@@ -2051,7 +2051,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # in case of failure, show user message and reload
             except KeyError as e:
 
-                errorMessage("File loading failed. Retrying.")
+                errorMessage(f"File loading failed: {e}. Retrying.")
                 self.locked = False
                 self.pushButtonLoadFileClicked()
 

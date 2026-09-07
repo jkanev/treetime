@@ -4,7 +4,7 @@ from treetime.tree import Field, Node
 def test_field_initialization():
     field = Field(fieldType="sum")
     assert field.fieldType == "sum"
-    assert field.getValue == field.getValueSum
+    assert field.calcValue == field.calcValueSum
 
 def test_field_get_value_sum():
     # Mocking Node and its behavior for Field
@@ -26,7 +26,7 @@ def test_field_get_value_sum():
     
     node.children = [child1, child2]
     
-    # We need to bypass some logic or mock it more deeply because Field.getFieldValues 
+    # We need to bypass some logic or mock it more deeply because Field.calcFieldValues
     # expects actual Node/Field objects.
     # For now, let's just test that the type initialization works.
     assert field.fieldType == "sum"

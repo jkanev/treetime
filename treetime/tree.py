@@ -37,22 +37,32 @@ class Field:
              'product': 'numerical', 'reciprocal': 'numerical', 'ratio': 'numerical', 'ratio-percent': 'numerical',
              'node-name': 'text', 'node-path': 'text'}
 
-    def __init__(self, node=None, ownFields=False, childFields=False, siblingFields=False, parentFields=False,
-                 fieldType=None):
-        """Initialises the class, links the source node, field type, and sets the evaluation method."""
+    def __init__(self):
+        """Initialises the empty class
+        """
         
-        self.cache = None
-        self.ownFields = ownFields or []
-        self.siblingFields = siblingFields or []
-        self.childFields = childFields or []
-        self.parentFields = parentFields or []
-        self.sourceNode = node
-        self.getValue = None
-        self.getString = None
-        self.hidden = False
-        self.fieldType = fieldType
-        if (self.fieldType != ""):
-            self.initFieldType()
+        # lists with names for input fields
+        self.ownFields = []
+        self.siblingFields = []
+        self.childFields = []
+        self.parentFields = []
+
+        # lists with fields that depend on this field (use it as input)
+        self.fieldsOwn = []
+        self.fieldsSibling = []
+        self.fieldsParent = []
+        self.fieldsChild = []
+
+        # calculation values
+        self.sourceNode = None    # the node this field is in
+        self.fieldType = None     # field type
+        self.value = None         # cached value, will be returned by getValue() and created by calcValue()
+        self.string = ""          # string representation of value, returned by getString() and updated by calcString()
+        self.clean = False        # flag used in recursion to avoid infinite cycles
+        self.calcValue = None     # pointer to function to calculate my value
+        self.calcString = None    # pointer to function to calculate a string repr. of value
+        self.hidden = False       # whether this field is visible in the GUI
+
 
     def __deepcopy__(self, memo):
         ''' Overload of the deepcopy function, to avoid copying the node recursively.'''
@@ -120,7 +130,7 @@ class Field:
         if node.item is not None: # don't try to get values from the root node
             for f in self.ownFields:
                 if f in node.fields:
-                    values += [node.fields[f].getValue()]
+                    values += [node.fields[f].value]
                 elif f in node.item.fields:
                     values += [Field.getFieldValue(node.item.fields[f])]
         
@@ -129,7 +139,7 @@ class Field:
         for f in self.childFields:
             for c in sort and sorted(node.children, key=lambda n: n.name) or node.children:
                 if f in c.fields:
-                    values += [c.fields[f].getValue()]
+                    values += [c.fields[f].value]
                 elif c.item and c.item.fields and f in c.item.fields:
                     values += [Field.getFieldValue(c.item.fields[f])]
 
@@ -141,92 +151,142 @@ class Field:
                 for c in sort and sorted(node.children, key=lambda n: n.name) or node.children:
                     if c != self.sourceNode:
                         if f in c.fields:
-                            values += [c.fields[f].getValue()]
+                            values += [c.fields[f].value]
                         elif f in c.item.fields:
                             values += [Field.getFieldValue(c.item.fields[f])]
 
             # look in parent fields
             for f in self.parentFields:
                 if f in node.fields:
-                    values += [node.fields[f].getValue()]
+                    values += [node.fields[f].value]
                 elif f in node.item.fields:
                     values += [Field.getFieldValue(node.item.fields[f])]
         
         # return
         return values
 
+    def getValue(self):
+        """ Returns self.value """
+        return self.value
+
+    def getString(self):
+        """ Returns self.string """
+        return self.string
+
     def initFieldType(self):
         
         if self.fieldType == "string":
-            self.getValue = self.getValueString
-            self.getString = self.getStringUnchanged
+            self.calcValue = self.calcValueString
+            self.calcString = self.calcStringUnchanged
+            self.value = ""
+            self.string = ""
         elif self.fieldType == "url":
-            self.getValue = self.getValueString
-            self.getString = self.getStringUnchanged
+            self.calcValue = self.calcValueString
+            self.calcString = self.calcStringUnchanged
+            self.value = ""
+            self.string = ""
         elif self.fieldType == "text":
-            self.getValue = self.getValueString
-            self.getString = self.getStringUnchanged
+            self.calcValue = self.calcValueString
+            self.calcString = self.calcStringUnchanged
+            self.value = ""
+            self.string = ""
         elif self.fieldType == "count":
-            self.getValue = self.getValueCount
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueCount
+            self.calcString = self.calcStringRounded
+            self.value = 0
+            self.string = "0"
         elif self.fieldType == "set":
-            self.getValue = self.getValueSet
-            self.getString = self.getStringSet
+            self.calcValue = self.calcValueSet
+            self.calcString = self.calcStringSet
+            self.value = {}
+            self.string = ""
         elif self.fieldType == "sum":
-            self.getValue = self.getValueSum
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueSum
+            self.calcString = self.calcStringRounded
+            self.value = 0
+            self.string = "0"
         elif self.fieldType == "sum-time":
-            self.getValue = self.getValueSum
-            self.getString = self.getStringTime
+            self.calcValue = self.calcValueSum
+            self.calcString = self.calcStringTime
+            self.value = 0
+            self.string = "0"
         elif self.fieldType == "difference":
-            self.getValue = self.getValueDifference
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueDifference
+            self.calcString = self.calcStringRounded
+            self.value = 0
+            self.string = "0"
         elif self.fieldType == "difference-time":
-            self.getValue = self.getValueDifference
-            self.getString = self.getStringTime
+            self.calcValue = self.calcValueDifference
+            self.calcString = self.calcStringTime
+            self.value = 0
+            self.string = "1"
         elif self.fieldType == "mean":
-            self.getValue = self.getValueMean
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueMean
+            self.calcString = self.calcStringRounded
+            self.value = 1
+            self.string = "1"
         elif self.fieldType == "mean-percent":
-            self.getValue = self.getValueMean
-            self.getString = self.getStringPercent
+            self.calcValue = self.calcValueMean
+            self.calcString = self.calcStringPercent
+            self.value = 0
+            self.string = "0"
         elif self.fieldType == "min":
-            self.getValue = self.getValueMin
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueMin
+            self.calcString = self.calcStringRounded
+            self.value = 0
+            self.string = "0"
         elif self.fieldType == "max":
-            self.getValue = self.getValueMax
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueMax
+            self.calcString = self.calcStringRounded
+            self.value = 0
+            self.string = "0"
         elif self.fieldType == "min-string":
-            self.getValue = self.getValueMinString
-            self.getString = self.getStringUnchanged
+            self.calcValue = self.calcValueMinString
+            self.calcString = self.calcStringUnchanged
+            self.value = ""
+            self.string = ""
         elif self.fieldType == "max-string":
-            self.getValue = self.getValueMaxString
-            self.getString = self.getStringUnchanged
+            self.calcValue = self.calcValueMaxString
+            self.calcString = self.calcStringUnchanged
+            self.value = ""
+            self.string = ""
         elif self.fieldType == "product":
-            self.getValue = self.getValueProduct
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueProduct
+            self.calcString = self.calcStringRounded
+            self.value = 1
+            self.string = "1"
         elif self.fieldType == "reciprocal":
-            self.getValue = self.getValueReciprocal
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueReciprocal
+            self.calcString = self.calcStringRounded
+            self.value = 1
+            self.string = "1"
         elif self.fieldType == "ratio":
-            self.getValue = self.getValueRatio
-            self.getString = self.getStringRounded
+            self.calcValue = self.calcValueRatio
+            self.calcString = self.calcStringRounded
+            self.value = 1
+            self.string = "1"
         elif self.fieldType == "ratio-percent":
-            self.getValue = self.getValueRatio
-            self.getString = self.getStringPercent
+            self.calcValue = self.calcValueRatio
+            self.calcString = self.calcStringPercent
+            self.value = 100
+            self.string = "100"
         elif self.fieldType == "node-name":
-            self.getValue = self.getValueNodeName
-            self.getString = self.getStringUnchanged
+            self.calcValue = self.calcValueNodeName
+            self.calcString = self.calcStringUnchanged
+            self.value = ""
+            self.string = ""
         elif self.fieldType == "node-path":
-            self.getValue = self.getValueNodePath
-            self.getString = self.getStringUnchanged
+            self.calcValue = self.calcValueNodePath
+            self.calcString = self.calcStringUnchanged
+            self.value = ""
+            self.string = ""
         else:
             if self.fieldType:
                 print(f'... error: field type {self.fieldType} does not exist.')
 
-    def getStringPercent(self):
-        if self.sourceNode and self.getValue:
-            v = self.getValue()
+    def calcStringPercent(self):
+        if self.sourceNode and self.calcValue:
+            v = self.calcValue()
             try:
                 if v:
                     whitespace = ""
@@ -234,9 +294,9 @@ class Field:
                         whitespace = "  "
                     elif v < 1.0:
                         whitespace = " "
-                    return whitespace + str(round(100*v)) + " %"
+                    self.string = whitespace + str(round(100*v)) + " %"
                 else:
-                    return ""
+                    self.string = ""
             except (TypeError, ValueError):
                 message = (f'Error in calculating value for field "{self.name}".\n'
                            'Please check your tree definition for type errors.')
@@ -246,19 +306,19 @@ class Field:
                 msgBox.setWindowTitle("TreeTime Error")
                 msgBox.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
                 result = msgBox.exec()
-                return "undefined"
+                self.string = "undefined"
         else:
-            return ""
+            self.string = ""
 
-    def getStringSet(self):
-        if self.sourceNode and self.getValue:
-            return ', '.join(sorted([str(n) for n in self.getValue()]))
+    def calcStringSet(self):
+        if self.sourceNode and self.calcValue:
+            self.string = ', '.join(sorted([str(n) for n in self.calcValue()]))
         else:
-            return "[undefined]"
+            self.string = "[undefined]"
 
-    def getStringTime(self):
-        if self.sourceNode and self.getValue:
-            v = self.getValue()
+    def calcStringTime(self):
+        if self.sourceNode and self.calcValue:
+            v = self.calcValue()
             try:
                 if v:
                     if v < 0:
@@ -269,94 +329,88 @@ class Field:
                     minutes = round(60.0*(v - hours) + adjust)
                     seconds = round(3600.0*((v - hours) - minutes/60.0) + adjust)
                     sign = v < 0.0 and "- " or "  "
-                    return "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
+                    self.string = "{}{:02d}:{:02d}:{:02d}".format(sign, abs(hours), abs(minutes), abs(seconds))
                 else:
-                    return ""
+                    self.string = ""
             except (TypeError, ValueError):
                 print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
                       f"Type mismatch, please check field definition.")
-                return "undefined"
+                self.string = "undefined"
         else:
-            return ""
+            self.string = ""
 
-    def getStringUnchanged(self):
-        if self.sourceNode and self.getValue:
-            return str(self.getValue())
+    def calcStringUnchanged(self):
+        if self.sourceNode and self.calcValue:
+            self.string = str(self.calcValue())
         else:
-            return "[undefined]"
+            self.string = "[undefined]"
 
-    def getStringRounded(self):
-        if self.sourceNode and self.getValue:
-            value = self.getValue()
+    def calcStringRounded(self):
+        if self.sourceNode and self.calcValue:
+            value = self.calcValue()
             if value:
                 try:
-                    return str(round(value, 3))
+                    self.string = str(round(value, 3))
                 except (TypeError, ValueError):
                     print(f"Calculation error in node {self.sourceNode.name} for field of type {self.fieldType}. "
                           f"Type mismatch, please check field definition.")
-                    return "undefined"
+                    self.string = "undefined"
             else:
-                return ""
+                self.string = ""
         else:
-            return "[undefined]"
+            self.string = "[undefined]"
 
-    def getValueNodeName(self):
-        if self.cache is not None:
-            return self.cache
-        else:
-            s = ""
-            item = self.sourceNode.item
-            if item is None:
-                return s
-            for t in self.parentFields:
-
-                # find tree
-                tree = self.sourceNode
-                while tree.parent is not None:
-                    tree = tree.parent
-                if type(tree) == Forest:
-                    tree = tree.children[t]
-
-                # find node in tree
-                if type(tree) == Tree:
-                    path = item.trees[t]
-                    node = tree.findNode(path)
-                    if node is not None:
-                        parent = node.parent
-                        if parent is not None:
-                            s += parent.name
+    def calcValueNodeName(self):
+        s = ""
+        item = self.sourceNode.item
+        if item is None:
             return s
+        for t in self.parentFields:
 
-    def getValueNodePath(self):
-        if self.cache is not None:
-            return self.cache
-        else:
-            s = ""
-            item = self.sourceNode.item
-            if item is None:
-                return s
-            for t in self.parentFields:
+            # find tree
+            tree = self.sourceNode
+            while tree.parent is not None:
+                tree = tree.parent
+            if type(tree) == Forest:
+                tree = tree.children[t]
 
-                # find tree
-                tree = self.sourceNode
-                while tree.parent is not None:
-                    tree = tree.parent
-                if type(tree) == Forest:
-                    tree = tree.children[t]
-
-                # find node in tree
-                if type(tree) == Tree:
-                    path = item.trees[t]
-                    node = tree.findNode(path)
-                    if node and node.parent:
-                        parent = node.parent
+            # find node in tree
+            if type(tree) == Tree:
+                path = item.trees[t]
+                node = tree.findNode(path)
+                if node is not None:
+                    parent = node.parent
+                    if parent is not None:
                         s += parent.name
-                        while parent.parent and parent.parent.parent and parent.parent.parent.parent : # don't display forest or tree names
-                            parent = parent.parent
-                            s = parent.name + " | " + s
-            return s
+        self.value = s
 
-    def getValueString(self):
+    def calcValueNodePath(self):
+        s = ""
+        item = self.sourceNode.item
+        if item is None:
+            return s
+        for t in self.parentFields:
+
+            # find tree
+            tree = self.sourceNode
+            while tree.parent is not None:
+                tree = tree.parent
+            if type(tree) == Forest:
+                tree = tree.children[t]
+
+            # find node in tree
+            if type(tree) == Tree:
+                path = item.trees[t]
+                node = tree.findNode(path)
+                if node and node.parent:
+                    parent = node.parent
+                    s += parent.name
+                    while parent.parent and parent.parent.parent and parent.parent.parent.parent : # don't display forest or tree names
+                        parent = parent.parent
+                        s = parent.name + " | " + s
+        self.value = s
+
+    def calcValueString(self):
         values = self.getFieldValues(sort=True)
         s = ''
         for v in values:
@@ -364,9 +418,9 @@ class Field:
                 s += v
             else:     # or the neutral element for addition ('')
                 s += ''
-        return s
+        self.value = s
 
-    def getValueSet(self):
+    def calcValueSet(self):
         values = self.getFieldValues(sort=True)
         result_set = set()
         for v in values:
@@ -374,9 +428,9 @@ class Field:
                 result_set = result_set | v
             elif v:     # either sum up using the value
                 result_set.add(v)
-        return result_set
+        self.value = result_set
 
-    def getValueCount(self):
+    def calcValueCount(self):
         values = self.getFieldValues()
         sum = 0
         for v in values:
@@ -384,9 +438,9 @@ class Field:
                 sum += 1
             else:     # or the neutral element for addition (0)
                 sum += 0
-        return sum
+        self.value = sum
 
-    def getValueSum(self):
+    def calcValueSum(self):
         values = self.getFieldValues()
         sum = 0
         for v in values:
@@ -397,9 +451,9 @@ class Field:
                     pass
             else:     # or the neutral element for addition (0)
                 sum += 0
-        return sum
+        self.value = sum
 
-    def getValueDifference(self):
+    def calcValueDifference(self):
         """
         Calculates different a - b - c - d of values a,b,c,d
         """
@@ -420,42 +474,42 @@ class Field:
                         difference -= v     # all other elements are negative
                     except:
                         pass
-        return difference
+        self.value = difference
 
-    def getValueMin(self):
+    def calcValueMin(self):
         values = self.getFieldValues()
         minValue = inf
         for v in values:
             if v < minValue:     # either sum up using the value
                 minValue = v
-        return minValue
+        self.value = minValue
 
-    def getValueMax(self):
+    def calcValueMax(self):
         values = self.getFieldValues()
         maxValue = -inf
         for v in values:
             if v > maxValue:     # either sum up using the value
                 maxValue = v
-        return maxValue
+        self.value = maxValue
 
-    def getValueMinString(self):
+    def calcValueMinString(self):
         values = self.getFieldValues()
         minValue = ""
         # find minimum ignoring "" (otherwise empty fields will overrule everything)
         for v in values:
             if v and (not minValue or v < minValue):
                 minValue = v
-        return minValue
+        self.value = minValue
 
-    def getValueMaxString(self):
+    def calcValueMaxString(self):
         values = self.getFieldValues()
         maxValue = ""
         for v in values:
             if v > maxValue:
                 maxValue = v
-        return maxValue
+        self.value = maxValue
 
-    def getValueMean(self):
+    def calcValueMean(self):
         values = self.getFieldValues()
         sum = 0.0
         n = 0.0
@@ -470,9 +524,9 @@ class Field:
             sum = sum/n
         else:
             sum = None
-        return sum
+        self.value = sum
 
-    def getValueProduct(self):
+    def calcValueProduct(self):
         """
         Returns the product a*b*c*d*... of field values a,b,c,d...
         """
@@ -483,9 +537,9 @@ class Field:
                 prod *= v
             except:
                 pass    # same as: prod *= 1.0
-        return prod
+        self.value = prod
 
-    def getValueReciprocal(self):
+    def calcValueReciprocal(self):
         """
         Returns the reciprocal 1/(a+b+c+d+...) of field values a,b,c,d...
         """
@@ -500,15 +554,15 @@ class Field:
                 rec = 1.0/rec
             except:
                 rec = None
-        return rec
+        self.value = rec
 
-    def getValueRatio(self):
+    def calcValueRatio(self):
         """
         Returns the ratio a/(b+c+d+e+...) of field values a,b,c,d,e,...
         """
         values = self.getFieldValues()
         if len(values) < 2:
-            return None
+            self.value = None
         else:
             denom = values[0]
             sum = 0
@@ -519,9 +573,9 @@ class Field:
                     except:
                         pass
             if sum != 0:
-                return denom/sum
+                self.value = denom/sum
             else:
-                return None
+                self.value = None
     
     def writeToString(self):
         string = "    field-type " + json.dumps(self.fieldType) + "\n"
@@ -567,6 +621,26 @@ class Field:
         self.initFieldType()
         
         return name
+
+    def linkReverseFields(self, reverseFields):
+        """ Links the content of the reverse field dictionary to the reverse fields
+        """
+        self.fieldsParent = reverseFields['parent']
+        self.fieldsChild = reverseFields['child']
+        self.fieldsSibling = reverseFields['sibling']
+        self.fieldsOwn = reverseFields['own']
+
+    def getInputFieldNames(self, source):
+        """ Helper function to build reverse dictionary in the tree.
+        """
+        if source == 'own':
+            return self.ownFields
+        elif source == 'sibling':
+            return self.siblingFields
+        elif source == 'parent':
+            return self.parentFields
+        else:
+            return self.childFields
 
     def printReadError(self, name, parameter, string):
         print('error reading field parameter "' + parameter + '" of field "' + name + '": definition string "' + string + '" cannot be parsed.')
@@ -1581,6 +1655,9 @@ class Node:
         :fieldName: A dummy, but needed in order to have the correct number of parameters when used in callbacks
         """
 
+        # TODO This moves into the field, calls the fields calc functions, and when there's a change, walks thrrough
+        #      the depending fields (and only those)
+
         if self.fieldChangeCallback is not None:
             for f in self.fields:
                 self.fieldChangeCallback(f, self.fields[f].getString())
@@ -1814,6 +1891,7 @@ class Tree(Node):
         super().__init__(parent, index, [])
         self.fieldOrder = []
         self.fields = {}
+        self.reverseFields = {}  # dictionary containing reverse fields, content used by reference in fields
         self.name = ""
 
     def createPathTo(self, item, treeindex):
@@ -1853,16 +1931,39 @@ class Tree(Node):
         return string
 
     def readFromString(self, string):
+        """
+        Reads a tree from string, creating field and reverse field lookup tables
+        """
+
+        # split definition string
         fieldStrings = string.split("\n    field ")
+
+        # build field dictionary
         for n,fs in enumerate(fieldStrings):
             if n==0:
                 self.name = json.loads(fs)
             else:
-                f = Field()
-                name = f.readFromString(fs)
+                f = Field()                    # create empty field
+                name = f.readFromString(fs)    # fill the fields and get the name
                 self.fields[name] = f
                 if not f.hidden:
                     self.fieldOrder += [name]
+
+        # build reverse field dictionary,
+        self.reverseFields = {name: {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
+                              for name in self.fields}
+        for name, field in self.fields.items():
+
+            # add parent relations as reverse child fields, children as reverse parents, etc
+            for source, target in (('parent','child'), ('child','parent'), ('sibling', 'sibling'), ('own', 'own')):
+                for p in field.getInputFieldNames(target):
+                    if p not in self.reverseFields:
+                        self.reverseFields[p] = {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
+                    self.reverseFields[p][source].add(name)
+
+        # assign reverse dict content to single fields
+        for name, field in self.fields.items():
+            field.linkReverseFields(self.reverseFields[name])
 
     def fieldIndexFromName(self, name):
         """
@@ -2223,7 +2324,14 @@ class Forest(Node):
             n += 1
 
         # create default field (string)
-        field = Field(fieldType='string')
+        field = Field((
+            f'    field {name}\n'
+            '        field-type "string"'
+            '        own-fields []\n'
+            '        child-fields []\n'
+            '        sibling-fields []\n'
+            '        parent-fields []\n'
+        ))
 
         # register with trees
         for tree in self.children:
