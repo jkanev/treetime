@@ -157,6 +157,8 @@ class Field:
         memo[id(self)] = newField
         return newField
 
+    # Generic Methods for accessing Field content
+
     @staticmethod
     def getFieldValue(field):
         """
@@ -222,7 +224,7 @@ class Field:
             for f in self.parentFields:
                 if f in node.fields:
                     values += [node.fields[f].value]
-                elif f in node.item.fields:
+                elif node.item and f in node.item.fields:
                     values += [Field.getFieldValue(node.item.fields[f])]
         
         # return
@@ -347,6 +349,8 @@ class Field:
             if self.fieldType:
                 print(f'... error: field type {self.fieldType} does not exist.')
 
+    # Update the GUI strings for Fields
+
     @stringupdate
     def calcStringPercent(self):
         """ Calculate perecentage string.
@@ -407,6 +411,8 @@ class Field:
             Calls the update function of the GUI layer when done.
         """
         self.string = str(round(self.value, 3))
+
+    # Calculate Field Values
 
     @calculator
     def calcValueNodeName(self):
@@ -585,8 +591,6 @@ class Field:
         else:
             sum = None
             self.value = sum
-            if oldValue != self.value:
-                self.calcString()
 
     @calculator
     def calcValueProduct(self):
@@ -642,6 +646,8 @@ class Field:
                 self.value = denom/sum
             else:
                 self.value = None
+
+    # Read/Write from/to File
 
     def writeToString(self):
         string = "    field-type " + json.dumps(self.fieldType) + "\n"
@@ -712,7 +718,6 @@ class Field:
         print('error reading field parameter "' + parameter + '" of field "' + name + '": definition string "' + string + '" cannot be parsed.')
 
 
-
 class Node:
     """
     A tree structure consisting of nodes that are parents of nodes etc. A node is a view-object to display one item.
@@ -739,6 +744,8 @@ class Node:
         else:
             self.fields = []
             self.reverseFields = {}
+
+    # Functions used for export and printing
 
     @staticmethod
     def _wrap_lines(raw_lines, chars=70):
@@ -1518,6 +1525,8 @@ class Node:
         # finished.
         return needed_columns, html
 
+    # Functions used for content editing
+
     def createPathTo(self, item, treeindex, nodeindex, viewtemplate):
         """
         Links an item into a tree, using the given path. Empty nodes get created on the way.
@@ -1626,52 +1635,14 @@ class Node:
         node.initFields(self.fields)
         return node
 
-    def addField(self, name, field):
-        """ Adds a new field recursively in the entire tree. Silently, no messages sent. After adding, the visibility
-        still needs to be adapted, and then update messages sent through the tree. . The first call does not create deep
-        copies, only subsequent recursive calls do. This is to not touch existing references when the top-level fields
-        are changed (meta nodes keep pointers to the parameter lists).
-        :param name: The field name
-        :param field: The field itself
-        :return: void
-        """
-        self.fields[name] = field
-        self.fields[name].sourceNode = self
-        for c in self.children:
-            c.addField(name, copy.deepcopy(field))
-
-    def findNodeByName(self, name):
-        """
-        Finds the first node of a given name in the tree.
-        """
-        if self.name == name:
-            return self
-        else:
-            for c in self.children:
-                found = c.findNodeByName(name)
-                if found is not None:
-                    return found
-        return None
-
     def initFields(self, fields):
+        """ Initialise fields of a node. Used during tree setup and while creating new children.
+        """
         self.fields = copy.deepcopy(fields)
         
         # set all fields to myself
         for name, field in self.fields.items():
             field.sourceNode = self
-        
-    def findNodeByName(self, name):
-        """
-        Finds the first node of a given name in the tree.
-        """
-        if self.name == name:
-            return self
-        else:
-            for c in self.children:
-                found = c.findNodeByName(name)
-                if found is not None:
-                    return found
-        return None
 
     def registerNameChangeCallback(self, callback):
         self.nameChangeCallback = callback
@@ -1736,7 +1707,7 @@ class Node:
             for f in toupdate['parent']:
                 self.parent.fields[f].calcValue()
             for f in toupdate['sibling']:
-                for s in self.parent.children:
+                for c in self.parent.children:
                     c.fields[f].calcValue()
             for f in toupdate['own']:
                 self.fields[f].calcValue()
@@ -1798,6 +1769,22 @@ class Node:
             c.removeEmptyNodes()
         if not self.item:
             self.notifyDeletion()
+
+    # Functions used for Meta editing
+
+    def addField(self, name, field):
+        """ Adds a new field recursively in the entire tree. Silently, no messages sent. After adding, the visibility
+        still needs to be adapted, and then update messages sent through the tree. . The first call does not create deep
+        copies, only subsequent recursive calls do. This is to not touch existing references when the top-level fields
+        are changed (meta nodes keep pointers to the parameter lists).
+        :param name: The field name
+        :param field: The field itself
+        :return: void
+        """
+        self.fields[name] = field
+        self.fields[name].sourceNode = self
+        for c in self.children:
+            c.addField(name, copy.deepcopy(field))
 
     def updateFieldOrderEntry(self, n, newName):
         """ Notifies the QNode of a change in the tree's fieldOrderer in this node (if it is a tree), and in the node's view node, via the
@@ -1870,58 +1857,6 @@ class Node:
         for c in self.children:
             c.changeFieldDefinition(fieldName, field)
 
-    def changeFieldOwnParameters(self, name, params):
-        """
-        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
-        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
-        changed (meta nodes keep pointers to the parameter lists).
-        :param name: Name of the field
-        :param params: List of parameters
-        :return:
-        """
-        self.fields[name].ownFields = params
-        for c in self.children:
-            c.changeFieldOwnParameters(name, copy.deepcopy(params))
-
-    def changeFieldChildParameters(self, name, params):
-        """
-        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
-        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
-        changed (meta nodes keep pointers to the parameter lists).
-        :param name: Name of the field
-        :param params: List of parameters
-        :return:
-        """
-        self.fields[name].childFields = params
-        for c in self.children:
-            c.changeFieldChildParameters(name, copy.deepcopy(params))
-
-    def changeFieldSiblingParameters(self, name, params):
-        """
-        Recursively changes the sibling-fields parameter list in all fields. The first call does not create deep copies,
-        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
-        changed (meta nodes keep pointers to the parameter lists).
-        :param name: Name of the field
-        :param params: List of parameters
-        :return:
-        """
-        self.fields[name].siblingFields = params
-        for c in self.children:
-            c.changeFieldSiblingParameters(name, copy.deepcopy(params))
-
-    def changeFieldParentParameters(self, name, params):
-        """
-        Recursively changes the own-fields parameter list in all fields. The first call does not create deep copies,
-        only subsequent recursive calls do. This is to not touch existing references when the top-level fields are
-        changed (meta nodes keep pointers to the parameter lists).
-        :param name: Name of the field
-        :param params: List of parameters
-        :return:
-        """
-        self.fields[name].parentFields = params
-        for c in self.children:
-            c.changeFieldParentParameters(name, copy.deepcopy(params))
-
     def updateFieldContent(self, fieldName):
         """
         Notifying a change of the field definition during meta structure editing. Will call the notify functions on
@@ -1954,6 +1889,8 @@ class Tree(Node):
     """
     A tree inside a forest. One item can appear several times in the forest, but only once in each tree.
     """
+
+    # Creation of Tree
 
     def __init__(self, parent, index):
         """Initialise"""
@@ -2019,24 +1956,57 @@ class Tree(Node):
                 if not f.hidden:
                     self.fieldOrder += [name]
 
-        # build reverse field dictionary,
-        self.reverseFields.update({name: {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
-                                         for name in self.fields})
-        for name, field in self.fields.items():
-            for source, target in (('parent','child'), ('child','parent'), ('sibling', 'sibling'), ('own', 'own')):
-                for p in field.getInputFieldNames(target):
+        # build reverse field dictionary
+        self.updateReverseFields()
 
-                    # adding node-name and node-path relations purely to 'own' field relations
+    def updateReverseFields(self, oldName="", newName=""):
+        """ Updates or builds the reverseFields dictionary, used for field notification when updates need to
+            be passed through the tree.
+            This has to be done carefully because existing entries in this dictionary are pointed to by fields
+            in the nodes of the trees.
+        """
+
+        # Find existing source and target fields
+        existingFields = set(self.parent.listFieldNames(self.name))
+        additionalFields = set()
+        for name in existingFields:
+            if name in self.fields and self.fields[name].fieldType in ('node-name', 'node-path'):
+                for t in ('own', 'sibling', 'parent', 'child'):
+                    for p in self.fields[name].getInputFieldNames(t):
+                        additionalFields.add(f'node-tree-{p}')
+        existingFields |= additionalFields
+
+        # update reverse dictionary with empty entries for missing fields
+        for name in existingFields:
+            if name not in self.reverseFields:
+                if name == newName and oldName in self.reverseFields:
+                    self.reverseFields[name] = self.reverseFields.pop(oldName)
+                else:
+                    self.reverseFields[name] = {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
+
+        # remove entries in the dictionary that don't exist
+        for name in self.reverseFields:
+            if name not in existingFields:
+                if name == newName and newName in existingFields:
+                    self.reverseFields[newName] = self.reverseFields.pop(name)
+                else:
+                    del self.reverseFields[name]
+            for t in ('own', 'sibling', 'parent', 'child'):
+                target = self.reverseFields[name][t]
+                for s in target:
+                    if s not in existingFields:
+                        if s == oldName and newName in existingFields:
+                            target.add(newName)
+                        target.discard(s)
+
+        # add fields that are not in the reverse dictionary
+        for name, field in self.fields.items():
+            for source, target in (('parent', 'child'), ('child', 'parent'), ('sibling', 'sibling'), ('own', 'own')):
+                for p in field.getInputFieldNames(target):
                     if field.fieldType in ('node-name', 'node-path'):
                         p = f'node-tree-{p}'
-                        if p not in self.reverseFields:
-                            self.reverseFields[p] = {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
                         self.reverseFields[p]['own'].add(name)
-
-                    # add parent relations as reverse child fields, children as reverse parents, etc
                     else:
-                        if p not in self.reverseFields:
-                            self.reverseFields[p] = {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
                         self.reverseFields[p][source].add(name)
 
         # assign reverse dict content to single fields
@@ -2058,6 +2028,8 @@ class Tree(Node):
         """
         for c in self.children:
             c.removeEmptyNodes()
+
+    # Removing, Adding, Editing Meta Structure in the GUI
 
     def changeName(self, newName):
         """
@@ -2122,6 +2094,7 @@ class Tree(Node):
                 c.changeFieldDefinition(fname, self.fields[fname])    # this is the renamed field, replace old name
 
         # then (when all fields are replaced) send the definition updates
+        self.updateReverseFields(oldName, newName)
         for fname in changes:
             self.updateFieldContent(fname)
 
@@ -2174,36 +2147,13 @@ class Tree(Node):
         # Update all field values
         self.updateFieldContent(None)
 
-    def updateFieldParameters(self, fieldName, listName):
-        """
-        Called by a MetaNode. A top-level field parameter list has changed, update the fieldOrder list, then update all
-        nodes and redisplay.
-        :param name: The field name
-        :param hidden: Whether the field is now hidden or not
-        :return: True if success, False if error
-        """
-        result = True
-        if listName == 'own-fields':
-            self.changeFieldOwnParameters(fieldName, self.fields[fieldName].ownFields)
-        elif listName == 'child-fields':
-            self.changeFieldChildParameters(fieldName, self.fields[fieldName].childFields)
-        elif listName == 'sibling-fields':
-            self.changeFieldSiblingParameters(fieldName, self.fields[fieldName].siblingFields)
-        elif listName == 'parent-fields':
-            self.changeFieldParentParameters(fieldName, self.fields[fieldName].parentFields)
-        else:
-            print(f"Error when replacing parameters for field {fieldName:} list type {listName} does not exist")
-            result = False
-
-        # Update all field values
-        self.updateFieldContent(fieldName)
-        return result
-
 
 class Forest(Node):
     """
     The trunk node containing trees, that contain the nodes. Also manages the node templates.
     """
+
+    # Creation of Forest
 
     def __init__(self, filename):
         """Initialise"""
@@ -2320,10 +2270,21 @@ class Forest(Node):
         [index] = [n for n, tree in enumerate(self.children) if tree.name == name] or [-1]
         return index
 
+    def blanketFieldUpdate(self):
+        """ Sends a field update to all items, refreshing the entire view.
+            Called after reading a fiele and after changing the structure (leaving Meta-Editing Mode).
+        """
+        for c in self.children:
+            c.notifyNameChange(False)
+        self.itemPool.blanketFieldUpdate()
+
+    # Removing, Adding, Editing Meta Structure in the GUI
+
     def listFieldNames(self, scope=None):
         """
         :param scope: The name of a tree or None. If not None, only tree fields within that tree, and data field
                       names, are listed. Otherwise, all tree field names and data field names are listed.
+                      Used to offer a list of fields when creating new fields in the GUI.
         :return: a list of existing tree field and data item field names
         """
         # find name for new field
@@ -2382,6 +2343,8 @@ class Forest(Node):
         field = {'type': 'string', 'content': ''}
         self.itemTypes.addField(name, field)
         self.itemPool.addField(name, field)
+        for c in self.children:
+            c.updateReverseFields()
 
         # return field
         return name, self.itemTypes.items[0].fields[name]
@@ -2417,6 +2380,7 @@ class Forest(Node):
             if tree.name == treeName:
                 tree.addField(name, field)
                 tree.updateFieldVisibility(name)
+                tree.updateReverseFields()
 
         # return field
         return name, field
@@ -2449,6 +2413,8 @@ class Forest(Node):
     def deleteDataField(self, name):
         self.itemTypes.deleteField(name)
         self.itemPool.deleteField(name)
+        for c in self.children:
+            c.updateReverseFields()
 
     def deleteTreeField(self, treeName, fieldName):
         """
@@ -2476,9 +2442,9 @@ class Forest(Node):
         self.children.pop(n)
         return n
 
-    def updateTreeFieldParameters(self, treeName, fieldName, listName):
+    def updateReverseFields(self, treeName):
         """
-        Propagates the changed parameter list that was set in a top-level field through the tree and updates the display
+        Recreates the reverse lookup for change propagation according to the changed parameter list
         :param treeName: The name of the tree
         :param fieldName: The name of the tree field
         :param listName: The name of the parameter list, one of 'own-fields', 'child-fields', 'sibling-fields',
@@ -2487,11 +2453,4 @@ class Forest(Node):
         """
         for c in self.children:
             if c.name == treeName:
-                c.updateFieldParameters(fieldName, listName)
-
-    def blanketFieldUpdate(self):
-        """ Sends a field update to all items
-        """
-        for c in self.children:
-            c.notifyNameChange(False)
-        self.itemPool.blanketFieldUpdate()
+                c.updateReverseFields()

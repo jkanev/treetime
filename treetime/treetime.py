@@ -344,7 +344,7 @@ class QMetaNode(QtWidgets.QTreeWidgetItem):
                     self.source[index] = bare
             else:
                 self.source.pop(index)
-            self.forest.updateTreeFieldParameters(self.grandParentName, self.parentName, self.name)
+            self.forest.updateReverseFields(self.grandParentName)
             super().setText(1, f'{self.source}'[1:-1])
         else:
             print(f"Content change to {newContent} at index {index} not implemented yet for type {self.nodeType}.")
@@ -2012,6 +2012,7 @@ class TreeTimeWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 tab.setEnabled(True)
 
             # init display
+            self.forest.blanketFieldUpdate()
             self.tableWidget.clear()
             self.gridInitialised = False
             self.itemSelectionChanged()
