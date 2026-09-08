@@ -130,21 +130,18 @@ class Field:
         
         fieldType = self.__class__
         newField = fieldType.__new__(fieldType)
-        
-        # cache doesn't get copied
-        newField.cache = None
-        
-        # simple fields are copies
-        newField.ownFields = copy.deepcopy(self.ownFields)
-        newField.siblingFields = copy.deepcopy(self.siblingFields)
-        newField.childFields = copy.deepcopy(self.childFields)
-        newField.parentFields = copy.deepcopy(self.parentFields)
-        newField.fieldType = copy.deepcopy(self.fieldType)
-        newField.hidden = copy.deepcopy(self.hidden)
-        newField.fieldsOwn = copy.deepcopy(self.fieldsOwn)
-        newField.fieldsSibling = copy.deepcopy(self.fieldsSibling)
-        newField.fieldsParent = copy.deepcopy(self.fieldsParent)
-        newField.fieldsChild = copy.deepcopy(self.fieldsChild)
+
+        # simple fields are links
+        newField.ownFields = self.ownFields
+        newField.siblingFields = self.siblingFields
+        newField.childFields = self.childFields
+        newField.parentFields = self.parentFields
+        newField.fieldType = self.fieldType
+        newField.hidden = self.hidden
+        newField.fieldsOwn = self.fieldsOwn
+        newField.fieldsSibling = self.fieldsSibling
+        newField.fieldsParent = self.fieldsParent
+        newField.fieldsChild = self.fieldsChild
         newField.clean = True
         newField.value = self.value
         newField.string = self.string
@@ -1547,7 +1544,7 @@ class Node:
         """
         if self.item is not None:
             self.item.registerNameChangeCallback(self.tree, self.notifyNameChange)
-            self.item.registerFieldChangeCallback(self.tree, lambda x: self.notifyFieldChange(x, True))
+            self.item.registerFieldChangeCallback(self.tree, lambda x: self.notifyFieldChange(x))
             self.item.registerDeletionCallback(self.tree, self.notifyDeletion)
             self.item.registerMoveCallback(self.tree, self.notifyMove)
             self.item.registerSelectionCallback(self.tree, lambda x: self.notifySelection(x))
@@ -1711,16 +1708,16 @@ class Node:
             if self.nameChangeCallback is not None:
                 self.nameChangeCallback(newName)
 
-        # always adapt all my fields in all trees (better: call the callback from the item without recursion)
-        if self.item:
-            for v in self.item.viewNodes:
-                v and v.notifyFieldChange(False, False)
+        # trigger field change for name-path and node-name fields if tree=parent
+        def recurseName(node, fieldName):
+            if node.item:
+                for v in node.item.viewNodes:
+                    v and v.notifyFieldChange(fieldName)
+            for c in node.children:
+                recurseName(c, fieldName)
+        recurseName(self, f'node-tree-{self.tree}')
 
-        # notify all children, recursive, but only update their fields
-        for c in self.children:
-            c.notifyNameChange(False)
-
-    def notifyFieldChange(self, fieldName, recursion):
+    def notifyFieldChange(self, fieldName):
         """
         Callback, called whenever a field in a related item has changed. Updates all fields of all children (but
         stops at first layer), and all siblings.
@@ -2026,13 +2023,21 @@ class Tree(Node):
         self.reverseFields.update({name: {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
                                          for name in self.fields})
         for name, field in self.fields.items():
-
-            # add parent relations as reverse child fields, children as reverse parents, etc
             for source, target in (('parent','child'), ('child','parent'), ('sibling', 'sibling'), ('own', 'own')):
                 for p in field.getInputFieldNames(target):
-                    if p not in self.reverseFields:
-                        self.reverseFields[p] = {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
-                    self.reverseFields[p][source].add(name)
+
+                    # adding node-name and node-path relations purely to 'own' field relations
+                    if field.fieldType in ('node-name', 'node-path'):
+                        p = f'node-tree-{p}'
+                        if p not in self.reverseFields:
+                            self.reverseFields[p] = {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
+                        self.reverseFields[p]['own'].add(name)
+
+                    # add parent relations as reverse child fields, children as reverse parents, etc
+                    else:
+                        if p not in self.reverseFields:
+                            self.reverseFields[p] = {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
+                        self.reverseFields[p][source].add(name)
 
         # assign reverse dict content to single fields
         for name, field in self.fields.items():
@@ -2487,4 +2492,6 @@ class Forest(Node):
     def blanketFieldUpdate(self):
         """ Sends a field update to all items
         """
+        for c in self.children:
+            c.notifyNameChange(False)
         self.itemPool.blanketFieldUpdate()
