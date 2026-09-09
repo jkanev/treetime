@@ -2095,8 +2095,6 @@ class Tree(Node):
 
         # then (when all fields are replaced) send the definition updates
         self.updateReverseFields(oldName, newName)
-        for fname in changes:
-            self.updateFieldContent(fname)
 
     def updateFieldType(self, fieldName):
         """
@@ -2310,6 +2308,7 @@ class Forest(Node):
         """
         newType = self.itemTypes.items[0].fields[fieldName]['type']
         self.itemPool.changeFieldType(fieldName, newType)
+        self.itemTypes.changeFieldType(fieldName, newType)
 
     def updateTreeFieldType(self, treeName, fieldName):
         """

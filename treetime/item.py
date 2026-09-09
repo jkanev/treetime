@@ -278,7 +278,7 @@ class Item:
                 self.fields[field]['content'] = str(self.fields[field]['content'])
             elif newType in ('integer', 'timer'):
                 try:
-                    self.fields[field]['content'] = float(self.fields[field]['content'])
+                    self.fields[field]['content'] = float(self.fields[field]['content'] or 0.0)
                 except ValueError:
                     self.fields[field]['content'] = 0.0
             if newType == 'timer':
@@ -391,6 +391,19 @@ class ItemPool:
                         # if all is fine, add item and proceed
                         else:
                             self.existing_paths[i].append(t)
+
+                # fix broken types
+                for name, field in it.fields.items():
+                    fieldType = field['type']
+                    if fieldType in ('string', 'text', 'longtext', 'url'):
+                        if not isinstance(field, str):
+                           field['content'] = str(field['content'])
+                    elif fieldType in ('integer', 'timer'):
+                        if not isinstance(field['content'], (int, float)):
+                            try:
+                                field['content'] = float(field['content'] or 0.0)
+                            except ValueError:
+                                field['content'] = 0.0
                 self.items += [it]
 
     def printpool(self):

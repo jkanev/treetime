@@ -141,13 +141,14 @@ class QNode(QtWidgets.QTreeWidgetItem):
         :param newName: New name of field with index n, of False if field is being removed
         :return: void
         """
+        print(f'old field order: {self.fieldOrder}')
         [oldName] = [k for k, i in self.fieldOrder.items() if i==(n+1)] or [False]
         if oldName:
             self.fieldOrder.pop(oldName)
 
         # update field order if new field exists
-        if newName and newName in self.fieldOrder:
-            self.fieldOrder[newName] = n
+        if newName:
+            self.fieldOrder[newName] = n+1     # columns in view start with 1, the name is 0
 
         # field has been removed
         else:
@@ -159,6 +160,7 @@ class QNode(QtWidgets.QTreeWidgetItem):
             # update all subsequent fields by taking them one number down
             for k in range(n+1, len(self.fieldOrder)+1):
                 self.setText(k, self.text(k+1))
+        print(f'new field order: {self.fieldOrder}')
 
     def notifyFieldOrderChange(self, fieldOrder):
         """ Updates the reverse-field-order dict
