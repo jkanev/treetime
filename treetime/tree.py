@@ -694,13 +694,21 @@ class Field:
         
         return self.name
 
-    def linkReverseFields(self, reverseFields):
+    def linkReverseFields(self, reverseFields, recurse):
         """ Links the content of the reverse field dictionary to the reverse fields
         """
+
+        # Link our fields. For existing fields this needs to be done once, everything else happens
+        # in deepcopy.
         self.fieldsParent = reverseFields['parent']
         self.fieldsChild = reverseFields['child']
         self.fieldsSibling = reverseFields['sibling']
         self.fieldsOwn = reverseFields['own']
+
+        # We're coming from the create-new-field function, introduce ourselves to our children
+        if recurse:
+            for c in self.sourceNode.children:
+                c.fields[self.name].linkReverseFields(reverseFields, recurse)
 
     def getInputFieldNames(self, source):
         """ Helper function to build reverse dictionary in the tree.
@@ -1609,7 +1617,7 @@ class Node:
             self.children.remove(child)
             self.renumberChildren()
             for f in self.fields:
-                self.notifyFieldChange(f, True)
+                self.notifyFieldChange(f)
             child.parent = None
 
     def renumberChildren(self):
@@ -1823,9 +1831,9 @@ class Node:
         :return: True
         """
         if oldName in self.fields.keys():
-            print(f'changing "{oldName}" to "{newName}" in node {self.name}')
             if newName:
                 self.fields[newName] = self.fields.pop(oldName)
+                self.fields[newName].name = newName
             else:
                 self.item.notifyFieldNameChange(oldName, newName)
                 self.fields.pop(oldName)
@@ -1985,19 +1993,26 @@ class Tree(Node):
                     self.reverseFields[name] = {'parent': set(), 'child': set(), 'own': set(), 'sibling': set()}
 
         # remove entries in the dictionary that don't exist
+        removeFields = set()
         for name in self.reverseFields:
             if name not in existingFields:
                 if name == newName and newName in existingFields:
                     self.reverseFields[newName] = self.reverseFields.pop(name)
                 else:
-                    del self.reverseFields[name]
-            for t in ('own', 'sibling', 'parent', 'child'):
-                target = self.reverseFields[name][t]
-                for s in target:
-                    if s not in existingFields:
-                        if s == oldName and newName in existingFields:
-                            target.add(newName)
+                    removeFields.add(name)
+            else:
+                for t in ('own', 'sibling', 'parent', 'child'):
+                    target = self.reverseFields[name][t]
+                    removeDeps = set()
+                    for s in target:
+                        if s not in existingFields:
+                            if s == oldName and newName in existingFields:
+                                target.add(newName)
+                            removeDeps.add(s)
+                    for s in removeDeps:         # need to remove afterwards, not during iteration
                         target.discard(s)
+        for s in removeFields:         # need to remove afterwards, not during iteration
+            target.discard(s)
 
         # add fields that are not in the reverse dictionary
         for name, field in self.fields.items():
@@ -2011,7 +2026,7 @@ class Tree(Node):
 
         # assign reverse dict content to single fields
         for name, field in self.fields.items():
-            field.linkReverseFields(self.reverseFields[name])
+            field.linkReverseFields(self.reverseFields[name], not oldName and newName==name)
 
     def fieldIndexFromName(self, name):
         """
@@ -2379,7 +2394,7 @@ class Forest(Node):
             if tree.name == treeName:
                 tree.addField(name, field)
                 tree.updateFieldVisibility(name)
-                tree.updateReverseFields()
+                tree.updateReverseFields(False, name)
 
         # return field
         return name, field
